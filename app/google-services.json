@@ -1,0 +1,55 @@
+{
+  "project_info": {
+    "project_number": "743089689704",
+    "firebase_url": "https://lecitoyenuqac-ff785.firebaseio.com",
+    "project_id": "lecitoyenuqac-ff785",
+    "storage_bucket": "lecitoyenuqac-ff785.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:743089689704:android:62e3d02aeeb8eaf1",
+        "android_client_info": {
+          "package_name": "ca.uqac.lecitoyen"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "743089689704-5fjdpvklmn01k676mtm7crnfds82pbfu.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "ca.uqac.lecitoyen",
+            "certificate_hash": "0f1b164382b8988a760a21f550243b9c7a9c9a09"
+          }
+        },
+        {
+          "client_id": "743089689704-qoqsb54p74751vnmvlt3t6fb3v9ec8qu.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCb4A5jCEboQLo92_oNqugFpyYu1HL7tv8"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 2,
+          "other_platform_oauth_client": [
+            {
+              "client_id": "743089689704-qoqsb54p74751vnmvlt3t6fb3v9ec8qu.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
