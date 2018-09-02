@@ -26,11 +26,21 @@ d'intérêt des citoyens pour par exemple :
 
 ## Idée de concept
 
-Créer un "réseau social" faciliant la découverte d'artiste de la région par les citoyens
+Créer un "réseau social" faciliant la découverte d'artiste de la région par les citoyens. 
 
 ## Backlog et fonctionnalités
-
-- Login pour Citoyen
-- Login pour Artiste (musique, art, écrivain, photography, etc.)
-- Accès à la plateform par n'importe qui mais seulement en terme de vue. Si tu veux intéragir, sur la plateforme, tu dois absolument t'inscrite. 
+- Permettre à un utilisateur de se connecter
+- Permettre la connnexion anonyme
+- Permettre à l'inscription d'un usager.
+    - Créer deux type de compte (citoyen/artiste)
+- Permettre la publication d'images, fichier audio, pdf, ou lien vers d'autre site internet de publication (afficher l'image du lein)
+- Permettre l'interaction entre usager (seulement si inscrit)
+  - Message privé
+  - Commentaire sur l'art
+  - Appréciation 
+  - Partage de lien
+- Permettre à l'usager de suivre les actualités d'autre usager
+- Permettre la création / partage d'évènement avec emplacement, date, heure, etc.
+  - Groupe de musique joue à tel heure à tel endroit
+  - Présentation d'oeuvre d'art à tel endroit.
 
