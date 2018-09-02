@@ -3,6 +3,7 @@ package ca.uqac.lecitoyen;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentStatePagerAdapter;
+import android.view.MotionEvent;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -34,4 +35,6 @@ public class SectionStatePagerAdapter extends FragmentStatePagerAdapter {
     public int getCount() {
         return mFragmentList.size();
     }
+
+
 }
