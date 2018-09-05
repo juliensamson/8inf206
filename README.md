@@ -29,18 +29,11 @@ d'intérêt des citoyens pour par exemple :
 Créer un "réseau social" faciliant la découverte d'artiste de la région par les citoyens. 
 
 ## Backlog et fonctionnalités
-- Permettre à un utilisateur de se connecter
-- Permettre la connnexion anonyme
-- Permettre à l'inscription d'un usager.
-    - Créer deux type de compte (citoyen/artiste)
+- Permettre à un utilisateur de se connecter/déconnecter/inscrire/désinscrire
 - Permettre la publication d'images, fichier audio, pdf, ou lien vers d'autre site internet de publication (afficher l'image du lein)
-- Permettre l'interaction entre usager (seulement si inscrit)
-  - Message privé
-  - Commentaire sur l'art
-  - Appréciation 
-  - Partage de lien
+- Permettre l'interaction entre usager (seulement si inscrit): Message privé, Commentaire sur l'art, Appréciation , Partage de lien, Demande d'avis (sondage), etc.
 - Permettre à l'usager de suivre les actualités d'autre usager
 - Permettre la création / partage d'évènement avec emplacement, date, heure, etc.
-  - Groupe de musique joue à tel heure à tel endroit
-  - Présentation d'oeuvre d'art à tel endroit.
+- Permettre la publication de projet (et alternative) fait par la ville.
+- Permettre au citoyen de commenter et voter (sondage) sur des projets physique, projets de lois, etc. 
 
