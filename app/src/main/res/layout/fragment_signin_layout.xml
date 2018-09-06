@@ -21,7 +21,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="60dp"
-        android:text="Une place pour partager ses créations"
+        android:text="Créer votre compte avec "
         android:textAlignment="center"
         android:textSize="20sp"
         app:layout_constraintLeft_toLeftOf="parent"
@@ -40,32 +40,11 @@
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/signin_subtitle">
 
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:textAlignment="center"
-            android:text="Je suis un créateur et je veux partager mes créations"
-            />
-
         <Button
-            android:id="@+id/signin_creator"
+            android:id="@+id/button_create_account_email"
             android:layout_width="180dp"
             android:layout_height="wrap_content"
-            android:text="S'inscrire comme créateur" />
-
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:textAlignment="center"
-            android:text="Je préfère suivre mes artistes favoris"
-            />
-
-
-        <Button
-            android:id="@+id/signin_citizen"
-            android:layout_width="180dp"
-            android:layout_height="wrap_content"
-            android:text="S'inscrire comme citoyen" />
+            android:text="Email" />
 
         <LinearLayout
             android:layout_width="match_parent"

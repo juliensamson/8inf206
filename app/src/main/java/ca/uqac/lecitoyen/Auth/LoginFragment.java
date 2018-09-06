@@ -19,14 +19,11 @@ import ca.uqac.lecitoyen.R;
  * Created by jul_samson on 18-08-29.
  */
 
-public class LoginFragment extends Fragment {
+public class LoginFragment extends Fragment implements View.OnClickListener {
 
     private static final String TAG = "LoginFragment";
 
-    private Intent mLoginAuthActivity;
-
     private Button mEmailLogin;
-
     private TextView mSigninFragment;
 
     @Nullable
@@ -36,25 +33,28 @@ public class LoginFragment extends Fragment {
 
         //  View
         mEmailLogin = view.findViewById(R.id.button_login_email);
+
         mSigninFragment = view.findViewById(R.id.go_to_signin_fragment);
 
-
         //  Buttons
-        mEmailLogin.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                mLoginAuthActivity = new Intent(getContext(), EmailPasswordActivity.class);
-                startActivity(mLoginAuthActivity);
-            }
-        });
-        mSigninFragment.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                ((MainActivity)getActivity()).setViewPager(1);
-            }
-        });
+        view.findViewById(R.id.button_login_email).setOnClickListener(this);
+        view.findViewById(R.id.go_to_signin_fragment).setOnClickListener(this);
 
         return view;
     }
 
+    @Override
+    public void onClick(View view) {
+        int id = view.getId();
+
+        if (id == R.id.button_login_email) {
+            Intent intent = new Intent(getContext(), EmailPasswordActivity.class);
+            Bundle extras = new Bundle();
+            extras.putString("display_button", "login");
+            intent.putExtras(extras);
+            startActivity(intent);
+        } else if (id == R.id.go_to_signin_fragment) {
+            ((MainActivity)getActivity()).setupViewPager(1);
+        }
+    }
 }

@@ -14,6 +14,7 @@ import android.widget.Button;
 
 import com.google.android.gms.common.util.VisibleForTesting;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 
 import ca.uqac.lecitoyen.Auth.EmailPasswordActivity;
 import ca.uqac.lecitoyen.Auth.LoginFragment;
@@ -24,26 +25,29 @@ public class MainActivity extends AppCompatActivity {
 
     final private static String TAG = "MainActivity";
 
-    private SectionStatePagerAdapter mSectionStatePagerAdapter;
     private ViewPager mViewPager;
-    private Context mContext;
 
-    private Button mLoginEmail;
-    private Button mLoginAnonymous;
+    private FirebaseAuth mAuth;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        mContext = this;
 
-        mSectionStatePagerAdapter = new SectionStatePagerAdapter(getSupportFragmentManager());
+        SectionStatePagerAdapter sectionStatePagerAdapter
+                = new SectionStatePagerAdapter(getSupportFragmentManager());
         mViewPager = findViewById(R.id.container);
-        setupViewPager(mViewPager);
+        createViewPager(mViewPager);
     }
 
-    private void setupViewPager(ViewPager viewPager) {
-        Log.d("SetupViewPager", "START");
+    @Override
+    protected void onStart() {
+        super.onStart();
+        Log.d(TAG, "Activity started");
+    }
+
+    private void createViewPager(ViewPager viewPager) {
+        Log.d(TAG, "createViewPager");
         viewPager.setOnTouchListener(new View.OnTouchListener() {
 
             @Override
@@ -53,14 +57,13 @@ public class MainActivity extends AppCompatActivity {
         });
 
         SectionStatePagerAdapter adapter = new SectionStatePagerAdapter(getSupportFragmentManager());
-        adapter.addFragment(new LoginFragment(), "LoginFragment");
-        adapter.addFragment(new SigninFragment(), "SigninFragment");
+        adapter.addFragment(new LoginFragment(), "LogInFragment");
+        adapter.addFragment(new SigninFragment(), "SignInFragment");
         viewPager.setAdapter(adapter);
-        Log.d("SetupViewPager", "END");
     }
 
-    public void setViewPager(int fragmentNumber) {
-        Log.d("setViewPager", "...");
+    public void setupViewPager(int fragmentNumber) {
+        Log.d(TAG, "setupViewPager");
         mViewPager.setCurrentItem(fragmentNumber);
     }
 
