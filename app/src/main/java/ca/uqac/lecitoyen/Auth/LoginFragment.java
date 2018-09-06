@@ -15,16 +15,14 @@ import android.widget.TextView;
 import ca.uqac.lecitoyen.MainActivity;
 import ca.uqac.lecitoyen.R;
 
-/**
- * Created by jul_samson on 18-08-29.
- */
-
 public class LoginFragment extends Fragment implements View.OnClickListener {
 
     private static final String TAG = "LoginFragment";
 
     private Button mEmailLogin;
     private TextView mSigninFragment;
+
+
 
     @Nullable
     @Override

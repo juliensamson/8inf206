@@ -25,6 +25,7 @@ import com.google.firebase.auth.FirebaseUser;
 import ca.uqac.lecitoyen.BaseActivity;
 import ca.uqac.lecitoyen.MainActivity;
 import ca.uqac.lecitoyen.R;
+import ca.uqac.lecitoyen.UserMainActivity;
 
 /**
  * Created by jul_samson on 18-09-02.
@@ -53,42 +54,23 @@ public class EmailPasswordActivity extends BaseActivity implements View.OnClickL
         //  Initialize auth
         mAuth = FirebaseAuth.getInstance();
 
-        //  Toolbar
-        mUserToolbar = findViewById(R.id.toolbar_layout);
-
         //  Views
-        mStatusTextView = findViewById(R.id.emailpassword_status);
-        mDetailTextView = findViewById(R.id.emailpassword_detail);
         mEmailField = findViewById(R.id.emailpassword_email_field);
         mPasswordField = findViewById(R.id.emailpassword_password_field);
 
         //  Buttons
         findViewById(R.id.emailpassword_log_in_button).setOnClickListener(this);
-        findViewById(R.id.emailpassword_sign_out_button).setOnClickListener(this);
         findViewById(R.id.emailpassword_create_account_button).setOnClickListener(this);
-        findViewById(R.id.emailpassword_verify_email_button).setOnClickListener(this);
 
         layoutManagement();
-    }
-
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        MenuInflater inflater = getMenuInflater();
-        inflater.inflate(R.menu.user_menu, menu);
-        return super.onCreateOptionsMenu(menu);
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        return super.onOptionsItemSelected(item);
     }
 
     @Override
     protected void onStart() {
         super.onStart();
         Log.d(TAG, "Activity started");
-        FirebaseUser currentUser = mAuth.getCurrentUser();
-        updateUI(currentUser);
+        //FirebaseUser currentUser = mAuth.getCurrentUser();
+        //updateUI(currentUser);
     }
 
 
@@ -99,10 +81,6 @@ public class EmailPasswordActivity extends BaseActivity implements View.OnClickL
             createAccount(mEmailField.getText().toString(), mPasswordField.getText().toString());
         } else if (id == R.id.emailpassword_log_in_button) {
             signInUser(mEmailField.getText().toString(), mPasswordField.getText().toString());
-        } else if (id == R.id.emailpassword_sign_out_button) {
-            signOutUser();
-        } else if (id == R.id.emailpassword_verify_email_button) {
-            sendEmailVerification();
         }
     }
 
@@ -141,38 +119,6 @@ public class EmailPasswordActivity extends BaseActivity implements View.OnClickL
         // [END create_user_with_email]
     }
 
-    private void sendEmailVerification() {
-        // Disable button
-        findViewById(R.id.emailpassword_verify_email_button).setEnabled(false);
-
-        // Send verification email
-        // [START send_email_verification]
-        final FirebaseUser user = mAuth.getCurrentUser();
-        user.sendEmailVerification()
-                .addOnCompleteListener(this, new OnCompleteListener<Void>() {
-                    @Override
-                    public void onComplete(@NonNull Task<Void> task) {
-                        // [START_EXCLUDE]
-                        // Re-enable button
-                        findViewById(R.id.emailpassword_verify_email_button).setEnabled(true);
-
-                        if (task.isSuccessful()) {
-                            Toast.makeText(EmailPasswordActivity.this,
-                                    "Verification email sent to " + user.getEmail(),
-                                    Toast.LENGTH_SHORT).show();
-                        } else {
-                            Log.e(TAG, "sendEmailVerification", task.getException());
-                            Toast.makeText(EmailPasswordActivity.this,
-                                    "Failed to send verification email.",
-                                    Toast.LENGTH_SHORT).show();
-                        }
-                        // [END_EXCLUDE]
-                    }
-                });
-        // [END send_email_verification]
-    }
-
-
     private void signInUser(String email, String password) {
         Log.d(TAG, "signInUser: " + email);
 
@@ -200,11 +146,6 @@ public class EmailPasswordActivity extends BaseActivity implements View.OnClickL
         });
     }
 
-    private void signOutUser() {
-        mAuth.signOut();
-        updateUI(null);
-    }
-
     private boolean validateForm() {
         boolean valid = true;
 
@@ -229,27 +170,10 @@ public class EmailPasswordActivity extends BaseActivity implements View.OnClickL
 
     private void updateUI(FirebaseUser user) {
 
-        setSupportActionBar(mUserToolbar);
-
         if (user != null) {
-            mStatusTextView.setText("Connected " + user.getEmail());
-            mDetailTextView.setText("User " + user.getUid());
-
-            findViewById(R.id.emailpassword_fields_layout).setVisibility(View.GONE);
-            findViewById(R.id.emailpassword_log_in_layout).setVisibility(View.GONE);
-            findViewById(R.id.emailpassword_sign_out_layout).setVisibility(View.VISIBLE);
-
-            findViewById(R.id.emailpassword_verify_email_button).setEnabled(!user.isEmailVerified());
-
-        } else {
-            mStatusTextView.setText("Signout");
-            mDetailTextView.setText(null);
-
-            findViewById(R.id.emailpassword_fields_layout).setVisibility(View.VISIBLE);
-            findViewById(R.id.emailpassword_log_in_layout).setVisibility(View.VISIBLE);
-            findViewById(R.id.emailpassword_sign_out_layout).setVisibility(View.GONE);
+            startActivity(new Intent(this, UserMainActivity.class));
+            this.finish();
         }
-
     }
 
     private void layoutManagement() {
@@ -271,5 +195,9 @@ public class EmailPasswordActivity extends BaseActivity implements View.OnClickL
                     break;
             }
         }
+    }
+
+    private void unsubscribeUser() {
+
     }
 }

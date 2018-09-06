@@ -1,5 +1,6 @@
 package ca.uqac.lecitoyen;
 
+import android.annotation.SuppressLint;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
@@ -34,16 +35,28 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        SectionStatePagerAdapter sectionStatePagerAdapter
-                = new SectionStatePagerAdapter(getSupportFragmentManager());
-        mViewPager = findViewById(R.id.container);
-        createViewPager(mViewPager);
+        //  Initialize auth
+        mAuth = FirebaseAuth.getInstance();
+
     }
 
     @Override
     protected void onStart() {
         super.onStart();
         Log.d(TAG, "Activity started");
+
+        //  Obtenir l'utilisateur courant. Doit être dans la method onStart sinon l'utilisateur est
+        //  déconnecté une fois qu'il utilse BackPressed dans l'activité UserMain
+        FirebaseUser currentUser = mAuth.getCurrentUser();
+        if(currentUser != null) {
+            startActivity(new Intent(this, UserMainActivity.class));
+        } else {
+            SectionStatePagerAdapter sectionStatePagerAdapter
+                    = new SectionStatePagerAdapter(getSupportFragmentManager());
+            mViewPager = findViewById(R.id.container);
+            createViewPager(mViewPager);
+        }
+
     }
 
     private void createViewPager(ViewPager viewPager) {

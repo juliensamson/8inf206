@@ -17,7 +17,8 @@
             </intent-filter>
         </activity>
         <activity android:name=".Auth.EmailPasswordActivity" />
-        <activity android:name=".BaseActivity"></activity>
+        <activity android:name=".BaseActivity" />
+        <activity android:name=".UserMainActivity"></activity>
     </application>
 
 </manifest>
