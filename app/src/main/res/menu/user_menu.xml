@@ -1,13 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
-<menu xmlns:android="http://schemas.android.com/apk/res/android"
+<menu
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
+
     <item
         android:id="@+id/toolbar_setting"
         android:title="@string/setting_name"
         app:showAsAction="never">
     </item>
     <item
-        android:id="@+id/toolbar_unsub"
-        android:title="@string/unsub">
+        android:id="@+id/toolbar_signout"
+        android:title="@string/unsub"
+        app:showAsAction="never">
     </item>
 </menu>

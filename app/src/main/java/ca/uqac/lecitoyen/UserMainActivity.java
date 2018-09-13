@@ -42,6 +42,8 @@ public class UserMainActivity extends AppCompatActivity implements View.OnClickL
         mAuth = FirebaseAuth.getInstance();
 
         //  Views
+        mUserToolbar = findViewById(R.id.toolbar_user);
+        setSupportActionBar(mUserToolbar);
         mStatusTextView = findViewById(R.id.emailpassword_status);
         mDetailTextView = findViewById(R.id.emailpassword_detail);
 
@@ -86,8 +88,6 @@ public class UserMainActivity extends AppCompatActivity implements View.OnClickL
     }
 
     private void updateUI(FirebaseUser user) {
-
-        setSupportActionBar(mUserToolbar);
 
         if (user != null) {
             mStatusTextView.setText("Connected " + user.getEmail());

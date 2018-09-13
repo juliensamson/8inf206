@@ -7,6 +7,10 @@
     android:layout_height="match_parent"
     tools:context="ca.uqac.lecitoyen.MainActivity">
 
+    <include
+        layout="@layout/toolbar_default"
+        android:id="@+id/toolbar_default" />
+
     <android.support.v4.view.ViewPager
         android:id="@+id/container"
         android:layout_width="match_parent"

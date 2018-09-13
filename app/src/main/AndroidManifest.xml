@@ -18,7 +18,10 @@
         </activity>
         <activity android:name=".Auth.EmailPasswordActivity" />
         <activity android:name=".BaseActivity" />
-        <activity android:name=".UserMainActivity"></activity>
+        <activity android:name=".UserMainActivity" />
+        <activity
+            android:name=".User.UserActivity"
+            android:label="@string/title_activity_user"></activity>
     </application>
 
 </manifest>

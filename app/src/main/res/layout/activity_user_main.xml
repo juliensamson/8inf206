@@ -18,9 +18,8 @@
         app:layout_constraintTop_toTopOf="parent">
 
         <include
-            layout="@layout/toolbar_layout"
-            android:id="@+id/user_toolbar_layout" />
-
+            android:id="@+id/toolbar_user"
+            layout="@layout/toolbar_default" />
 
         <TextView
             android:id="@+id/emailpassword_status"

@@ -25,20 +25,13 @@ import com.google.firebase.auth.FirebaseUser;
 import ca.uqac.lecitoyen.BaseActivity;
 import ca.uqac.lecitoyen.MainActivity;
 import ca.uqac.lecitoyen.R;
+import ca.uqac.lecitoyen.User.UserActivity;
 import ca.uqac.lecitoyen.UserMainActivity;
-
-/**
- * Created by jul_samson on 18-09-02.
- */
 
 public class EmailPasswordActivity extends BaseActivity implements View.OnClickListener {
 
     final private static String TAG = "EmailPasswordActivity";
 
-    private Toolbar mUserToolbar;
-
-    private TextView mStatusTextView;
-    private TextView mDetailTextView;
     private EditText mEmailField;
     private EditText mPasswordField;
 
@@ -64,15 +57,6 @@ public class EmailPasswordActivity extends BaseActivity implements View.OnClickL
 
         layoutManagement();
     }
-
-    @Override
-    protected void onStart() {
-        super.onStart();
-        Log.d(TAG, "Activity started");
-        //FirebaseUser currentUser = mAuth.getCurrentUser();
-        //updateUI(currentUser);
-    }
-
 
     @Override
     public void onClick(View view) {
@@ -171,7 +155,7 @@ public class EmailPasswordActivity extends BaseActivity implements View.OnClickL
     private void updateUI(FirebaseUser user) {
 
         if (user != null) {
-            startActivity(new Intent(this, UserMainActivity.class));
+            startActivity(new Intent(this, UserActivity.class));
             this.finish();
         }
     }
@@ -195,9 +179,5 @@ public class EmailPasswordActivity extends BaseActivity implements View.OnClickL
                     break;
             }
         }
-    }
-
-    private void unsubscribeUser() {
-
     }
 }

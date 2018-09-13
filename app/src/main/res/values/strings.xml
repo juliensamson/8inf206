@@ -2,4 +2,8 @@
     <string name="app_name">LeCitoyen</string>
     <string name="setting_name">Réglages</string>
     <string name="unsub">Se désinscrire</string>
+    <string name="title_activity_user">UserActivity</string>
+    <string name="title_city">Ma Ville</string>
+    <string name="title_home">Accueil</string>
+    <string name="title_message">Messages</string>
 </resources>
