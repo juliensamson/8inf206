@@ -36,4 +36,5 @@ Créer un "réseau social" faciliant la découverte d'artiste de la région par 
 - Permettre la création / partage d'évènement avec emplacement, date, heure, etc.
 - Permettre la publication de projet (et alternative) fait par la ville.
 - Permettre au citoyen de commenter et voter (sondage) sur des projets physique, projets de lois, etc. 
+- Permettre la diffusion en direct (et notifier) de scéances publiques (ou des adresses direct au public)
 
