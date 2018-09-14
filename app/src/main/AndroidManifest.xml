@@ -21,7 +21,9 @@
         <activity android:name=".UserMainActivity" />
         <activity
             android:name=".User.UserActivity"
-            android:label="@string/title_activity_user"></activity>
+            android:label="@string/title_activity_user" />
+        <activity android:name=".User.UserSettingsActivity"
+            android:parentActivityName=".User.UserActivity"></activity>
     </application>
 
 </manifest>

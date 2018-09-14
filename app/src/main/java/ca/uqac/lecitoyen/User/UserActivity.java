@@ -1,15 +1,16 @@
 package ca.uqac.lecitoyen.User;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.BottomNavigationView;
-import android.support.v7.app.AppCompatActivity;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
-import android.view.View;
 import android.widget.TextView;
 
 import com.google.firebase.auth.FirebaseAuth;
@@ -18,11 +19,14 @@ import com.google.firebase.auth.FirebaseUser;
 import ca.uqac.lecitoyen.BaseActivity;
 import ca.uqac.lecitoyen.R;
 
-public class UserActivity extends BaseActivity {
+public class UserActivity extends BaseActivity implements iUserActivity {
 
-    final private static String TAG = "UserMainActivity";
+    final private static String TAG = "UserActivity";
+
+    private iUserActivity mUserInterface;
 
     private Toolbar mUserToolbar;
+    private TextView mUserToolbarTitle;
 
     private TextView mTextMessage;
 
@@ -34,15 +38,18 @@ public class UserActivity extends BaseActivity {
 
         @Override
         public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+
+            Log.d(TAG, "OnNavigationItem");
+
             switch (item.getItemId()) {
                 case R.id.navigation_city:
-                    mTextMessage.setText(R.string.title_city);
+                    inflateFragment(getString(R.string.fragment_city), "");
                     return true;
                 case R.id.navigation_home:
-                    mTextMessage.setText(R.string.title_home);
+                    inflateFragment(getString(R.string.fragment_home), "");
                     return true;
                 case R.id.navigation_messages:
-                    mTextMessage.setText(R.string.title_message);
+                    inflateFragment(getString(R.string.fragment_messages), "");
                     return true;
             }
             return false;
@@ -60,7 +67,10 @@ public class UserActivity extends BaseActivity {
 
         //  Views
         mUserToolbar = findViewById(R.id.toolbar_user);
+        mUserToolbarTitle = findViewById(R.id.toolbar_title);
         setSupportActionBar(mUserToolbar);
+
+        init();
 
         mTextMessage = (TextView) findViewById(R.id.message);
         BottomNavigationView navigation = (BottomNavigationView) findViewById(R.id.navigation);
@@ -77,11 +87,9 @@ public class UserActivity extends BaseActivity {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
-            case R.id.toolbar_signout:
-                signOutUser();
-                break;
-            default:
-                break;
+            case R.id.toolbar_setting:
+                startActivity(new Intent(this, UserSettingsActivity.class));
+                return true;
         }
         return super.onOptionsItemSelected(item);
     }
@@ -100,6 +108,22 @@ public class UserActivity extends BaseActivity {
         moveTaskToBack(true);
     }
 
+    private void init() {
+        CityFragment fragment = new CityFragment();
+        doFragmentTransaction(fragment, getString(R.string.fragment_city), false, "");
+    }
+
+    private void doFragmentTransaction(Fragment fragment, String tag, boolean addToBackStack, String message) {
+        FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
+
+        transaction.replace(R.id.user_container, fragment, tag);
+
+        if(addToBackStack) {
+            transaction.addToBackStack(tag);
+        }
+        transaction.commit();
+    }
+
     private void updateUI(FirebaseUser user) {
 
         if (user != null) {
@@ -110,8 +134,28 @@ public class UserActivity extends BaseActivity {
 
     }
 
-    private void signOutUser() {
+    public void signOutUser() {
         mAuth.signOut();
         updateUI(null);
+    }
+
+    @Override
+    public void setToolbarTitle(String fragmentTag) {
+        mUserToolbarTitle.setText(fragmentTag);
+    }
+
+    @Override
+    public void inflateFragment(String fragmentTag, String message) {
+        Log.d(TAG, "Inflate " + fragmentTag + " " + message);
+        if(fragmentTag.equals(getString(R.string.fragment_city))) {
+            CityFragment fragment = new CityFragment();
+            doFragmentTransaction(fragment, fragmentTag, false, message);
+        } else if (fragmentTag.equals(getString(R.string.fragment_home))) {
+            HomeFragment fragment = new HomeFragment();
+            doFragmentTransaction(fragment, fragmentTag, false, message);
+        } else if (fragmentTag.equals(getString(R.string.fragment_messages))) {
+            MessageFragment fragment = new MessageFragment();
+            doFragmentTransaction(fragment, fragmentTag, false, message);
+        }
     }
 }
