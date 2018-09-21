@@ -10,6 +10,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import ca.uqac.lecitoyen.Interface.iHandleFragment;
 import ca.uqac.lecitoyen.R;
 
 /**
@@ -19,7 +20,7 @@ public class MessageFragment extends Fragment {
 
     final private static String TAG = "MessageFragment";
 
-    private iUserActivity mUserInterface;
+    private iHandleFragment mHandleFragment;
 
     private TextView mDisplayedMessage;
 
@@ -30,12 +31,11 @@ public class MessageFragment extends Fragment {
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        mUserInterface.setToolbarTitle(getTag());
+        mHandleFragment.setToolbarTitle(getTag());
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_message, container, false);
         mDisplayedMessage = view.findViewById(R.id.fragment_message_title);
@@ -45,7 +45,7 @@ public class MessageFragment extends Fragment {
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
-        mUserInterface = (UserActivity) getActivity();
+        mHandleFragment = (UserActivity) getActivity();
     }
 
 }

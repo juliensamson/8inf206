@@ -1,5 +1,6 @@
 package ca.uqac.lecitoyen.Auth;
 
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -10,8 +11,10 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.TextView;
 
+import ca.uqac.lecitoyen.Interface.iHandleFragment;
 import ca.uqac.lecitoyen.MainActivity;
 import ca.uqac.lecitoyen.R;
+import ca.uqac.lecitoyen.User.UserActivity;
 
 /**
  * Created by jul_samson on 18-08-29.
@@ -21,8 +24,15 @@ public class SigninFragment extends Fragment implements View.OnClickListener {
 
     private static final String TAG = "SigninFragment";
 
+    private iHandleFragment mHandleFragment;
+
     private Button mCreateAccountEmail;
     private TextView mLoginFragment;
+
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+    }
 
     @Nullable
     @Override
@@ -41,16 +51,25 @@ public class SigninFragment extends Fragment implements View.OnClickListener {
     }
 
     @Override
+    public void onAttach(Context context) {
+        super.onAttach(context);
+        mHandleFragment = (MainActivity) getActivity();
+    }
+
+    @Override
     public void onClick(View view) {
         int id = view.getId();
-        if (id == R.id.button_create_account_email) {
+        if (id == R.id.button_create_account_email)
+        {
             Intent intent = new Intent(getContext(), EmailPasswordActivity.class);
             Bundle extras = new Bundle();
             extras.putString("display_button", "create_account");
             intent.putExtras(extras);
             startActivity(intent);
-        } else if (id == R.id.go_to_login_fragment) {
-            ((MainActivity)getActivity()).setupViewPager(0);
+        }
+        else if (id == R.id.go_to_login_fragment)
+        {
+            mHandleFragment.inflateFragment(getString(R.string.fragment_login), "");
         }
     }
 }

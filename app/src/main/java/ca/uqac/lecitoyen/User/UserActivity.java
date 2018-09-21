@@ -17,13 +17,14 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 
 import ca.uqac.lecitoyen.BaseActivity;
+import ca.uqac.lecitoyen.Interface.iHandleFragment;
 import ca.uqac.lecitoyen.R;
 
-public class UserActivity extends BaseActivity implements iUserActivity {
+public class UserActivity extends BaseActivity implements iHandleFragment {
 
     final private static String TAG = "UserActivity";
 
-    private iUserActivity mUserInterface;
+    private iHandleFragment mHandleFragment;
 
     private Toolbar mUserToolbar;
     private TextView mUserToolbarTitle;
@@ -147,13 +148,19 @@ public class UserActivity extends BaseActivity implements iUserActivity {
     @Override
     public void inflateFragment(String fragmentTag, String message) {
         Log.d(TAG, "Inflate " + fragmentTag + " " + message);
-        if(fragmentTag.equals(getString(R.string.fragment_city))) {
+
+        if(fragmentTag.equals(getString(R.string.fragment_city)))
+        {
             CityFragment fragment = new CityFragment();
             doFragmentTransaction(fragment, fragmentTag, false, message);
-        } else if (fragmentTag.equals(getString(R.string.fragment_home))) {
+        }
+        else if (fragmentTag.equals(getString(R.string.fragment_home)))
+        {
             HomeFragment fragment = new HomeFragment();
             doFragmentTransaction(fragment, fragmentTag, false, message);
-        } else if (fragmentTag.equals(getString(R.string.fragment_messages))) {
+        }
+        else if (fragmentTag.equals(getString(R.string.fragment_messages)))
+        {
             MessageFragment fragment = new MessageFragment();
             doFragmentTransaction(fragment, fragmentTag, false, message);
         }

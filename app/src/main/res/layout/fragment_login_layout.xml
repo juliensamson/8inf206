@@ -47,10 +47,13 @@
             android:text="Connexion avec Email" />
 
         <Button
-            android:id="@+id/button_login_anonymous"
-            android:layout_width="220dp"
+            android:id="@+id/button_facebook_login"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Connexion Anonyme" />
+            android:layout_gravity="center_horizontal"
+            android:layout_marginTop="30dp"
+            android:layout_marginBottom="30dp"
+            android:text="Connexion avec Facebook"/>
 
         <LinearLayout
             android:layout_width="match_parent"
