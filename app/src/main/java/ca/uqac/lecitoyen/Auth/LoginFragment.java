@@ -74,6 +74,7 @@ public class LoginFragment extends Fragment implements View.OnClickListener {
         view.findViewById(R.id.button_login_email).setOnClickListener(this);
         view.findViewById(R.id.button_facebook_login).setOnClickListener(this);
         view.findViewById(R.id.go_to_signin_fragment).setOnClickListener(this);
+        view.findViewById(R.id.forgot_password).setOnClickListener(this);
 
         return view;
     }
@@ -120,6 +121,10 @@ public class LoginFragment extends Fragment implements View.OnClickListener {
         else if (id == R.id.go_to_signin_fragment)
         {
             mHandleFragment.inflateFragment(getString(R.string.fragment_signin), "");
+        }
+        else if (id == R.id.forgot_password)
+        {
+            startActivity(new Intent(getContext(), ResetPasswordActivity.class));
         }
 
     }

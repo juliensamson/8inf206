@@ -6,6 +6,8 @@ import android.view.View;
 import android.widget.Button;
 
 
+import com.facebook.login.LoginManager;
+
 import ca.uqac.lecitoyen.R;
 
 public class UserSettingsActivity extends UserActivity implements View.OnClickListener {
@@ -26,17 +28,12 @@ public class UserSettingsActivity extends UserActivity implements View.OnClickLi
     }
 
     @Override
-    public void onBackPressed() {
-        super.onBackPressed();
-        moveTaskToBack(true);
-    }
-
-    @Override
     public void onClick(View view) {
         int id = view.getId();
 
         if (id == R.id.sign_out_button) {
             signOutUser();
+            LoginManager.getInstance().logOut();
             this.finish();
         }
     }
