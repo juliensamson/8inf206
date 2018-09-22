@@ -33,9 +33,8 @@ public class ResetPasswordActivity extends BaseActivity implements View.OnClickL
 
         //  View
         mEmailField = findViewById(R.id.reset_password_email);
-        mDefaultToolbar = findViewById(R.id.toolbar_default_reset);
-        setSupportActionBar(mDefaultToolbar);
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+
+        showToolbar(TAG, "Reset Password");
 
         //  Button
         findViewById(R.id.reset_password_button).setOnClickListener(this);
@@ -78,7 +77,8 @@ public class ResetPasswordActivity extends BaseActivity implements View.OnClickL
                         if (task.isSuccessful())
                         {
                             Toast.makeText(ResetPasswordActivity.this, "We have sent you instructions to reset your password!", Toast.LENGTH_SHORT).show();
-                        } else
+                        }
+                        else
                         {
                             Toast.makeText(ResetPasswordActivity.this, "Failed to send reset email!", Toast.LENGTH_SHORT).show();
                         }

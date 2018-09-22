@@ -126,9 +126,7 @@ public class LoginFragment extends Fragment implements View.OnClickListener {
         {
             startActivity(new Intent(getContext(), ResetPasswordActivity.class));
         }
-
     }
-
 
     //
     //  Handle connection to facebook

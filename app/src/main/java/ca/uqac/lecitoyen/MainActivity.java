@@ -40,8 +40,7 @@ public class MainActivity extends BaseActivity implements iHandleFragment {
         //  Initialize auth
         mAuth = FirebaseAuth.getInstance();
 
-        //  Set default toolbar
-        setSupportActionBar(mToolbar);
+        showToolbar(TAG, "Le Citoyen");
     }
 
     @Override
@@ -61,12 +60,6 @@ public class MainActivity extends BaseActivity implements iHandleFragment {
         }
 
     }
-    @Override
-    public void onBackPressed() {
-        super.onBackPressed();
-        moveTaskToBack(true);
-    }
-
 
     @Override
     public void setToolbarTitle(String fragmentTag) {

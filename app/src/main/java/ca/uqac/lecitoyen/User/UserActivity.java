@@ -31,9 +31,6 @@ public class UserActivity extends BaseActivity implements iHandleFragment {
 
     private TextView mTextMessage;
 
-    //Firebase
-    private FirebaseAuth mAuth;
-
     private BottomNavigationView.OnNavigationItemSelectedListener mOnNavigationItemSelectedListener
             = new BottomNavigationView.OnNavigationItemSelectedListener() {
 
@@ -63,44 +60,37 @@ public class UserActivity extends BaseActivity implements iHandleFragment {
         setContentView(R.layout.activity_user);
         Log.d(TAG, "Activity created");
 
-        //  Initialize auth
-        mAuth = FirebaseAuth.getInstance();
+        init();
 
         //  Views
         mUserToolbar = findViewById(R.id.toolbar_user);
         mUserToolbarTitle = findViewById(R.id.toolbar_title);
         setSupportActionBar(mUserToolbar);
 
-        init();
-
-        mTextMessage = (TextView) findViewById(R.id.message);
-        BottomNavigationView navigation = (BottomNavigationView) findViewById(R.id.navigation);
+        mTextMessage = findViewById(R.id.message);
+        BottomNavigationView navigation = findViewById(R.id.navigation);
         navigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener);
     }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
+        Log.w(TAG, "menu created");
         MenuInflater inflater = getMenuInflater();
-        inflater.inflate(R.menu.user_menu, menu);
+        inflater.inflate(R.menu.user_menu, menu);;
         return super.onCreateOptionsMenu(menu);
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-            case R.id.toolbar_setting:
+        Log.w(TAG, "item selected");
+        switch (item.getItemId())
+        {
+            case R.id.menu_setting:
+                Log.w(TAG, "menu_setting clicked");
                 startActivity(new Intent(this, UserSettingsActivity.class));
                 return true;
         }
         return super.onOptionsItemSelected(item);
-    }
-
-
-    @Override
-    protected void onStart() {
-        super.onStart();
-        FirebaseUser currentUser = mAuth.getCurrentUser();
-        updateUI(currentUser);
     }
 
     @Override
@@ -110,11 +100,13 @@ public class UserActivity extends BaseActivity implements iHandleFragment {
     }
 
     private void init() {
+        Log.d(TAG, "init");
         CityFragment fragment = new CityFragment();
         doFragmentTransaction(fragment, getString(R.string.fragment_city), false, "");
     }
 
     private void doFragmentTransaction(Fragment fragment, String tag, boolean addToBackStack, String message) {
+        Log.d(TAG, "doFragmentTransaction");
         FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
 
         transaction.replace(R.id.user_container, fragment, tag);
@@ -123,21 +115,6 @@ public class UserActivity extends BaseActivity implements iHandleFragment {
             transaction.addToBackStack(tag);
         }
         transaction.commit();
-    }
-
-    private void updateUI(FirebaseUser user) {
-
-        if (user != null) {
-
-        } else {
-            this.finish();
-        }
-
-    }
-
-    public void signOutUser() {
-        mAuth.signOut();
-        updateUI(null);
     }
 
     @Override

@@ -4,7 +4,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <item
-        android:id="@+id/toolbar_setting"
+        android:id="@+id/menu_setting"
         android:title="@string/setting_name"
         android:icon="@drawable/ic_settings_white_24dp"
         app:showAsAction="always">
