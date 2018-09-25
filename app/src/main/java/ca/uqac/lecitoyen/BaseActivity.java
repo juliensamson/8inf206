@@ -4,6 +4,7 @@ import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Context;
+import android.content.Intent;
 import android.support.annotation.Nullable;
 import android.support.annotation.VisibleForTesting;
 import android.support.v4.view.ViewPager;
@@ -16,9 +17,13 @@ import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.TextView;
 
+import ca.uqac.lecitoyen.User.UserSettingsActivity;
+
 public class BaseActivity extends AppCompatActivity {
 
     private static String TAG = "BaseActivity";
+
+    final public static long currentTimeMillis = System.currentTimeMillis();
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -69,6 +74,12 @@ public class BaseActivity extends AppCompatActivity {
                 Log.e(TAG, npe.getMessage());
             }
         }
+    }
+
+    protected void destroyPreviousActivity(Context currActivityContext, Class nextActivity) {
+        Intent intent = new Intent(currActivityContext, nextActivity);
+        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        startActivity(intent);
     }
 
     @Override

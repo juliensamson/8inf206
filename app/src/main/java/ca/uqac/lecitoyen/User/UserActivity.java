@@ -157,7 +157,8 @@ public class UserActivity extends BaseActivity implements iHandleFragment {
         }
     }
 
-    //  TODO: Make Key,Value a list, map, etc. in order to add more "extras" to the Bundle
+    //  TODO: - Make Key,Value a list, map, etc. in order to add more "extras" to the Bundle
+    //        - Allow to sent the class User to get the info directly. and not call mAuth on setting. (make it faster)
     void startActivityWithBundle(Class activity, String key, String value) {
 
         //  Create Bundle sent to the next activity

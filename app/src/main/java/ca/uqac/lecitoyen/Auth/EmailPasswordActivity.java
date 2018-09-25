@@ -18,16 +18,15 @@ import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DatabaseReference;
 
 import ca.uqac.lecitoyen.BaseActivity;
+import ca.uqac.lecitoyen.Interface.iUpdate;
 import ca.uqac.lecitoyen.R;
 import ca.uqac.lecitoyen.User.UserActivity;
 import ca.uqac.lecitoyen.database.DatabaseManager;
 import ca.uqac.lecitoyen.database.UserData;
 
-public class EmailPasswordActivity extends BaseActivity implements View.OnClickListener {
+public class EmailPasswordActivity extends BaseActivity implements iUpdate, View.OnClickListener {
 
     final private static String TAG = "EmailPasswordActivity";
-
-
 
     private EditText mEmailField;
     private EditText mPasswordField;
@@ -157,18 +156,22 @@ public class EmailPasswordActivity extends BaseActivity implements View.OnClickL
         return valid;
     }
 
-    private void updateDB(FirebaseUser user) {
-        mUserReference = mDatabaseManager.getReference();
-        UserData userData = new UserData(user.getUid(), " ", " ", user.getEmail());
-        mDatabaseManager.writeUserInformation(mUserReference, userData);
-    }
+    @Override
+    public void updateUI(FirebaseUser user) {
 
-    private void updateUI(FirebaseUser user) {
-
-        if (user != null) {
+        if (user != null)
+        {
             startActivity(new Intent(this, UserActivity.class));
             this.finish();
         }
+        this.finish();
+    }
+
+    @Override
+    public void updateDB(FirebaseUser user) {
+        mUserReference = mDatabaseManager.getReference();
+        UserData userData = new UserData(user.getUid(), " ", " ", user.getEmail(), currentTimeMillis);
+        mDatabaseManager.writeUserInformation(mUserReference, userData);
     }
 
     private void layoutManagement() {
@@ -176,9 +179,12 @@ public class EmailPasswordActivity extends BaseActivity implements View.OnClickL
         Log.d(TAG, "layoutManagement");
 
         Intent previousIntent = getIntent();
-        if (previousIntent != null) {
+        if (previousIntent != null)
+        {
             String previousFragment = previousIntent.getStringExtra("display_button");
-            switch (previousFragment) {
+
+            switch (previousFragment)
+            {
                 case "login":
                     findViewById(R.id.emailpassword_create_account_button).setVisibility(View.GONE);
                     break;

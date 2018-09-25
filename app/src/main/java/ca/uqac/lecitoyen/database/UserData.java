@@ -1,7 +1,5 @@
 package ca.uqac.lecitoyen.database;
 
-import java.util.Date;
-
 public class UserData {
 
     //  User ID
@@ -14,24 +12,27 @@ public class UserData {
     private String userName;
 
     //  Date naissance
-    private Date birthDate;
+    private long createAccountTime;
 
     //  Email
     private String email;
+
+    //  Location
+    private long location;
 
     //  Password
     private String password;
 
 
     //  Constructor
-    public UserData() {
-    }
+    public UserData() { }
 
-    public UserData(String userID, String realName, String userName, String email) {
+    public UserData(String userID, String realName, String userName, String email, long createAccountTime) {
         this.userID = userID;
         this.realName = realName;
         this.userName = userName;
         this.email = email;
+        this.createAccountTime = createAccountTime;
     }
 
     //
@@ -65,12 +66,12 @@ public class UserData {
         this.userName = userName;
     }
 
-    public Date getBirthDate() {
-        return birthDate;
+    public long getCreateAccountTime() {
+        return createAccountTime;
     }
 
-    public void setBirthDate(Date birthDate) {
-        this.birthDate = birthDate;
+    public void setCreateAccountTime(long createAccountTime) {
+        this.createAccountTime = createAccountTime;
     }
 
     public String getEmail() {
@@ -81,11 +82,11 @@ public class UserData {
         this.email = email;
     }
 
-    public String getPassword() {
-        return password;
+    public long getLocation() {
+        return location;
     }
 
-    public void setPassword(String password) {
-        this.password = password;
+    public void setLocation(long location) {
+        this.location = location;
     }
 }

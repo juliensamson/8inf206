@@ -11,6 +11,7 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.EditText;
+import android.widget.LinearLayout;
 import android.widget.Toast;
 
 
@@ -19,6 +20,8 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
+import com.google.firebase.auth.AuthCredential;
+import com.google.firebase.auth.EmailAuthProvider;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
@@ -27,12 +30,13 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.ValueEventListener;
 
 import ca.uqac.lecitoyen.BaseActivity;
+import ca.uqac.lecitoyen.Interface.iUpdate;
 import ca.uqac.lecitoyen.MainActivity;
 import ca.uqac.lecitoyen.R;
 import ca.uqac.lecitoyen.database.DatabaseManager;
 import ca.uqac.lecitoyen.database.UserData;
 
-public class UserSettingsActivity extends BaseActivity implements View.OnClickListener {
+public class UserSettingsActivity extends BaseActivity implements iUpdate, View.OnClickListener {
 
     private static String TAG = "UserSettingsActivity";
 
@@ -43,10 +47,20 @@ public class UserSettingsActivity extends BaseActivity implements View.OnClickLi
     private EditText mNameField;
     private EditText mUserNameField;
     private EditText mEmailField;
+    private EditText mLocationField;
+
+    private LinearLayout mVerifiyUserLayout;
+    private EditText mVerifyPasswordField;
+    private LinearLayout mPasswordFieldLayout;
+    private EditText mPasswordField;
+    private EditText mPasswordFieldVerify;
+
+
 
     //Firebase
     private FirebaseAuth mAuth;
     private FirebaseUser mUser;
+    private AuthCredential mCredential;
     private String mUserId;
 
     @Override
@@ -76,8 +90,16 @@ public class UserSettingsActivity extends BaseActivity implements View.OnClickLi
         mUserNameField = findViewById(R.id.user_setting_username);
         mEmailField = findViewById(R.id.user_setting_email);
 
+        mVerifiyUserLayout = findViewById(R.id.user_setting_user_verification_layout);
+        mVerifyPasswordField = findViewById(R.id.user_setting_verify_old_password);
+        mPasswordFieldLayout = findViewById(R.id.user_setting_password_layout);
+        mPasswordField= findViewById(R.id.user_setting_password);
+        mPasswordFieldVerify = findViewById(R.id.user_setting_password_verify);
 
         //  Button
+        findViewById(R.id.change_password_button).setOnClickListener(this);
+        findViewById(R.id.confirm_old_password_button).setOnClickListener(this);
+        findViewById(R.id.confirm_password_button).setOnClickListener(this);
         findViewById(R.id.signout_account_button).setOnClickListener(this);
         findViewById(R.id.delete_account_button).setOnClickListener(this);
 
@@ -111,7 +133,7 @@ public class UserSettingsActivity extends BaseActivity implements View.OnClickLi
         {
             case R.id.menu_confirm:
                 if(!mEmailField.getText().toString().equals(""))
-                    updateBD(mUser);
+                    updateDB(mUser);
                 Log.w(TAG, "Information saved");
                 return true;
         }
@@ -125,31 +147,7 @@ public class UserSettingsActivity extends BaseActivity implements View.OnClickLi
     }
 
     @Override
-    public void onClick(View view) {
-        int id = view.getId();
-        Log.w(TAG, "OnClick");
-
-        switch (id) {
-            case R.id.signout_account_button:
-                mAuth.signOut();
-                LoginManager.getInstance().logOut();
-                startActivity(new Intent(UserSettingsActivity.this, MainActivity.class));
-                finish();
-                break;
-            case R.id.delete_account_button:
-                deleteAccount();
-                break;
-            default:
-                break;
-        }
-
-    }
-
-    //
-    //  Remplir les champs avec les données disponible
-    //
-
-    private void updateUI(final FirebaseUser user) {
+    public void updateUI(final FirebaseUser user) {
 
         //  Initialize database manager
         mUserReference = mDatabaseManager.getReference();
@@ -164,7 +162,7 @@ public class UserSettingsActivity extends BaseActivity implements View.OnClickLi
                 mUserData = dataSnapshot.getValue(UserData.class);
                 if(mUserData == null)
                 {
-                    mUserData = new UserData(mUserId, "", "", user.getEmail());
+                    mUserData = new UserData(mUserId, "", "", user.getEmail(), currentTimeMillis);
                 }
 
                 mNameField.setText(mUserData.getRealName());
@@ -183,11 +181,8 @@ public class UserSettingsActivity extends BaseActivity implements View.OnClickLi
 
     }
 
-    //
-    //  Write data to database
-    //
-
-    private void updateBD(FirebaseUser user) {
+    @Override
+    public void updateDB(FirebaseUser user) {
 
         mUserData.setRealName(mNameField.getText().toString());
         mUserData.setUserName(mUserNameField.getText().toString());
@@ -209,22 +204,154 @@ public class UserSettingsActivity extends BaseActivity implements View.OnClickLi
                 });
 
     }
+    //
+    //  Button onClick
+    //
+
+    @Override
+    public void onClick(View view) {
+        switch (view.getId())
+        {
+            case R.id.change_password_button:
+                if(mVerifiyUserLayout.getVisibility() ==  View.GONE && mPasswordFieldLayout.getVisibility() == View.GONE)
+                {
+                    mVerifiyUserLayout.setVisibility(View.VISIBLE);
+                    mVerifyPasswordField.setText("");
+                }
+                else {
+                    mVerifiyUserLayout.setVisibility(View.GONE);
+                    mPasswordFieldLayout.setVisibility(View.GONE);
+                }
+                break;
+            case R.id.confirm_old_password_button:
+                confirmOldPasswordAccount();
+                break;
+            case R.id.confirm_password_button:
+                changePasswordAccount();
+                break;
+            case R.id.signout_account_button:
+                signOutAccount();
+                break;
+            case R.id.delete_account_button:
+                deleteAccount();
+                break;
+            default:
+                break;
+        }
+    }
+
+    private void confirmOldPasswordAccount() {
+
+        try {
+             mCredential = EmailAuthProvider.getCredential(
+                    mUser.getEmail(),
+                    mVerifyPasswordField.getText().toString()
+            );
+
+             showProgressDialog();
+
+             mUser.reauthenticate(mCredential).addOnCompleteListener(new OnCompleteListener<Void>() {
+                 @Override
+                 public void onComplete(@NonNull Task<Void> task)
+                 {
+                     hideProgressDialog();
+                     if(!task.isSuccessful())
+                     {
+                         Log.e(TAG, "reauthenticate failed");
+                         Toast.makeText(UserSettingsActivity.this, "Mot de passe erroné", Toast.LENGTH_SHORT).show();
+                     }
+                     else
+                     {
+                         Log.w(TAG, "reauthenticate succeed");
+                         Toast.makeText(UserSettingsActivity.this, "Mot de passe vérifié", Toast.LENGTH_SHORT).show();
+                         mVerifiyUserLayout.setVisibility(View.GONE);
+                         mPasswordFieldLayout.setVisibility(View.VISIBLE);
+                     }
+                 }
+             });
+        } catch (NullPointerException e) {
+            e.printStackTrace();
+        }
+
+    }
+
+    private void changePasswordAccount() {
+        Log.d(TAG, "changePasswordAccount");
+
+        if (mPasswordField.getText().toString().equals(mPasswordFieldVerify.getText().toString()))
+        {
+            showProgressDialog();
+
+            mUser.updatePassword(mPasswordField.getText().toString()).addOnCompleteListener(new OnCompleteListener<Void>() {
+                @Override
+                public void onComplete(@NonNull Task<Void> task)
+                {
+                    hideProgressDialog();
+                    if(!task.isSuccessful())
+                    {
+                        Log.e(TAG, "updatePassword failed");
+                        Toast.makeText(UserSettingsActivity.this, "Mot de passe est trop court", Toast.LENGTH_SHORT).show();
+                    }
+                    else
+                    {
+                        Log.w(TAG, "updatePassword succeed");
+                        Toast.makeText(UserSettingsActivity.this, "Password changed", Toast.LENGTH_SHORT).show();
+                        mPasswordFieldLayout.setVisibility(View.GONE);
+                    }
+                }
+            });
+        }
+        else
+        {
+            Log.e(TAG, "Passwords does not correspond");
+            Toast.makeText(UserSettingsActivity.this, "Password are different", Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    private void signOutAccount() {
+        Log.d(TAG, "signOutAccount");
+        mAuth.signOut();
+        LoginManager.getInstance().logOut();
+        destroyPreviousActivity(UserSettingsActivity.this, MainActivity.class);
+    }
 
 
-    //  Delete Account
 
+    //  TODO: ReAuthenticate the user. (Confirm old password)
     private void deleteAccount() {
-        Log.d(TAG, "ingreso a deleteAccount");
-        mAuth.getCurrentUser().delete().addOnCompleteListener(new OnCompleteListener<Void>() {
+        Log.d(TAG, "deleteAccount");
+
+        mUser.delete().addOnCompleteListener(new OnCompleteListener<Void>() {
             @Override
             public void onComplete(@NonNull Task<Void> task) {
                 if (task.isSuccessful()) {
-                    Log.d(TAG,"OK! Works fine!");
-                    startActivity(new Intent(UserSettingsActivity.this, MainActivity.class));
-                    finish();
+                    // Delete account but also delete data in reference to the account
+                    removeDataFromFirebase();
+                    Log.w(TAG,"OK! Works fine!");
+
+                    //Close all previous activity
+                    destroyPreviousActivity(UserSettingsActivity.this, MainActivity.class);
                 } else {
-                    Log.w(TAG,"Something is wrong!");
+                    Log.e(TAG,"Cannot delete account!");
                 }
+            }
+        });
+    }
+
+    private void removeDataFromFirebase() {
+        mUserReference.child("users").child(mUserId).removeValue().addOnCompleteListener(new OnCompleteListener<Void>() {
+            @Override
+            public void onComplete(@NonNull Task<Void> task) {
+                if(task.isSuccessful())
+                {
+                    Toast.makeText(UserSettingsActivity.this, "Données supprimer", Toast.LENGTH_SHORT).show();
+                    Log.w(TAG, "Data deleted  ");
+                }
+                else
+                {
+                    Log.e(TAG, "Couldn't remove firebase user database ");
+                }
+
             }
         });
     }
