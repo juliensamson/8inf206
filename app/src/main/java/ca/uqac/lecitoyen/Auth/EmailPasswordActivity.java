@@ -15,20 +15,27 @@ import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DatabaseReference;
 
 import ca.uqac.lecitoyen.BaseActivity;
 import ca.uqac.lecitoyen.R;
 import ca.uqac.lecitoyen.User.UserActivity;
+import ca.uqac.lecitoyen.database.AbstractDatabaseManager;
+import ca.uqac.lecitoyen.database.UserData;
 
 public class EmailPasswordActivity extends BaseActivity implements View.OnClickListener {
 
     final private static String TAG = "EmailPasswordActivity";
+
+
 
     private EditText mEmailField;
     private EditText mPasswordField;
 
     //Firebase
     private FirebaseAuth mAuth;
+    private AbstractDatabaseManager mDatabaseManager;
+    private UserData mUserData;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -38,6 +45,8 @@ public class EmailPasswordActivity extends BaseActivity implements View.OnClickL
 
         //  Initialize auth
         mAuth = FirebaseAuth.getInstance();
+        mDatabaseManager = new AbstractDatabaseManager();
+        mUserData = new UserData();
 
         //  Views
         mEmailField = findViewById(R.id.emailpassword_email_field);
@@ -53,9 +62,12 @@ public class EmailPasswordActivity extends BaseActivity implements View.OnClickL
     @Override
     public void onClick(View view) {
         int id = view.getId();
-        if (id == R.id.emailpassword_create_account_button) {
+        if (id == R.id.emailpassword_create_account_button)
+        {
             createAccount(mEmailField.getText().toString(), mPasswordField.getText().toString());
-        } else if (id == R.id.emailpassword_log_in_button) {
+        }
+        else if (id == R.id.emailpassword_log_in_button)
+        {
             signInUser(mEmailField.getText().toString(), mPasswordField.getText().toString());
         }
     }
@@ -78,6 +90,7 @@ public class EmailPasswordActivity extends BaseActivity implements View.OnClickL
                             // Sign in success, update UI with the signed-in user's information
                             Log.d(TAG, "createUserWithEmail:success");
                             FirebaseUser user = mAuth.getCurrentUser();
+                            addUserToDatabase(user);
                             updateUI(user);
                         } else {
                             // If sign in fails, display a message to the user.
@@ -142,6 +155,12 @@ public class EmailPasswordActivity extends BaseActivity implements View.OnClickL
         }
 
         return valid;
+    }
+
+    private void addUserToDatabase(FirebaseUser user) {
+        DatabaseReference ref = mDatabaseManager.getRef();
+        mUserData.setUserID(user.getUid());
+        mDatabaseManager.writeData(ref, mUserData);
     }
 
     private void updateUI(FirebaseUser user) {

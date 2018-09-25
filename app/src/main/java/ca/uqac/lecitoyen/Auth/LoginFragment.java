@@ -4,7 +4,6 @@ package ca.uqac.lecitoyen.Auth;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.annotation.MainThread;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -22,7 +21,6 @@ import com.facebook.FacebookCallback;
 import com.facebook.FacebookException;
 import com.facebook.login.LoginManager;
 import com.facebook.login.LoginResult;
-import com.facebook.login.widget.LoginButton;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthCredential;
@@ -33,11 +31,9 @@ import com.google.firebase.auth.FirebaseUser;
 
 import java.util.Arrays;
 
-import ca.uqac.lecitoyen.BaseActivity;
 import ca.uqac.lecitoyen.Interface.iHandleFragment;
 import ca.uqac.lecitoyen.MainActivity;
 import ca.uqac.lecitoyen.R;
-import ca.uqac.lecitoyen.User.UserActivity;
 
 public class LoginFragment extends Fragment implements View.OnClickListener {
 

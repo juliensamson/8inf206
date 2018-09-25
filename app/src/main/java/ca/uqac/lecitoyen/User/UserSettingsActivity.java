@@ -3,13 +3,12 @@ package ca.uqac.lecitoyen.User;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
-import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.Button;
+import android.widget.EditText;
 
 
 import com.facebook.login.LoginManager;
@@ -17,14 +16,24 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DatabaseReference;
 
 import ca.uqac.lecitoyen.BaseActivity;
 import ca.uqac.lecitoyen.MainActivity;
 import ca.uqac.lecitoyen.R;
+import ca.uqac.lecitoyen.database.AbstractDatabaseManager;
+import ca.uqac.lecitoyen.database.UserData;
 
 public class UserSettingsActivity extends BaseActivity implements View.OnClickListener {
 
     private static String TAG = "UserSettingsActivity";
+
+    private AbstractDatabaseManager mDatabaseManager;
+    private UserData mUserData;
+
+    private EditText mNameField;
+    private EditText mUserNameField;
+    private EditText mEmailField;
 
     //Firebase
     private FirebaseAuth mAuth;
@@ -35,11 +44,21 @@ public class UserSettingsActivity extends BaseActivity implements View.OnClickLi
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_user_settings);
 
+        //  Initialize database manager
+        mDatabaseManager = new AbstractDatabaseManager();
+        mUserData = new UserData();
+
         //  Initialize auth
         mAuth = FirebaseAuth.getInstance();
 
         //  Toolbar
         showToolbar(TAG,"Paramètres");
+
+        //  View
+        mNameField = findViewById(R.id.user_setting_realname);
+        mUserNameField = findViewById(R.id.user_setting_username);
+        mEmailField = findViewById(R.id.user_setting_email);
+
 
         //  Button
         findViewById(R.id.signout_account_button).setOnClickListener(this);
@@ -51,20 +70,40 @@ public class UserSettingsActivity extends BaseActivity implements View.OnClickLi
     protected void onStart() {
         super.onStart();
         FirebaseUser currentUser = mAuth.getCurrentUser();
+        setFieldWithData(currentUser);
         Log.w(TAG, "Started");
     }
 
     @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        Log.d(TAG, "onCreateOptionMenu");
+        MenuInflater menuInflater = getMenuInflater();
+        menuInflater.inflate(R.menu.confirm_menu, menu);
+        return super.onCreateOptionsMenu(menu);
+    }
+
+    @Override
     public boolean onPrepareOptionsMenu(Menu menu) {
-        Log.w(TAG, "OnPrepareMenu");
-        menu.clear();
+        Log.d(TAG, "onPrepareMenu");
+        //menu.clear();
         return super.onPrepareOptionsMenu(menu);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId())
+        {
+            case R.id.menu_confirm:
+                addInformation();
+                Log.w(TAG, "Information saved");
+                return true;
+        }
+        return super.onOptionsItemSelected(item);
     }
 
     @Override
     public void onBackPressed() {
         super.onBackPressed();
-        moveTaskToBack(true);
         finish();
     }
 
@@ -88,6 +127,26 @@ public class UserSettingsActivity extends BaseActivity implements View.OnClickLi
         }
 
     }
+
+    //
+    //  Remplir les champs avec les données disponible
+    //
+
+    private void setFieldWithData(FirebaseUser user) {
+        mEmailField.setText(user.getEmail());
+    }
+
+    //
+    //  Write data to database
+    //
+
+    private void addInformation() {
+        DatabaseReference ref = mDatabaseManager.getRef();
+        mUserData.setRealName(mNameField.getText().toString());
+        mUserData.setUserName(mUserNameField.getText().toString());
+        mDatabaseManager.writeData(ref, mUserData);
+    }
+
 
     //  Delete Account
 

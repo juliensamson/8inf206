@@ -14,7 +14,6 @@ import android.widget.TextView;
 import ca.uqac.lecitoyen.Interface.iHandleFragment;
 import ca.uqac.lecitoyen.MainActivity;
 import ca.uqac.lecitoyen.R;
-import ca.uqac.lecitoyen.User.UserActivity;
 
 /**
  * Created by jul_samson on 18-08-29.

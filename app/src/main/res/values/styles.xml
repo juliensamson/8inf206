@@ -8,7 +8,7 @@
         <item name="colorAccent">@color/colorAccent</item>
     </style>
     
-    <style name="UserToolbarStyle" parent="Theme.AppCompat.Light.NoActionBar">
+    <style name="UserToolbarStyle" parent="ThemeOverlay.AppCompat.Dark.ActionBar">
         <item name="android:background">@color/colorPrimary</item>
     </style>
 

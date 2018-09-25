@@ -5,18 +5,10 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
-import android.util.Base64;
 import android.util.Log;
-import android.widget.Toast;
-
-import com.facebook.AccessToken;
-import com.facebook.CallbackManager;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
-
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
 
 import ca.uqac.lecitoyen.Auth.LoginFragment;
 import ca.uqac.lecitoyen.Auth.SigninFragment;
