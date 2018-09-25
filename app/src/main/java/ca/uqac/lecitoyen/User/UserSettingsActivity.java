@@ -132,6 +132,7 @@ public class UserSettingsActivity extends BaseActivity implements iUpdate, View.
         switch (item.getItemId())
         {
             case R.id.menu_confirm:
+                showProgressDialog();
                 if(!mEmailField.getText().toString().equals(""))
                     updateDB(mUser);
                 Log.w(TAG, "Information saved");
@@ -181,6 +182,7 @@ public class UserSettingsActivity extends BaseActivity implements iUpdate, View.
 
     }
 
+    //TODO: Make sure if you change EMAIL, change also auth email
     @Override
     public void updateDB(FirebaseUser user) {
 
@@ -202,7 +204,7 @@ public class UserSettingsActivity extends BaseActivity implements iUpdate, View.
                         Log.e(TAG, "Something went wrong inserting data");
                     }
                 });
-
+        hideProgressDialog();
     }
     //
     //  Button onClick
@@ -314,7 +316,6 @@ public class UserSettingsActivity extends BaseActivity implements iUpdate, View.
         LoginManager.getInstance().logOut();
         destroyPreviousActivity(UserSettingsActivity.this, MainActivity.class);
     }
-
 
 
     //  TODO: ReAuthenticate the user. (Confirm old password)
