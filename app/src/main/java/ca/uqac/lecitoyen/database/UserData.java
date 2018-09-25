@@ -27,6 +27,13 @@ public class UserData {
     public UserData() {
     }
 
+    public UserData(String userID, String realName, String userName, String email) {
+        this.userID = userID;
+        this.realName = realName;
+        this.userName = userName;
+        this.email = email;
+    }
+
     //
     //  Getter & Setter
     //

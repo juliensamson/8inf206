@@ -3,32 +3,41 @@ package ca.uqac.lecitoyen.User;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.EditText;
+import android.widget.Toast;
 
 
 import com.facebook.login.LoginManager;
 import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.ValueEventListener;
 
 import ca.uqac.lecitoyen.BaseActivity;
 import ca.uqac.lecitoyen.MainActivity;
 import ca.uqac.lecitoyen.R;
-import ca.uqac.lecitoyen.database.AbstractDatabaseManager;
+import ca.uqac.lecitoyen.database.DatabaseManager;
 import ca.uqac.lecitoyen.database.UserData;
 
 public class UserSettingsActivity extends BaseActivity implements View.OnClickListener {
 
     private static String TAG = "UserSettingsActivity";
 
-    private AbstractDatabaseManager mDatabaseManager;
+    private DatabaseManager mDatabaseManager;
+    private DatabaseReference mUserReference;
     private UserData mUserData;
 
     private EditText mNameField;
@@ -37,6 +46,8 @@ public class UserSettingsActivity extends BaseActivity implements View.OnClickLi
 
     //Firebase
     private FirebaseAuth mAuth;
+    private FirebaseUser mUser;
+    private String mUserId;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -44,12 +55,18 @@ public class UserSettingsActivity extends BaseActivity implements View.OnClickLi
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_user_settings);
 
-        //  Initialize database manager
-        mDatabaseManager = new AbstractDatabaseManager();
+        try {
+            mUserId = getIntent().getExtras().getString("userid");
+        } catch (NullPointerException e) {
+            Log.e(TAG, "No Bundle was sent with the intent");
+        }
+
+        mDatabaseManager = DatabaseManager.getInstance();
         mUserData = new UserData();
 
         //  Initialize auth
         mAuth = FirebaseAuth.getInstance();
+        mUser = mAuth.getCurrentUser();
 
         //  Toolbar
         showToolbar(TAG,"Paramètres");
@@ -69,8 +86,7 @@ public class UserSettingsActivity extends BaseActivity implements View.OnClickLi
     @Override
     protected void onStart() {
         super.onStart();
-        FirebaseUser currentUser = mAuth.getCurrentUser();
-        setFieldWithData(currentUser);
+        updateUI(mUser);
         Log.w(TAG, "Started");
     }
 
@@ -94,7 +110,8 @@ public class UserSettingsActivity extends BaseActivity implements View.OnClickLi
         switch (item.getItemId())
         {
             case R.id.menu_confirm:
-                addInformation();
+                if(!mEmailField.getText().toString().equals(""))
+                    updateBD(mUser);
                 Log.w(TAG, "Information saved");
                 return true;
         }
@@ -132,19 +149,65 @@ public class UserSettingsActivity extends BaseActivity implements View.OnClickLi
     //  Remplir les champs avec les données disponible
     //
 
-    private void setFieldWithData(FirebaseUser user) {
-        mEmailField.setText(user.getEmail());
+    private void updateUI(final FirebaseUser user) {
+
+        //  Initialize database manager
+        mUserReference = mDatabaseManager.getReference();
+
+        showProgressDialog();
+
+        mUserReference.child("users").child(mUserId).addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+
+                //  Add the user to the database if he wasn't added before
+                mUserData = dataSnapshot.getValue(UserData.class);
+                if(mUserData == null)
+                {
+                    mUserData = new UserData(mUserId, "", "", user.getEmail());
+                }
+
+                mNameField.setText(mUserData.getRealName());
+                mUserNameField.setText(mUserData.getUserName());
+                mEmailField.setText(mUserData.getEmail());
+
+                hideProgressDialog();
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+                Log.e(TAG, databaseError.getDetails());
+            }
+        });
+
+
     }
 
     //
     //  Write data to database
     //
 
-    private void addInformation() {
-        DatabaseReference ref = mDatabaseManager.getRef();
+    private void updateBD(FirebaseUser user) {
+
         mUserData.setRealName(mNameField.getText().toString());
         mUserData.setUserName(mUserNameField.getText().toString());
-        mDatabaseManager.writeData(ref, mUserData);
+
+        mUserReference.child("users").child(mUserId).setValue(mUserData)
+                .addOnSuccessListener(new OnSuccessListener<Void>() {
+                    @Override
+                    public void onSuccess(Void aVoid) {
+                        Toast.makeText(UserSettingsActivity.this, "Change saved", Toast.LENGTH_SHORT).show();
+                        Log.w(TAG, "Data inserted ");
+                    }
+                })
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        Toast.makeText(UserSettingsActivity.this, "Couldn't be saved", Toast.LENGTH_SHORT).show();
+                        Log.e(TAG, "Something went wrong inserting data");
+                    }
+                });
+
     }
 
 

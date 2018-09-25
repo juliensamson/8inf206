@@ -1,5 +1,6 @@
 package ca.uqac.lecitoyen.User;
 
+import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -12,6 +13,9 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.widget.TextView;
+
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 
 import ca.uqac.lecitoyen.BaseActivity;
 import ca.uqac.lecitoyen.Interface.iHandleFragment;
@@ -27,6 +31,10 @@ public class UserActivity extends BaseActivity implements iHandleFragment {
     private TextView mUserToolbarTitle;
 
     private TextView mTextMessage;
+
+    //Firebase
+    private FirebaseAuth mAuth;
+    private FirebaseUser mUser;
 
     private BottomNavigationView.OnNavigationItemSelectedListener mOnNavigationItemSelectedListener
             = new BottomNavigationView.OnNavigationItemSelectedListener() {
@@ -57,6 +65,9 @@ public class UserActivity extends BaseActivity implements iHandleFragment {
         setContentView(R.layout.activity_user);
         Log.d(TAG, "Activity created");
 
+        //  Initialize auth
+        mAuth = FirebaseAuth.getInstance();
+
         init();
 
         //  Views
@@ -67,6 +78,12 @@ public class UserActivity extends BaseActivity implements iHandleFragment {
         mTextMessage = findViewById(R.id.message);
         BottomNavigationView navigation = findViewById(R.id.navigation);
         navigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener);
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        mUser = mAuth.getCurrentUser();
     }
 
     @Override
@@ -84,7 +101,7 @@ public class UserActivity extends BaseActivity implements iHandleFragment {
         {
             case R.id.menu_setting:
                 Log.w(TAG, "menu_setting clicked");
-                startActivity(new Intent(this, UserSettingsActivity.class));
+                startActivityWithBundle(UserSettingsActivity.class, "userid", mUser.getUid());
                 return true;
         }
         return super.onOptionsItemSelected(item);
@@ -138,5 +155,18 @@ public class UserActivity extends BaseActivity implements iHandleFragment {
             MessageFragment fragment = new MessageFragment();
             doFragmentTransaction(fragment, fragmentTag, false, message);
         }
+    }
+
+    //  TODO: Make Key,Value a list, map, etc. in order to add more "extras" to the Bundle
+    void startActivityWithBundle(Class activity, String key, String value) {
+
+        //  Create Bundle sent to the next activity
+        Bundle extras = new Bundle();
+        extras.putString(key, value);
+
+        //  Add extras to the intent and start
+        Intent intent = new Intent(this, activity);
+        intent.putExtras(extras);
+        startActivity(intent);
     }
 }
