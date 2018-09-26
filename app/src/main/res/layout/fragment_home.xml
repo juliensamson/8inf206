@@ -5,10 +5,12 @@
     tools:context="ca.uqac.lecitoyen.User.HomeFragment">
 
     <!-- TODO: Update blank fragment layout -->
-    <TextView
-        android:id="@+id/fragment_home_title"
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/home_recycler_view"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:text="@string/fragment_home" />
+        android:scrollbars="vertical">
+
+    </android.support.v7.widget.RecyclerView>
 
 </FrameLayout>
