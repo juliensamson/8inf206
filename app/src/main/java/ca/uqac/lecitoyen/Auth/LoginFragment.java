@@ -129,6 +129,7 @@ public class LoginFragment extends Fragment implements View.OnClickListener {
     //
 
     private void initFacebookLogin() {
+
         mCallbackManager = CallbackManager.Factory.create();
 
         LoginManager.getInstance().registerCallback(mCallbackManager,

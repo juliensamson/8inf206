@@ -3,10 +3,11 @@
     <color name="colorPrimary">#3F51B5</color>
     <color name="colorPrimaryDark">#303F9F</color>
     <color name="colorAccent">#FF4081</color>
+    <color name="colorAlert">#FFFF3D40</color>
     <color name="textWhite">#FFFFFF</color>
     <color name="whiteIcon">#FFFFFF</color>
 
-    <color name="tab_checked">#FF4081</color>
+    <color name="tab_checked">#ef5350</color>
     <color name="tab_enable">#FFFFFF</color>
 
     <color name="grey_100">#F5F5F5</color>

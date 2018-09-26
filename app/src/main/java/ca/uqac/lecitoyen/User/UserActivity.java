@@ -1,6 +1,5 @@
 package ca.uqac.lecitoyen.User;
 
-import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -20,6 +19,7 @@ import com.google.firebase.auth.FirebaseUser;
 import ca.uqac.lecitoyen.BaseActivity;
 import ca.uqac.lecitoyen.Interface.iHandleFragment;
 import ca.uqac.lecitoyen.R;
+import ca.uqac.lecitoyen.User.UserSettings.UserSettingsActivity;
 
 public class UserActivity extends BaseActivity implements iHandleFragment {
 

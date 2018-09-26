@@ -1,23 +1,19 @@
 package ca.uqac.lecitoyen;
 
-import android.annotation.SuppressLint;
-import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.support.annotation.Nullable;
 import android.support.annotation.VisibleForTesting;
-import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
-import android.view.MotionEvent;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.TextView;
 
-import ca.uqac.lecitoyen.User.UserSettingsActivity;
+import ca.uqac.lecitoyen.User.UserSettings.ChangePasswordActivity;
 
 public class BaseActivity extends AppCompatActivity {
 
@@ -76,7 +72,14 @@ public class BaseActivity extends AppCompatActivity {
         }
     }
 
+    @Override
+    public void onBackPressed() {
+        Log.d(TAG, "onBackPressed");
+        this.finish();
+    }
+
     protected void destroyPreviousActivity(Context currActivityContext, Class nextActivity) {
+        Log.e(TAG, "destroyPreviousActivity");
         Intent intent = new Intent(currActivityContext, nextActivity);
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
         startActivity(intent);
@@ -85,6 +88,6 @@ public class BaseActivity extends AppCompatActivity {
     @Override
     public void onStop() {
         super.onStop();
-        hideProgressDialog();
+        //hideProgressDialog();
     }
 }

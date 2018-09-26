@@ -5,7 +5,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="ca.uqac.lecitoyen.User.UserSettingsActivity">
+    tools:context="ca.uqac.lecitoyen.User.UserSettings.UserSettingsActivity">
 
     <include
         layout="@layout/toolbar_default"
@@ -80,7 +80,6 @@
             </LinearLayout>
 
             <!--    EMAIL OF THE USER    -->
-
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -91,17 +90,19 @@
                 <TextView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="Email: "
+                    android:text="User Name: "
                     android:layout_weight="2"/>
 
-                <EditText
+                <TextView
                     android:id="@+id/user_setting_email"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_weight="1"/>
+                    android:layout_weight="1"
+                    android:textSize="20sp"/>
 
             </LinearLayout>
 
+            <!--    LOCATION OF THE USER    -->
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -124,69 +125,18 @@
             </LinearLayout>
 
             <Button
+                android:id="@+id/change_email_button"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="@dimen/activity_vertical_margin"
+                android:text="Changer de email"/>
+
+            <Button
                 android:id="@+id/change_password_button"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="@dimen/activity_vertical_margin"
                 android:text="Changer Mot de Passe"/>
-
-            <LinearLayout
-                android:id="@+id/user_setting_user_verification_layout"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:visibility="gone">
-
-                <EditText
-                    android:id="@+id/user_setting_verify_old_password"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginBottom="@dimen/activity_vertical_margin"
-                    android:hint="Entrez votre ancien mot de passe"
-                    android:inputType="textPassword" />
-
-                <Button
-                    android:id="@+id/confirm_old_password_button"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginBottom="@dimen/activity_vertical_margin"
-                    android:text="Confirmer identité"
-                    />
-
-            </LinearLayout>
-
-            <LinearLayout
-                android:id="@+id/user_setting_password_layout"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:visibility="gone">
-
-                <EditText
-                    android:id="@+id/user_setting_password"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginBottom="@dimen/activity_vertical_margin"
-                    android:hint="entrer le nouveau mot de passe"
-                    android:inputType="textPassword" />
-
-                <EditText
-                    android:id="@+id/user_setting_password_verify"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginBottom="@dimen/activity_vertical_margin"
-                    android:hint="verifié mot de passe"
-                    android:inputType="textPassword" />
-
-                <Button
-                    android:id="@+id/confirm_password_button"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginBottom="@dimen/activity_vertical_margin"
-                    android:text="Confirmer le changement"
-                    />
-            </LinearLayout>
-
 
             <Button
                 android:id="@+id/delete_account_button"
