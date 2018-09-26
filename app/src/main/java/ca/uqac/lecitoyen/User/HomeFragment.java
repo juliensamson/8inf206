@@ -4,6 +4,7 @@ package ca.uqac.lecitoyen.User;
 import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -29,7 +30,7 @@ public class HomeFragment extends Fragment {
 
     private iHandleFragment mHandleFragment;
 
-    private UserActivity mParentActivity;
+    private FloatingActionButton mAddMessageButton;
 
     private RecyclerView mRecyclerView;
     private RecyclerView.Adapter mAdapter;
@@ -48,10 +49,11 @@ public class HomeFragment extends Fragment {
         super.onCreate(savedInstanceState);
         mHandleFragment.setToolbarTitle(getTag());
 
-        mRealNameList.add("JULIEN SAMSON");
-        mUserNameList.add("jul_samson");
-        mMessageList.add("Allo commenct ca va. Test ercycler view");
-        Log.d(TAG, "insertion ok");
+        for(int i = 1; i <= 30; i++) {
+            mRealNameList.add("Real name " + i);
+            mUserNameList.add("Username " + i);
+            mMessageList.add("Message " + i);
+        }
     }
 
     @Override
@@ -61,7 +63,9 @@ public class HomeFragment extends Fragment {
 
         View view = inflater.inflate(R.layout.fragment_home, container, false);
 
-        mRecyclerView = view.findViewById(R.id.home_recycler_view);
+        mAddMessageButton = view.findViewById(R.id.home_fragment_add_message);
+
+        mRecyclerView = view.findViewById(R.id.home_fragment_recycler_view);
 
         mLayoutManager = new LinearLayoutManager(getActivity());
         mRecyclerView.setLayoutManager(mLayoutManager);
