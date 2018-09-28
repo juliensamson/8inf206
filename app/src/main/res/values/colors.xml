@@ -1,18 +1,102 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="colorPrimary">#3F51B5</color>
-    <color name="colorPrimaryDark">#303F9F</color>
-    <color name="colorAccent">#FF4081</color>
-    <color name="colorAlert">#FFFF3D40</color>
-    <color name="textWhite">#FFFFFF</color>
-    <color name="whiteIcon">#FFFFFF</color>
+    <color name="black_900">#000000</color>
+    <color name="black_800">#262626</color>
+    <color name="black_700">#434343</color>
+    <color name="black_600">#555555</color>
+    <color name="black_500">#7b7b7b</color>
+    <color name="black_400">#9d9d9d</color>
+    <color name="black_300">#c4c4c4</color>
+    <color name="black_200">#d9d9d9</color>
+    <color name="black_100">#e9e9e9</color>
+    <color name="black_50">#f5f5f5</color>
 
-    <color name="tab_checked">#ef5350</color>
-    <color name="tab_enable">#FFFFFF</color>
+    <color name="white_900">#3c3c3c</color>
+    <color name="white_800">#606060</color>
+    <color name="white_700">#818181</color>
+    <color name="white_600">#979797</color>
+    <color name="white_500">#c2c2c2</color>
+    <color name="white_400">#dedede</color>
+    <color name="white_300">#f0f0f0</color>
+    <color name="white_200">#f5f5f5</color>
+    <color name="white_100">#fafafa</color>
+    <color name="white_50">#ffffff</color>
 
-    <color name="grey_100">#F5F5F5</color>
-    <color name="grey_300">#E0E0E0</color>
-    <color name="grey_500">#9E9E9E</color>
-    <color name="black">#FF000000</color>
+    <color name="primary_900">#0045a2</color>
+    <color name="i_primary_800">#0563c1</color> <!--blue ville-->
+    <color name="primary_700">#0053A0</color>
+    <color name="primary_600">#0c86e6</color>
+    <color name="primary_500">#0d94f4</color>
+    <color name="primary_400">#3aa3f6</color>
+    <color name="primary_300">#60b3f7</color>
+    <color name="primary_200">#8ec9f9</color>
+    <color name="primary_100">#baddfb</color>
+    <color name="primary_50">#e3f2fd</color>
+
+    <color name="secondary_900">#c40000</color>
+    <color name="secondary_800">#d20e13</color>
+    <color name="i_secondary_700">#df1b1b</color><!--red ville-->
+    <color name="secondary_600">#f12920</color>
+    <color name="secondary_500">#ff361e</color>
+    <color name="secondary_400">#fb4a40</color>
+    <color name="secondary_300">#f16d68</color>
+    <color name="secondary_200">#f89793</color>
+    <color name="secondary_100">#ffcbcf</color>
+    <color name="secondary_50">#ffeaed</color>
+
+    <color name="complementary_900">#b64e03</color>
+    <color name="i_complementary_800">#c16305</color> <!---->
+    <color name="complementary_700">#c87109</color>
+    <color name="complementary_600">#ce7f0d</color>
+    <color name="complementary_500">#d18912</color>
+    <color name="complementary_400">#d7992b</color>
+    <color name="complementary_300">#dda94d</color>
+    <color name="complementary_200">#e6c17e</color>
+    <color name="complementary_100">#f0d9b1</color>
+    <color name="complementary_50">#f9f0e0</color>
+
+    <color name="analogous_g_900">#005950</color>
+    <color name="analogous_g_800">#00756f</color>
+    <color name="analogous_g_700">#00867f</color>
+    <color name="analogous_g_600">#009691</color>
+    <color name="analogous_g_500">#00a4a0</color>
+    <color name="analogous_g_400">#00b3b1</color>
+    <color name="i_analogous_g_300">#05c1c1</color> <!---->
+    <color name="analogous_g_200">#70d3d4</color>
+    <color name="analogous_g_100">#ace4e5</color>
+    <color name="analogous_g_50">#def4f5</color>
+
+    <color name="i_analogous_p_900">#0505c1</color> <!---->
+    <color name="analogous_p_800">#3a19ca</color>
+    <color name="analogous_p_700">#4d20d0</color>
+    <color name="analogous_p_600">#5e29d9</color>
+    <color name="analogous_p_500">#692edf</color>
+    <color name="analogous_p_400">#8351e5</color>
+    <color name="analogous_p_300">#9b72ea</color>
+    <color name="analogous_p_200">#b89cef</color>
+    <color name="analogous_p_100">#d5c4f5</color>
+    <color name="analogous_p_50">#efe7fb</color>
+
+    <color name="triadic_p_900">#3e00b1</color>
+    <color name="triadic_p_800">#5600bb</color>
+    <color name="i_triadic_p_700">#6305c1</color><!---->
+    <color name="triadic_p_600">#7115c9</color>
+    <color name="triadic_p_500">#7b1bcf</color>
+    <color name="triadic_p_400">#9047d8</color>
+    <color name="triadic_p_300">#a46bdf</color>
+    <color name="triadic_p_200">#be98e8</color>
+    <color name="triadic_p_100">#d8c1f1</color>
+    <color name="triadic_p_50">#f0e6f9</color>
+
+    <color name="triadic_r_900">#860355</color>
+    <color name="triadic_r_800">#ac045e</color>
+    <color name="i_triadic_r_700">#c10563</color><!---->
+    <color name="triadic_r_600">#d70469</color>
+    <color name="triadic_r_500">#e9036c</color>
+    <color name="triadic_r_400">#ea3a83</color>
+    <color name="triadic_r_300">#ee5f9a</color>
+    <color name="triadic_r_200">#f18db7</color>
+    <color name="triadic_r_100">#f6bad4</color>
+    <color name="triadic_r_50">#fbe4ed</color>
 
 </resources>

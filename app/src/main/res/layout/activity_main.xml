@@ -8,8 +8,8 @@
     tools:context="ca.uqac.lecitoyen.MainActivity">
 
     <include
-        layout="@layout/toolbar_default"
-        android:id="@+id/toolbar_default" />
+        android:id="@+id/main_toolbar"
+        layout="@layout/toolbar_default" />
 
     <FrameLayout
         android:id="@+id/main_container"

@@ -1,6 +1,6 @@
 package ca.uqac.lecitoyen.database;
 
-public class UserData {
+public class User {
 
     //  User ID
     private String userID;
@@ -25,9 +25,9 @@ public class UserData {
 
 
     //  Constructor
-    public UserData() { }
+    public User() { }
 
-    public UserData(String userID, String realName, String userName, String email, long createAccountTime) {
+    public User(String userID, String realName, String userName, String email, long createAccountTime) {
         this.userID = userID;
         this.realName = realName;
         this.userName = userName;

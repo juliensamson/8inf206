@@ -55,7 +55,7 @@ public class DeleteAccountActivity extends BaseActivity implements View.OnClickL
         mUserId = mUser.getUid();
 
         //  View
-        showToolbar(TAG,"Supprimer compte");
+        createToolbar("Supprimer compte", true);
         mPasswordField = findViewById(R.id.delete_account_actual_password);
         findViewById(R.id.delete_account_confirm_button).setOnClickListener(this);
 
@@ -125,10 +125,10 @@ public class DeleteAccountActivity extends BaseActivity implements View.OnClickL
                 public void onComplete(@NonNull Task<Void> task) {
                     if (task.isSuccessful()) {
                         findViewById(R.id.delete_account_confirm_button).setEnabled(true);
-                        findViewById(R.id.delete_account_confirm_button).setBackgroundColor(getResources().getColor(R.color.colorAlert));
+                        findViewById(R.id.delete_account_confirm_button).setBackgroundColor(getResources().getColor(R.color.i_secondary_700));
                     } else {
                         findViewById(R.id.delete_account_confirm_button).setEnabled(false);
-                        findViewById(R.id.delete_account_confirm_button).setBackgroundColor(getResources().getColor(R.color.grey_100));
+                        findViewById(R.id.delete_account_confirm_button).setBackgroundColor(getResources().getColor(R.color.black_100));
                     }
                 }
             }).addOnFailureListener(new OnFailureListener() {

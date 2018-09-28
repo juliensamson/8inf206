@@ -14,10 +14,8 @@ import android.widget.Toast;
 
 
 import com.facebook.login.LoginManager;
-import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthCredential;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -31,9 +29,10 @@ import ca.uqac.lecitoyen.Interface.iUpdate;
 import ca.uqac.lecitoyen.MainActivity;
 import ca.uqac.lecitoyen.R;
 import ca.uqac.lecitoyen.database.DatabaseManager;
-import ca.uqac.lecitoyen.database.UserData;
+import ca.uqac.lecitoyen.database.User;
 
 //TODO: Add Verify email button
+//TODO: Make sure FAcebook user is added on the database
 
 public class UserSettingsActivity extends BaseActivity implements iUpdate, View.OnClickListener {
 
@@ -41,7 +40,7 @@ public class UserSettingsActivity extends BaseActivity implements iUpdate, View.
 
     private DatabaseManager mDatabaseManager;
     private DatabaseReference mUserReference;
-    private UserData mUserData;
+    private User mUserData;
 
     private EditText mNameField;
     private EditText mUserNameField;
@@ -67,14 +66,14 @@ public class UserSettingsActivity extends BaseActivity implements iUpdate, View.
         }
 
         mDatabaseManager = DatabaseManager.getInstance();
-        mUserData = new UserData();
+        mUserData = new User();
 
         //  Initialize auth
         mAuth = FirebaseAuth.getInstance();
         mUser = mAuth.getCurrentUser();
 
         //  Toolbar
-        showToolbar(TAG,"Paramètres");
+        createToolbar("Paramètres", true);
 
         //  View
         mNameField = findViewById(R.id.user_setting_realname);
@@ -153,10 +152,10 @@ public class UserSettingsActivity extends BaseActivity implements iUpdate, View.
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
 
                 //  Add the user to the database if he wasn't added before
-                mUserData = dataSnapshot.getValue(UserData.class);
+                mUserData = dataSnapshot.getValue(User.class);
                 if(mUserData == null)
                 {
-                    mUserData = new UserData(mUserId, "", "", user.getEmail(), currentTimeMillis);
+                    mUserData = new User(mUserId, "", "", user.getEmail(), currentTimeMillis);
                 }
 
                 mNameField.setText(mUserData.getRealName());
@@ -182,7 +181,7 @@ public class UserSettingsActivity extends BaseActivity implements iUpdate, View.
         mUserData.setRealName(mNameField.getText().toString());
         mUserData.setUserName(mUserNameField.getText().toString());
 
-        mUserReference.child("users").child(mUserId).setValue(mUserData)
+        mUserReference.child("users").child(mUserId).setValue(mUser)
                 .addOnSuccessListener(new OnSuccessListener<Void>() {
                     @Override
                     public void onSuccess(Void aVoid) {

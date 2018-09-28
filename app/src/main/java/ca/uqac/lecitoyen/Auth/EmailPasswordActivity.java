@@ -21,9 +21,11 @@ import com.google.firebase.database.DatabaseReference;
 import ca.uqac.lecitoyen.BaseActivity;
 import ca.uqac.lecitoyen.Interface.iUpdate;
 import ca.uqac.lecitoyen.R;
-import ca.uqac.lecitoyen.User.UserActivity;
+import ca.uqac.lecitoyen.User.UserMainActivity;
 import ca.uqac.lecitoyen.database.DatabaseManager;
-import ca.uqac.lecitoyen.database.UserData;
+import ca.uqac.lecitoyen.database.User;
+
+//TODO: DOnt finish activity if auth failed
 
 public class EmailPasswordActivity extends BaseActivity implements iUpdate, View.OnClickListener {
 
@@ -36,7 +38,7 @@ public class EmailPasswordActivity extends BaseActivity implements iUpdate, View
     private FirebaseAuth mAuth;
     private DatabaseManager mDatabaseManager;
     private DatabaseReference mUserReference;
-    private UserData mUserData;
+    private User mUser;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -56,7 +58,6 @@ public class EmailPasswordActivity extends BaseActivity implements iUpdate, View
         findViewById(R.id.emailpassword_log_in_button).setOnClickListener(this);
         findViewById(R.id.emailpassword_create_account_button).setOnClickListener(this);
 
-        layoutManagement();
     }
 
     @Override
@@ -163,7 +164,7 @@ public class EmailPasswordActivity extends BaseActivity implements iUpdate, View
 
         if (user != null)
         {
-            startActivity(new Intent(this, UserActivity.class));
+            startActivity(new Intent(this, UserMainActivity.class));
             this.finish();
         }
         this.finish();
@@ -172,31 +173,8 @@ public class EmailPasswordActivity extends BaseActivity implements iUpdate, View
     @Override
     public void updateDB(FirebaseUser user) {
         mUserReference = mDatabaseManager.getReference();
-        UserData userData = new UserData(user.getUid(), " ", " ", user.getEmail(), currentTimeMillis);
+        User userData = new User(user.getUid(), "", "", user.getEmail(), currentTimeMillis);
         mDatabaseManager.writeUserInformation(mUserReference, userData);
     }
 
-    private void layoutManagement() {
-
-        Log.d(TAG, "layoutManagement");
-
-        Intent previousIntent = getIntent();
-        if (previousIntent != null)
-        {
-            String previousFragment = previousIntent.getStringExtra("display_button");
-
-            switch (previousFragment)
-            {
-                case "login":
-                    findViewById(R.id.emailpassword_create_account_button).setVisibility(View.GONE);
-                    break;
-                case "create_account":
-                    findViewById(R.id.emailpassword_log_in_button).setVisibility(View.GONE);
-                    break;
-                default:
-                    Log.e(TAG, "There was some error");
-                    break;
-            }
-        }
-    }
 }

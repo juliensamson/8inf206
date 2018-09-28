@@ -11,9 +11,12 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 
 import ca.uqac.lecitoyen.R;
+import ca.uqac.lecitoyen.database.Post;
 
 
 public class HomeRecyclerViewAdapter extends RecyclerView.Adapter<HomeRecyclerViewAdapter.ViewHolder>{
@@ -22,15 +25,11 @@ public class HomeRecyclerViewAdapter extends RecyclerView.Adapter<HomeRecyclerVi
 
     private Context mContext;
 
-    private ArrayList<String> mRealNameList = new ArrayList<>();
-    private ArrayList<String> mUserNameList = new ArrayList<>();
-    private ArrayList<String> mMessageList = new ArrayList<>();
+    private ArrayList<Post> mPostList = new ArrayList<>();
 
-    public HomeRecyclerViewAdapter(ArrayList<String> mRealNameList, ArrayList<String> mUserNameList, ArrayList<String> mMessageList) {
+    public HomeRecyclerViewAdapter(ArrayList<Post> postList) {
         Log.d(TAG, "HomeRecyclerViewAdapter");
-        this.mRealNameList = mRealNameList;
-        this.mUserNameList = mUserNameList;
-        this.mMessageList = mMessageList;
+        this.mPostList = postList;
     }
 
     @NonNull
@@ -45,38 +44,44 @@ public class HomeRecyclerViewAdapter extends RecyclerView.Adapter<HomeRecyclerVi
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, final int position) {
         Log.d(TAG, "onBindViewHolder");
-        holder.mRealName.setText(mRealNameList.get(position));
-        holder.mUserName.setText(mUserNameList.get(position));
-        holder.mMessage.setText(mMessageList.get(position));
+        holder.mAuthor.setText(mPostList.get(position).getAuthor());
+        holder.mUserName.setText(mPostList.get(position).getUserName());
+        holder.mPost.setText(mPostList.get(position).getPost());
+
+        String dateString = new SimpleDateFormat("HH:mm - dd MMM yyyy").format(
+                new Date(mPostList.get(position).getDate()));
+        holder.mDate.setText(dateString);
 
         holder.mParentLayout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 Log.d(TAG, "Clicked on " +
-                        mRealNameList.get(position) + " " + mUserNameList.get(position));
-                //Toast.makeText(mContext,
-                 //       mRealNameList.get(position) + " " + mUserNameList.get(position), Toast.LENGTH_SHORT).show();
-            }
+                        mPostList.get(position).getAuthor() + " " +
+                        mPostList.get(position).getUserName() + " " +
+                        mPostList.get(position).getPost());
+               }
         });
     }
 
     @Override
     public int getItemCount() {
-        return mRealNameList.size();
+        return mPostList.size();
     }
 
     public class ViewHolder extends RecyclerView.ViewHolder {
         ConstraintLayout mParentLayout;
-        TextView mRealName;
+        TextView mAuthor;
         TextView mUserName;
-        TextView mMessage;
+        TextView mPost;
+        TextView mDate;
 
         public ViewHolder(View itemView) {
             super(itemView);
 
-            mRealName = itemView.findViewById(R.id.recycler_view_realname);
+            mAuthor = itemView.findViewById(R.id.recycler_view_realname);
             mUserName = itemView.findViewById(R.id.recycler_view_username);
-            mMessage  = itemView.findViewById(R.id.recycler_view_message);
+            mPost  = itemView.findViewById(R.id.recycler_view_message);
+            mDate  = itemView.findViewById(R.id.recycler_view_date);
             mParentLayout = itemView.findViewById(R.id.recycler_view_layout);
         }
     }

@@ -42,7 +42,7 @@ public class ChangePasswordActivity extends BaseActivity {
         mUser = mAuth.getCurrentUser();
 
         //  View
-        showToolbar(TAG,"Mot de passe");
+        createToolbar("Mot de passe", true);
         mActualPasswordField = findViewById(R.id.change_password_actual_password);
         mNewPasswordField= findViewById(R.id.change_password_new_password);
         mVerifyNewPasswordField = findViewById(R.id.change_password_verify_new_password);

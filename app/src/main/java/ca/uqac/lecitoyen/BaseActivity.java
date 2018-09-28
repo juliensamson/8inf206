@@ -28,8 +28,8 @@ public class BaseActivity extends AppCompatActivity {
     }
 
     @VisibleForTesting
-    public ProgressDialog mProgressDialog;
-    public Toolbar mToolbarByDefault;
+    private ProgressDialog mProgressDialog;
+    private Toolbar mToolbarByDefault;
 
     public void showProgressDialog() {
         if (mProgressDialog == null) {
@@ -54,22 +54,38 @@ public class BaseActivity extends AppCompatActivity {
         }
     }
 
-    public void showToolbar(String tag, String title) {
-
-        Toolbar mToolbarByDefault = findViewById(R.id.toolbar_default);
+    public void createToolbar(String title, boolean displayReturnHome) {
+        mToolbarByDefault = findViewById(R.id.toolbar_default);
         TextView toolbarTitle = findViewById(R.id.toolbar_title);
+
 
         setSupportActionBar(mToolbarByDefault);
         toolbarTitle.setText(title);
 
-        if (!tag.equals("MainActivity"))
-        {
-            try {
-                getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-            } catch (NullPointerException npe) {
-                Log.e(TAG, npe.getMessage());
-            }
+
+        try {
+
+            getSupportActionBar().setDisplayHomeAsUpEnabled(displayReturnHome);
+
+        } catch (NullPointerException npe) {
+
+            Log.e(TAG, npe.getMessage());
+
         }
+    }
+
+    public void showToolbar() {
+        if(mToolbarByDefault == null) {
+            mToolbarByDefault = new Toolbar(this);
+        }
+        mToolbarByDefault.setVisibility(View.VISIBLE);
+    }
+
+    public void hideToolbar() {
+        if(mToolbarByDefault == null) {
+            mToolbarByDefault = new Toolbar(this);
+        }
+        mToolbarByDefault.setVisibility(View.GONE);
     }
 
     @Override

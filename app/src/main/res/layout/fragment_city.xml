@@ -3,7 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="ca.uqac.lecitoyen.User.CityFragment">
+    tools:context="ca.uqac.lecitoyen.User.UserFragments.CityFragment">
 
     <!-- TODO: Update blank fragment layout -->
     <TextView

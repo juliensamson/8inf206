@@ -1,6 +1,5 @@
 package ca.uqac.lecitoyen.User.UserSettings;
 
-import android.app.Activity;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.util.Log;
@@ -24,7 +23,6 @@ import ca.uqac.lecitoyen.BaseActivity;
 import ca.uqac.lecitoyen.Interface.iUpdate;
 import ca.uqac.lecitoyen.R;
 import ca.uqac.lecitoyen.database.DatabaseManager;
-import ca.uqac.lecitoyen.database.UserData;
 
 public class ChangeEmailActivity extends BaseActivity implements iUpdate {
 
@@ -57,7 +55,7 @@ public class ChangeEmailActivity extends BaseActivity implements iUpdate {
         mDatabaseManager = DatabaseManager.getInstance();
 
         //  View
-        showToolbar(TAG,"Email");
+        createToolbar("Email", true);
         mActualPasswordField = findViewById(R.id.change_email_actual_password);
         mNewEmailField= findViewById(R.id.change_email_new_email);
         mVerifyNewEmailField = findViewById(R.id.change_email_verify_new_email);

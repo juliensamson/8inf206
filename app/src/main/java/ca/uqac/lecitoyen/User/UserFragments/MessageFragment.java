@@ -1,4 +1,4 @@
-package ca.uqac.lecitoyen.User;
+package ca.uqac.lecitoyen.User.UserFragments;
 
 
 import android.content.Context;
@@ -12,19 +12,20 @@ import android.widget.TextView;
 
 import ca.uqac.lecitoyen.Interface.iHandleFragment;
 import ca.uqac.lecitoyen.R;
+import ca.uqac.lecitoyen.User.UserMainActivity;
 
 /**
  * A simple {@link Fragment} subclass.
  */
-public class CityFragment extends Fragment {
+public class MessageFragment extends Fragment {
 
-    final private static String TAG = "CityFragment";
+    final private static String TAG = "MessageFragment";
 
     private iHandleFragment mHandleFragment;
 
     private TextView mDisplayedMessage;
 
-    public CityFragment() {
+    public MessageFragment() {
         // Required empty public constructor
     }
 
@@ -37,14 +38,15 @@ public class CityFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        View view = inflater.inflate(R.layout.fragment_city, container, false);
-        mDisplayedMessage = view.findViewById(R.id.fragment_city_title);
+        View view = inflater.inflate(R.layout.fragment_message, container, false);
+        mDisplayedMessage = view.findViewById(R.id.fragment_message_title);
         return view;
     }
 
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
-        mHandleFragment = (UserActivity) getActivity();
+        mHandleFragment = (UserMainActivity) getActivity();
     }
+
 }
