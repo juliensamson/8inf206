@@ -24,14 +24,12 @@
         <activity android:name=".BaseActivity" />
 
         <!-- LOGIN ACTIVITY -->
-        <activity
-            android:name=".Auth.EmailPasswordActivity"
-            android:parentActivityName=".MainActivity" />
 
         <!-- USER ACTIVITY -->
         <activity
             android:name=".User.UserMainActivity"
             android:label="@string/title_activity_user" />
+        <activity android:name=".User.PostActivity" />
 
         <!-- USER SETTING ACTIVITY -->
         <activity
@@ -63,8 +61,7 @@
                 <data android:scheme="@string/fb_login_protocol_scheme" />
             </intent-filter>
         </activity>
-        <activity android:name=".User.PostActivity" />
-        <activity android:name=".Auth.AuthSelectorFragment"></activity>
+
     </application>
 
 </manifest>

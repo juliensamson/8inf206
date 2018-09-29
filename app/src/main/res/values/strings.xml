@@ -5,27 +5,53 @@
     <string name="title_activity_user">UserActivity</string>
 
     <!-- fragment tags -->
+    <string name="fragment_main_auth">Bienvenue</string>
     <string name="fragment_login_account">Se connecter</string>
     <string name="fragment_create_account">Creer un compte</string>
+    <string name="fragment_forgot_account">Mot de passe oublié</string>
     <string name="fragment_city">Ma Ville</string>
     <string name="fragment_home">Accueil</string>
     <string name="fragment_messages">Messages</string>
     <string name="fragment_selector">Fragment Selector</string>
+
+    <string name="textview_forgot_password">Mot de passe oublié?</string>
 
     <!--    EditField Hint-->
     <string name="email">Adresse courriel</string>
     <string name="email_again">Adresse courriel, un autre fois</string>
     <string name="password">Mot de passe</string>
     <string name="password_again">Mot de passe, encore un fois</string>
+    <string name="password_verification">Vérification du mot de passe</string>
     <string name="first_name">Prénom</string>
     <string name="last_name">Nom de famille</string>
     <string name="user_name">Nom d\'utilisateur unique</string>
 
     <!--    BUTTON Text-->
     <string name="button_create_account">Créer un compte</string>
+    <string name="button_delete_account">Suprimer le compte</string>
+    <string name="button_signin">Se connecter</string>
+    <string name="button_signin_email_account">Connexion avec Email</string>
+    <string name="button_signin_facebook_account">Connexion avec Facebook</string>
+    <string name="button_email_reinitialization">Envoyer</string>
+
+
+    <string name="long_subtitle_app_mission">Une place pour partager ses créations et regarder les dernières nouvelles de la ville</string>
+    <string name="long_subtitle_forgot_account">"Vous avez oublié votre mot de passe? \n\nVous n'avez qu'à entrer votre addresse courriel dans le champ si-dessus. Vous recevrez un courriel sous peu."</string>
+
+
 
     <!--    TOAST Text-->
+    <string name="toast_email_field_empty">Aucun email</string>
+    <string name="toast_password_field_empty">Aucun mot de passe</string>
+
+    <string name="toast_email_incorrect">Email incorrect</string>
+
+    <string name="toast_reset_password_sent">Nous avons envoyez les instructions pour réinitialiser votre mot de passe</string>
+    <string name="toast_reset_password_fail">Échec lors de l\'envoie du courriel</string>
+
     <string name="toast_password_different">Mot de passes different</string>
+
+    <string name="toast_email_auth_fail">Échec d\'authentification avec email</string>
 
 
 

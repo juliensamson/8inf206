@@ -2,15 +2,12 @@ package ca.uqac.lecitoyen.Auth;
 
 
 import android.content.Context;
-import android.content.DialogInterface;
-import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.TextInputEditText;
 import android.support.design.widget.TextInputLayout;
 import android.support.v4.app.Fragment;
-import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
 import android.util.Log;
@@ -20,26 +17,12 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
-import android.widget.EditText;
-import android.widget.FrameLayout;
 import android.widget.Toast;
 
-import com.facebook.AccessToken;
-import com.facebook.CallbackManager;
-import com.facebook.FacebookCallback;
-import com.facebook.FacebookException;
-import com.facebook.login.LoginManager;
-import com.facebook.login.LoginResult;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
-import com.google.firebase.auth.AuthCredential;
-import com.google.firebase.auth.AuthResult;
-import com.google.firebase.auth.FacebookAuthProvider;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
-
-import java.util.Arrays;
 
 import ca.uqac.lecitoyen.Interface.iHandleFragment;
 import ca.uqac.lecitoyen.MainActivity;
@@ -48,10 +31,10 @@ import ca.uqac.lecitoyen.R;
 /**
  * A simple {@link Fragment} subclass.
  */
-public class LoginAccountFragment extends Fragment implements View.OnClickListener {
+public class ForgotAccountFragment extends Fragment implements View.OnClickListener{
 
 
-    private static final String TAG = "LoginAccountFragment";
+    private static final String TAG = "ForgotAccountFragment";
 
     private iHandleFragment mHandleFragment;
 
@@ -61,12 +44,14 @@ public class LoginAccountFragment extends Fragment implements View.OnClickListen
 
     private FirebaseAuth mAuth;
 
+    boolean isEmailSent = false;
+
     MainActivity mParentActivity;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
-        Log.d(TAG, "onCreate");
         super.onCreate(savedInstanceState);
+
         mParentActivity = (MainActivity) getActivity();
         mHandleFragment.setToolbarTitle(getTag());
 
@@ -76,7 +61,7 @@ public class LoginAccountFragment extends Fragment implements View.OnClickListen
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_login_account, container, false);
+        View view = inflater.inflate(R.layout.fragment_forgot_account, container, false);
         Log.d(TAG, "onCreateView");
 
         try {
@@ -88,13 +73,11 @@ public class LoginAccountFragment extends Fragment implements View.OnClickListen
         }
 
         //  View
-        mTextInputLayout = view.findViewById(R.id.login_account_frag_text_input_layout);
-        mEmailField = view.findViewById(R.id.login_account_frag_text_input_email);
-        mPasswordField = view.findViewById(R.id.login_account_frag_text_input_password);
+        mTextInputLayout = view.findViewById(R.id.forgot_account_frag_text_input_layout);
+        mEmailField = view.findViewById(R.id.forgot_account_frag_text_input_email);
 
         //  Buttons
-        view.findViewById(R.id.login_account_frag_email_button).setOnClickListener(this);
-        view.findViewById(R.id.login_account_frag_password_forgotten).setOnClickListener(this);
+        view.findViewById(R.id.forgot_account_frag_send_email_button).setOnClickListener(this);
 
         return view;
     }
@@ -136,51 +119,45 @@ public class LoginAccountFragment extends Fragment implements View.OnClickListen
 
     @Override
     public void onClick(View view) {
-
         switch (view.getId())
         {
-            // TODO: Check connexion failure
-            case R.id.login_account_frag_email_button:
-                signInUser(mEmailField.getText().toString(), mPasswordField.getText().toString());
-                break;
-            case R.id.login_account_frag_password_forgotten:
-                mHandleFragment.inflateFragment(getString(R.string.fragment_forgot_account),"");
+            case R.id.forgot_account_frag_send_email_button:
+                if(resetEmailPassword(mEmailField.getText().toString()))
+                    mHandleFragment.inflateFragment(getString(R.string.fragment_main_auth),"");
                 break;
             default:
                 break;
         }
     }
 
-    private void signInUser(String email, String password) {
-        Log.d(TAG, "signInUser: " + email);
+    private boolean resetEmailPassword(String email) {
 
         if (TextUtils.isEmpty(email)) {
-            Toast.makeText(getContext(), R.string.toast_email_field_empty, Toast.LENGTH_SHORT).show();
-            return;
-        }
-
-        if (TextUtils.isEmpty(password)) {
-            Toast.makeText(getContext(), R.string.toast_password_field_empty, Toast.LENGTH_SHORT).show();
-            return;
+            Toast.makeText(getContext(), R.string.toast_email_incorrect, Toast.LENGTH_SHORT).show();
+            return isEmailSent;
         }
 
         mParentActivity.showProgressDialog();
 
-        mAuth.signInWithEmailAndPassword(email, password).addOnCompleteListener(getActivity(), new OnCompleteListener<AuthResult>() {
-            @Override
-            public void onComplete(@NonNull Task<AuthResult> task) {
-                if (task.isSuccessful()) {
-                    Log.d(TAG, "signInWithEmail:success");
-                    FirebaseUser user = mAuth.getCurrentUser();
-                    mParentActivity.updateUI(user);
-                } else {
-                    Log.w(TAG, "signInWithEmail:failure", task.getException());
-                    Toast.makeText(getContext(), R.string.toast_email_auth_fail, Toast.LENGTH_LONG).show();
-                    mParentActivity.updateUI(null);
-                }
-                mParentActivity.hideProgressDialog();
-            }
-        });
+        FirebaseAuth.getInstance().sendPasswordResetEmail(email)
+                .addOnCompleteListener(new OnCompleteListener<Void>() {
+                    @Override
+                    public void onComplete(@NonNull Task<Void> task)
+                    {
+                        Log.w(TAG, "Email sent");
+                        if (task.isSuccessful())
+                        {
+                            Toast.makeText(getContext(), R.string.toast_reset_password_sent, Toast.LENGTH_SHORT).show();
+                            isEmailSent = true;
+                        }
+                        else
+                        {
+                            Toast.makeText(getContext(), R.string.toast_reset_password_fail, Toast.LENGTH_SHORT).show();
+                            isEmailSent = false;
+                        }
+                        mParentActivity.hideProgressDialog();
+                    }
+                });
+        return isEmailSent;
     }
-
 }

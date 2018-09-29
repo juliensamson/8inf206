@@ -1,31 +1,22 @@
 package ca.uqac.lecitoyen;
 
 import android.content.Intent;
-import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
-import android.text.TextUtils;
 import android.util.Log;
-import android.view.Menu;
-import android.view.MenuInflater;
-import android.view.MenuItem;
 import android.widget.TextView;
-import android.widget.Toast;
 
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.Task;
-import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 
-import ca.uqac.lecitoyen.Auth.EmailPasswordActivity;
+import ca.uqac.lecitoyen.Auth.ForgotAccountFragment;
 import ca.uqac.lecitoyen.Auth.LoginAccountFragment;
+import ca.uqac.lecitoyen.Auth.MainAuthFragment;
 import ca.uqac.lecitoyen.Auth.CreateAccountFragment;
 import ca.uqac.lecitoyen.Interface.iHandleFragment;
 import ca.uqac.lecitoyen.User.UserMainActivity;
-import ca.uqac.lecitoyen.User.UserSettings.ChangeEmailActivity;
 
 
 public class MainActivity extends BaseActivity implements iHandleFragment {
@@ -52,9 +43,8 @@ public class MainActivity extends BaseActivity implements iHandleFragment {
         mToolbar = findViewById(R.id.main_toolbar);
         mToolbarTitle = findViewById(R.id.toolbar_title);
 
-
+        mToolbarTitle.setText(getString(R.string.fragment_main_auth));
         setSupportActionBar(mToolbar);
-        mToolbarTitle.setText("Bienvenue");
 
     }
 
@@ -71,16 +61,15 @@ public class MainActivity extends BaseActivity implements iHandleFragment {
         }
         else
         {
-            initLoginFragment();
+            MainAuthFragment fragment = new MainAuthFragment();
+            doFragmentTransaction(fragment, getString(R.string.fragment_main_auth), false, "");
         }
 
     }
 
     @Override
     public void setToolbarTitle(String fragmentTag) {
-        setSupportActionBar(mToolbar);
         mToolbarTitle.setText(fragmentTag);
-        //getSupportActionBar().setDisplayHomeAsUpEnabled(true);
     }
 
     @Override
@@ -88,7 +77,12 @@ public class MainActivity extends BaseActivity implements iHandleFragment {
 
         Log.d(TAG, "Inflate " + fragmentTag + " " + message);
 
-        if(fragmentTag.equals(getString(R.string.fragment_login_account)))
+        if(fragmentTag.equals(getString(R.string.fragment_main_auth)))
+        {
+            MainAuthFragment fragment = new MainAuthFragment();
+            doFragmentTransaction(fragment, fragmentTag, false, message);
+        }
+        else if(fragmentTag.equals(getString(R.string.fragment_login_account)))
         {
             LoginAccountFragment fragment = new LoginAccountFragment();
             doFragmentTransaction(fragment, fragmentTag, false, message);
@@ -98,17 +92,16 @@ public class MainActivity extends BaseActivity implements iHandleFragment {
             CreateAccountFragment fragment = new CreateAccountFragment();
             doFragmentTransaction(fragment, fragmentTag, false, message);
         }
+        else if (fragmentTag.equals(getString(R.string.fragment_forgot_account)))
+        {
+            ForgotAccountFragment fragment = new ForgotAccountFragment();
+            doFragmentTransaction(fragment, fragmentTag, false, message);
+        }
     }
 
     //
     // Fragment Transaction
     //
-
-    private void initLoginFragment() {
-        Log.d(TAG, "Login fragment initialize");
-        LoginAccountFragment fragment = new LoginAccountFragment();
-        doFragmentTransaction(fragment, getString(R.string.fragment_login_account), false, "");
-    }
 
     private void doFragmentTransaction(Fragment fragment, String tag, boolean addToBackStack, String message) {
 

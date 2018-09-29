@@ -106,7 +106,7 @@ public class CreateAccountFragment extends Fragment implements iUpdate, View.OnC
         switch (item.getItemId())
         {
             case android.R.id.home:
-                mHandleFragment.inflateFragment(getString(R.string.fragment_login_account),"");
+                mHandleFragment.inflateFragment(getString(R.string.fragment_main_auth),"");
                 break;
             default:
                 Log.e(TAG, "This onClick doesn't exist");
@@ -133,7 +133,7 @@ public class CreateAccountFragment extends Fragment implements iUpdate, View.OnC
         switch (view.getId())
         {
             case android.R.id.home:
-                //change frag
+                mHandleFragment.inflateFragment(getString(R.string.fragment_main_auth),"");
                 break;
             case R.id.create_account_frag_button:
                 createAccount(mEmailField.getText().toString(), mPasswordField.getText().toString());

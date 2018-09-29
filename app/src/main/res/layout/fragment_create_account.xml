@@ -118,7 +118,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_gravity="bottom"
-            style="@style/ButtonStyle"
+            style="@style/CreateAccountButtonStyle"
             android:text="@string/button_create_account" />
 
     </FrameLayout>
