@@ -1,77 +1,78 @@
 package ca.uqac.lecitoyen.database;
 
+//TODO: Store user data locally
+
 public class User {
 
-    //  User ID
-    private String userID;
 
-    //  Nom & Prenom d'utilisateur
-    private String realName;
+    //  Public info
+    private String uid;
 
-    //  Identifiant
-    private String userName;
+    private String name;
 
-    //  Date naissance
-    private long createAccountTime;
+    private String username;
 
-    //  Email
+    //  Private info
     private String email;
 
-    //  Location
-    private long location;
+    private String phone;
 
-    //  Password
-    private String password;
+    private boolean verify;
+
+    private String sexe;
+
+
+    //  Metadata
+    private long creationTimestamp;
+
+    private long lastSigninTimestamp;
+
+    private long location;
 
 
     //  Constructor
     public User() { }
 
-    public User(String userID, String realName, String userName, String email, long createAccountTime) {
-        this.userID = userID;
-        this.realName = realName;
-        this.userName = userName;
+    public User(String uid, String name, String username, String email, String phone, long creationTimestamp) {
+        this.uid = uid;
+        this.name = name;
+        this.username = username;
         this.email = email;
-        this.createAccountTime = createAccountTime;
+        this.phone = phone;
+        this.verify = false;
+        this.creationTimestamp = creationTimestamp;
+        this.lastSigninTimestamp = 0;
+        this.location = 0;
     }
+
 
     //
     //  Getter & Setter
     //
 
-    public String getUserID() {
-        return userID;
+
+    public String getUid() {
+        return uid;
     }
 
-    public void setUserID(String userID) {
-        this.userID = userID;
+    public void setUid(String uid) {
+        this.uid = uid;
     }
 
-
-
-
-    public String getRealName() {
-        return realName;
+    public String getName() {
+        return name;
     }
 
-    public void setRealName(String realName) {
-        this.realName = realName;
+    public void setName(String name) {
+        this.name = name;
     }
 
-    public String getUserName() {
-        return userName;
+    public String getUsername() {
+        return username;
     }
 
-    public void setUserName(String userName) {
-        this.userName = userName;
-    }
-
-    public long getCreateAccountTime() {
-        return createAccountTime;
-    }
-
-    public void setCreateAccountTime(long createAccountTime) {
-        this.createAccountTime = createAccountTime;
+    public void setUsername(String username) {
+        this.username = username;
     }
 
     public String getEmail() {
@@ -80,6 +81,46 @@ public class User {
 
     public void setEmail(String email) {
         this.email = email;
+    }
+
+    public String getPhone() {
+        return phone;
+    }
+
+    public void setPhone(String phone) {
+        this.phone = phone;
+    }
+
+    public boolean isVerify() {
+        return verify;
+    }
+
+    public void setVerify(boolean verify) {
+        this.verify = verify;
+    }
+
+    public String getSexe() {
+        return sexe;
+    }
+
+    public void setSexe(String sexe) {
+        this.sexe = sexe;
+    }
+
+    public long getCreationTimestamp() {
+        return creationTimestamp;
+    }
+
+    public void setCreationTimestamp(long creationTimestamp) {
+        this.creationTimestamp = creationTimestamp;
+    }
+
+    public long getLastSigninTimestamp() {
+        return lastSigninTimestamp;
+    }
+
+    public void setLastSigninTimestamp(long lastSigninTimestamp) {
+        this.lastSigninTimestamp = lastSigninTimestamp;
     }
 
     public long getLocation() {

@@ -1,0 +1,36 @@
+package ca.uqac.lecitoyen.User.UserSettings;
+
+
+import android.os.Bundle;
+import android.support.v4.app.Fragment;
+import android.util.Log;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+
+import com.google.firebase.auth.FirebaseAuth;
+
+import ca.uqac.lecitoyen.R;
+import ca.uqac.lecitoyen.database.DatabaseManager;
+
+/**
+ * A simple {@link Fragment} subclass.
+ */
+public class ChangeEmailFragment extends Fragment {
+
+
+    private static final String TAG = "ChangeEmailFragment";
+
+    public ChangeEmailFragment() {
+        // Required empty public constructor
+    }
+
+
+    @Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+                             Bundle savedInstanceState) {
+        // Inflate the layout for this fragment
+        return inflater.inflate(R.layout.fragment_change_email, container, false);
+    }
+
+}

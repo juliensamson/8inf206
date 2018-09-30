@@ -20,6 +20,7 @@ import ca.uqac.lecitoyen.BaseActivity;
 import ca.uqac.lecitoyen.R;
 import ca.uqac.lecitoyen.database.DatabaseManager;
 import ca.uqac.lecitoyen.database.Post;
+import ca.uqac.lecitoyen.database.PostTest;
 import ca.uqac.lecitoyen.database.User;
 
 public class PostActivity extends BaseActivity {
@@ -76,7 +77,8 @@ public class PostActivity extends BaseActivity {
                 return true;
             case R.id.menu_confirm:
                 if(!mMessage.getText().toString().isEmpty())
-                    updateDB();
+                    update();
+                    //updateDB();
                 else
                     Toast.makeText(PostActivity.this, "Un des champs est vide", Toast.LENGTH_SHORT).show();
                 return true;
@@ -84,7 +86,7 @@ public class PostActivity extends BaseActivity {
         return super.onOptionsItemSelected(item);
     }
 
-    private void updateDB() {
+    private void update() {
 
         final DatabaseReference ref = mDatabaseManager.getReference();
 
@@ -99,14 +101,12 @@ public class PostActivity extends BaseActivity {
                 {
                     userData = dataSnapshot.child(mUserId).getValue(User.class);
 
-                    Post post = new Post(
+                    PostTest post = new PostTest(
                             mUser.getUid(),
-                            userData.getRealName(),
-                            userData.getUserName(),
                             mMessage.getText().toString(),
                             System.currentTimeMillis(),
                             0);
-                    mDatabaseManager.writePostMessage(ref, post);
+                    mDatabaseManager.writePost(ref, post);
                     Toast.makeText(getApplicationContext(), "Data inserted", Toast.LENGTH_SHORT).show();
 
                 }

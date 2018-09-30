@@ -3,6 +3,9 @@ package ca.uqac.lecitoyen.User.UserSettings;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentTransaction;
+import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -25,16 +28,22 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.ValueEventListener;
 
 import ca.uqac.lecitoyen.BaseActivity;
+import ca.uqac.lecitoyen.Interface.iHandleFragment;
 import ca.uqac.lecitoyen.Interface.iUpdate;
 import ca.uqac.lecitoyen.MainActivity;
 import ca.uqac.lecitoyen.R;
+import ca.uqac.lecitoyen.User.UserFragments.CityFragment;
+import ca.uqac.lecitoyen.User.UserFragments.HomeFragment;
+import ca.uqac.lecitoyen.User.UserFragments.MessageFragment;
 import ca.uqac.lecitoyen.database.DatabaseManager;
 import ca.uqac.lecitoyen.database.User;
 
 //TODO: Add Verify email button
 //TODO: Make sure FAcebook user is added on the database
+//TODO: When you change NAMe, username, change the post
+//      So if I store only id, so you don't have to change every time the data in post with (name, username)
 
-public class UserSettingsActivity extends BaseActivity implements iUpdate, View.OnClickListener {
+public class UserSettingsActivity extends BaseActivity implements iHandleFragment {
 
     private static String TAG = "UserSettingsActivity";
 
@@ -46,6 +55,8 @@ public class UserSettingsActivity extends BaseActivity implements iUpdate, View.
     private EditText mUserNameField;
     private TextView mEmail;
 
+    Toolbar mSettingToolbar;
+    TextView mSettingToolbarTitle;
 
     //Firebase
     private FirebaseAuth mAuth;
@@ -65,6 +76,10 @@ public class UserSettingsActivity extends BaseActivity implements iUpdate, View.
             Log.e(TAG, "No Bundle was sent with the intent");
         }
 
+        MainUserSettingsFragment fragment = new MainUserSettingsFragment();
+        doFragmentTransaction(fragment, getString(R.string.fragment_main_user_settings), true, "");
+
+
         mDatabaseManager = DatabaseManager.getInstance();
         mUserData = new User();
 
@@ -73,154 +88,57 @@ public class UserSettingsActivity extends BaseActivity implements iUpdate, View.
         mUser = mAuth.getCurrentUser();
 
         //  Toolbar
-        createToolbar("Paramètres", true);
-
-        //  View
-        mNameField = findViewById(R.id.user_setting_realname);
-        mUserNameField = findViewById(R.id.user_setting_username);
-        mEmail = findViewById(R.id.user_setting_email);
-
-        //  Button
-        findViewById(R.id.change_email_button).setOnClickListener(this);
-        findViewById(R.id.change_password_button).setOnClickListener(this);
-        findViewById(R.id.signout_account_button).setOnClickListener(this);
-        findViewById(R.id.delete_account_button).setOnClickListener(this);
-
-        updateUI(mUser);
-    }
-
-    @Override
-    protected void onStart() {
-        super.onStart();
-        Log.d(TAG, "Started");
-    }
-
-    @Override
-    protected void onPause() {
-        super.onPause();
-        Log.d(TAG, "Paused");
-    }
-
-    @Override
-    public void onStop() {
-        super.onStop();
-        Log.d(TAG, "Stopped");
-    }
-
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-        Log.d(TAG, "Destroy");
-    }
-
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        Log.d(TAG, "onCreateOptionMenu");
-        MenuInflater menuInflater = getMenuInflater();
-        menuInflater.inflate(R.menu.confirm_menu, menu);
-        return super.onCreateOptionsMenu(menu);
-    }
-
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId())
-        {
-            case android.R.id.home:
-                onBackPressed();
-                return true;
-            case R.id.menu_confirm:
-                showProgressDialog();
-                if(!mUserNameField.getText().toString().equals(""))
-                    updateDB(mUser);
-                Log.w(TAG, "Information saved");
-                return true;
-        }
-        return super.onOptionsItemSelected(item);
-    }
-
-    @Override
-    public void updateUI(final FirebaseUser user) {
-
-        //  Initialize database manager
-        mUserReference = mDatabaseManager.getReference();
-
-        showProgressDialog();
-
-        mUserReference.child("users").child(mUserId).addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-
-                //  Add the user to the database if he wasn't added before
-                mUserData = dataSnapshot.getValue(User.class);
-                if(mUserData == null)
-                {
-                    mUserData = new User(mUserId, "", "", user.getEmail(), currentTimeMillis);
-                }
-
-                mNameField.setText(mUserData.getRealName());
-                mUserNameField.setText(mUserData.getUserName());
-                mEmail.setText(mUserData.getEmail());
-
-                hideProgressDialog();
+        mSettingToolbar = findViewById(R.id.toolbar_setting);
+        mSettingToolbarTitle = findViewById(R.id.toolbar_title);
+        setSupportActionBar(mSettingToolbar);
             }
 
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
-                Log.e(TAG, databaseError.getDetails());
-            }
-        });
-
-
-    }
-
-    //TODO: Check if USERNAME already exist
     @Override
-    public void updateDB(FirebaseUser user) {
-
-        mUserData.setRealName(mNameField.getText().toString());
-        mUserData.setUserName(mUserNameField.getText().toString());
-
-        mUserReference.child("users").child(mUserId).setValue(mUser)
-                .addOnSuccessListener(new OnSuccessListener<Void>() {
-                    @Override
-                    public void onSuccess(Void aVoid) {
-                        Toast.makeText(UserSettingsActivity.this, "Change saved", Toast.LENGTH_SHORT).show();
-                        Log.w(TAG, "Data inserted ");
-                    }
-                })
-                .addOnFailureListener(new OnFailureListener() {
-                    @Override
-                    public void onFailure(@NonNull Exception e) {
-                        Toast.makeText(UserSettingsActivity.this, "Couldn't be saved", Toast.LENGTH_SHORT).show();
-                        Log.e(TAG, "Something went wrong inserting data");
-                    }
-                });
-        hideProgressDialog();
+    public void setToolbarTitle(String fragmentTag) {
+        mSettingToolbarTitle.setText(fragmentTag);
     }
 
     @Override
-    public void onClick(View view) {
-        switch (view.getId())
+    public void inflateFragment(int fragmentTagId, String message) {
+
+        Fragment fragment;
+
+        switch (fragmentTagId)
         {
-            case R.id.change_email_button:
-                startActivity(new Intent(UserSettingsActivity.this, ChangeEmailActivity.class));
+            case R.string.fragment_main_user_settings:
+                fragment = new MainUserSettingsFragment();
+                doFragmentTransaction(fragment, getString(R.string.fragment_main_user_settings), true, "");
                 break;
-            case R.id.change_password_button:
-                startActivity(new Intent(UserSettingsActivity.this, ChangePasswordActivity.class));
+            case R.string.fragment_change_email:
+                fragment = new ChangeEmailFragment();
+                doFragmentTransaction(fragment, getString(R.string.fragment_change_email), true, "");
                 break;
-            case R.id.delete_account_button:
-                startActivity(new Intent(UserSettingsActivity.this, DeleteAccountActivity.class));
+            case R.string.fragment_change_password:
+                fragment = new ChangePasswordFragment();
+                doFragmentTransaction(fragment, getString(R.string.fragment_change_password), true, "");
                 break;
-            case R.id.signout_account_button:
-                signOutAccount();
+            case R.string.fragment_delete_account:
+                fragment = new DeleteAccountFragment();
+                doFragmentTransaction(fragment, getString(R.string.fragment_delete_account), true, "");
                 break;
             default:
                 break;
         }
     }
 
-    private void signOutAccount() {
+    private void doFragmentTransaction(Fragment fragment, String tag, boolean addToBackStack, String message) {
+        Log.d(TAG, "doFragmentTransaction");
+        FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
+
+        transaction.replace(R.id.setting_container, fragment, tag);
+
+        if(addToBackStack) {
+            transaction.addToBackStack(tag);
+        }
+        transaction.commit();
+    }
+
+    public void signOutAccount() {
         Log.d(TAG, "signOutAccount");
         mAuth.signOut();
         LoginManager.getInstance().logOut();

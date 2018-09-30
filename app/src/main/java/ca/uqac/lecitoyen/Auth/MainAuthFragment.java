@@ -42,11 +42,12 @@ import com.google.firebase.auth.FirebaseUser;
 
 import java.util.Arrays;
 
+import ca.uqac.lecitoyen.BaseFragment;
 import ca.uqac.lecitoyen.Interface.iHandleFragment;
 import ca.uqac.lecitoyen.MainActivity;
 import ca.uqac.lecitoyen.R;
 
-public class MainAuthFragment extends Fragment implements View.OnClickListener {
+public class MainAuthFragment extends BaseFragment implements View.OnClickListener {
 
     private static final String TAG = "MainAuthFragment";
 
@@ -78,12 +79,7 @@ public class MainAuthFragment extends Fragment implements View.OnClickListener {
         View view = inflater.inflate(R.layout.fragment_main_auth, container, false);
         Log.d(TAG, "onCreateView");
 
-        try {
-            Toolbar toolbar = getActivity().findViewById(R.id.main_toolbar);
-            mParentActivity.getSupportActionBar().setDisplayHomeAsUpEnabled(false);
-        } catch (NullPointerException npe) {
-            Log.e(TAG, npe.getMessage());
-        }
+        setFragmentToolbar(mParentActivity, R.id.main_toolbar, R.drawable.ic_arrow_back_white_24dp, false, false);
 
         //  View
         mFacebookButton = view.findViewById(R.id.main_auth_frag_facebook_button);
@@ -129,17 +125,17 @@ public class MainAuthFragment extends Fragment implements View.OnClickListener {
         {
             // TODO: Check connexion failure
             case R.id.main_auth_frag_email_button:
-                mHandleFragment.inflateFragment(getString(R.string.fragment_login_account),"");
+                mHandleFragment.inflateFragment(R.string.fragment_login_account,"");
                 break;
             case R.id.main_auth_frag_facebook_button:
                 initFacebookLogin();
                 LoginManager.getInstance().logInWithReadPermissions(this, Arrays.asList("public_profile", "user_friends"));
                 break;
             case R.id.main_auth_frag_password_forgotten:
-                mHandleFragment.inflateFragment(getString(R.string.fragment_forgot_account),"");
+                mHandleFragment.inflateFragment(R.string.fragment_forgot_account,"");
                 break;
             case R.id.main_auth_frag_create_account_button:
-                mHandleFragment.inflateFragment(getString(R.string.fragment_create_account),"");
+                mHandleFragment.inflateFragment(R.string.fragment_create_account,"");
                 break;
             default:
                 break;

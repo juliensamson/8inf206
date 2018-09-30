@@ -4,6 +4,6 @@ public interface iHandleFragment {
 
     void setToolbarTitle(String fragmentTag);
 
-    void inflateFragment(String fragmentTag, String message);
+    void inflateFragment(int fragmentTagId, String message);
 
 }

@@ -28,9 +28,15 @@ import ca.uqac.lecitoyen.R;
 import ca.uqac.lecitoyen.User.UserFragments.CityFragment;
 import ca.uqac.lecitoyen.User.UserFragments.HomeFragment;
 import ca.uqac.lecitoyen.User.UserFragments.MessageFragment;
+import ca.uqac.lecitoyen.User.UserSettings.ChangeEmailFragment;
+import ca.uqac.lecitoyen.User.UserSettings.ChangePasswordFragment;
+import ca.uqac.lecitoyen.User.UserSettings.DeleteAccountFragment;
+import ca.uqac.lecitoyen.User.UserSettings.MainUserSettingsFragment;
 import ca.uqac.lecitoyen.User.UserSettings.UserSettingsActivity;
 import ca.uqac.lecitoyen.database.DatabaseManager;
 import ca.uqac.lecitoyen.database.Post;
+import ca.uqac.lecitoyen.database.PostTest;
+import ca.uqac.lecitoyen.database.User;
 
 //TODO: Make the RecyclerView load automatically after making a post
 
@@ -44,6 +50,8 @@ public class UserMainActivity extends BaseActivity implements iHandleFragment {
     public DatabaseReference mReference;
 
     public ArrayList<Post> mPostList = new ArrayList<>();
+    public ArrayList<PostTest> mPostTestList = new ArrayList<>();
+    public ArrayList<User> mUserList = new ArrayList<>();
 
     private Toolbar mUserToolbar;
     private TextView mUserToolbarTitle;
@@ -62,13 +70,13 @@ public class UserMainActivity extends BaseActivity implements iHandleFragment {
 
             switch (item.getItemId()) {
                 case R.id.navigation_city:
-                    inflateFragment(getString(R.string.fragment_city), "");
+                    inflateFragment(R.string.fragment_city, "");
                     return true;
                 case R.id.navigation_home:
-                    inflateFragment(getString(R.string.fragment_home), "");
+                    inflateFragment(R.string.fragment_home, "");
                     return true;
                 case R.id.navigation_messages:
-                    inflateFragment(getString(R.string.fragment_messages), "");
+                    inflateFragment(R.string.fragment_messages, "");
                     return true;
             }
             return false;
@@ -89,8 +97,8 @@ public class UserMainActivity extends BaseActivity implements iHandleFragment {
         mAuth = FirebaseAuth.getInstance();
 
         init();
-
-        getThreadsData();
+        getPostsData();
+        //getThreadsData();
         //  Views
         mUserToolbar = findViewById(R.id.toolbar_user);
         mUserToolbarTitle = findViewById(R.id.toolbar_title);
@@ -136,6 +144,12 @@ public class UserMainActivity extends BaseActivity implements iHandleFragment {
     public ArrayList<Post> getPostArrayList() {
         return this.mPostList;
     }
+    public ArrayList<PostTest> getPostTestArrayList() {
+        return this.mPostTestList;
+    }
+    public ArrayList<User> getUserArrayList() {
+        return this.mUserList;
+    }
 
     private void init() {
         Log.d(TAG, "init");
@@ -161,23 +175,26 @@ public class UserMainActivity extends BaseActivity implements iHandleFragment {
     }
 
     @Override
-    public void inflateFragment(String fragmentTag, String message) {
-        Log.d(TAG, "Inflate " + fragmentTag);
+    public void inflateFragment(int fragmentTagId, String message) {
 
-        if(fragmentTag.equals(getString(R.string.fragment_city)))
+        Fragment fragment;
+
+        switch (fragmentTagId)
         {
-            CityFragment fragment = new CityFragment();
-            doFragmentTransaction(fragment, fragmentTag, false, message);
-        }
-        else if (fragmentTag.equals(getString(R.string.fragment_home)))
-        {
-            HomeFragment fragment = new HomeFragment();
-            doFragmentTransaction(fragment, fragmentTag, false, message);
-        }
-        else if (fragmentTag.equals(getString(R.string.fragment_messages)))
-        {
-            MessageFragment fragment = new MessageFragment();
-            doFragmentTransaction(fragment, fragmentTag, false, message);
+            case R.string.fragment_city:
+                fragment = new CityFragment();
+                doFragmentTransaction(fragment, getString(R.string.fragment_city), false, "");
+                break;
+            case R.string.fragment_home:
+                fragment = new HomeFragment();
+                doFragmentTransaction(fragment, getString(R.string.fragment_home), false, "");
+                break;
+            case R.string.fragment_messages:
+                fragment = new MessageFragment();
+                doFragmentTransaction(fragment, getString(R.string.fragment_messages), false, "");
+                break;
+            default:
+                break;
         }
     }
 
@@ -193,6 +210,11 @@ public class UserMainActivity extends BaseActivity implements iHandleFragment {
         Intent intent = new Intent(this, activity);
         intent.putExtras(extras);
         startActivity(intent);
+    }
+
+    private void getPostsData() {
+        mPostTestList = mDatabaseManager.getPostListOrderByDate();
+        mUserList = mDatabaseManager.getUserList();
     }
 
     private void getThreadsData() {

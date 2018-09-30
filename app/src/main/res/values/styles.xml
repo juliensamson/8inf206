@@ -32,7 +32,7 @@
     <style name="CreateAccountButtonStyle" parent="Widget.AppCompat.Button.Colored">
         <item name="android:background">@color/i_primary_800</item>
     </style>
-    <style name="SigninAccountButtonStyle" parent="Base.Widget.AppCompat.Button.Borderless.Colored">
+    <style name="SigninAccountButtonStyle" parent="Base.Widget.AppCompat.Button.Colored">
         <item name="android:textColor">@color/i_primary_800</item>
     </style>
     <style name="DeleteAccountButtonStyle" parent="Widget.AppCompat.Button.Colored">

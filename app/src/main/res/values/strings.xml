@@ -9,10 +9,15 @@
     <string name="fragment_login_account">Se connecter</string>
     <string name="fragment_create_account">Creer un compte</string>
     <string name="fragment_forgot_account">Mot de passe oublié</string>
+
     <string name="fragment_city">Ma Ville</string>
     <string name="fragment_home">Accueil</string>
     <string name="fragment_messages">Messages</string>
-    <string name="fragment_selector">Fragment Selector</string>
+
+    <string name="fragment_main_user_settings">Paramètres</string>
+    <string name="fragment_change_email">Email</string>
+    <string name="fragment_change_password">Mot de passe</string>
+    <string name="fragment_delete_account">Supprimer compte</string>
 
     <string name="textview_forgot_password">Mot de passe oublié?</string>
 
@@ -22,8 +27,7 @@
     <string name="password">Mot de passe</string>
     <string name="password_again">Mot de passe, encore un fois</string>
     <string name="password_verification">Vérification du mot de passe</string>
-    <string name="first_name">Prénom</string>
-    <string name="last_name">Nom de famille</string>
+    <string name="name">Nom</string>
     <string name="user_name">Nom d\'utilisateur unique</string>
 
     <!--    BUTTON Text-->
@@ -39,7 +43,6 @@
     <string name="long_subtitle_forgot_account">"Vous avez oublié votre mot de passe? \n\nVous n'avez qu'à entrer votre addresse courriel dans le champ si-dessus. Vous recevrez un courriel sous peu."</string>
 
 
-
     <!--    TOAST Text-->
     <string name="toast_email_field_empty">Aucun email</string>
     <string name="toast_password_field_empty">Aucun mot de passe</string>
@@ -52,7 +55,6 @@
     <string name="toast_password_different">Mot de passes different</string>
 
     <string name="toast_email_auth_fail">Échec d\'authentification avec email</string>
-
 
 
     <!-- TODO: Remove or change this placeholder text -->

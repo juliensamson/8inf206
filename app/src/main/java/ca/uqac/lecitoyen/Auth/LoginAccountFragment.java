@@ -41,6 +41,7 @@ import com.google.firebase.auth.FirebaseUser;
 
 import java.util.Arrays;
 
+import ca.uqac.lecitoyen.BaseFragment;
 import ca.uqac.lecitoyen.Interface.iHandleFragment;
 import ca.uqac.lecitoyen.MainActivity;
 import ca.uqac.lecitoyen.R;
@@ -48,7 +49,9 @@ import ca.uqac.lecitoyen.R;
 /**
  * A simple {@link Fragment} subclass.
  */
-public class LoginAccountFragment extends Fragment implements View.OnClickListener {
+
+//TODO: Check if the user is already connected on a device, because it bug everything so far
+public class LoginAccountFragment extends BaseFragment implements View.OnClickListener {
 
 
     private static final String TAG = "LoginAccountFragment";
@@ -79,13 +82,7 @@ public class LoginAccountFragment extends Fragment implements View.OnClickListen
         View view = inflater.inflate(R.layout.fragment_login_account, container, false);
         Log.d(TAG, "onCreateView");
 
-        try {
-            Toolbar toolbar = getActivity().findViewById(R.id.main_toolbar);
-            mParentActivity.getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-            setHasOptionsMenu(true);
-        } catch (NullPointerException npe) {
-            Log.e(TAG, npe.getMessage());
-        }
+        setFragmentToolbar(mParentActivity, R.id.main_toolbar, R.drawable.ic_arrow_back_white_24dp, true, true);
 
         //  View
         mTextInputLayout = view.findViewById(R.id.login_account_frag_text_input_layout);
@@ -109,7 +106,7 @@ public class LoginAccountFragment extends Fragment implements View.OnClickListen
         switch (item.getItemId())
         {
             case android.R.id.home:
-                mHandleFragment.inflateFragment(getString(R.string.fragment_main_auth),"");
+                mHandleFragment.inflateFragment(R.string.fragment_main_auth,"");
                 break;
             default:
                 Log.e(TAG, "This onClick doesn't exist");
@@ -144,7 +141,7 @@ public class LoginAccountFragment extends Fragment implements View.OnClickListen
                 signInUser(mEmailField.getText().toString(), mPasswordField.getText().toString());
                 break;
             case R.id.login_account_frag_password_forgotten:
-                mHandleFragment.inflateFragment(getString(R.string.fragment_forgot_account),"");
+                mHandleFragment.inflateFragment(R.string.fragment_forgot_account,"");
                 break;
             default:
                 break;

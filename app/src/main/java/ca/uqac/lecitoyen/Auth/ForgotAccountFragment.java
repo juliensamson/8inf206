@@ -24,6 +24,7 @@ import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 
+import ca.uqac.lecitoyen.BaseFragment;
 import ca.uqac.lecitoyen.Interface.iHandleFragment;
 import ca.uqac.lecitoyen.MainActivity;
 import ca.uqac.lecitoyen.R;
@@ -31,7 +32,7 @@ import ca.uqac.lecitoyen.R;
 /**
  * A simple {@link Fragment} subclass.
  */
-public class ForgotAccountFragment extends Fragment implements View.OnClickListener{
+public class ForgotAccountFragment extends BaseFragment implements View.OnClickListener {
 
 
     private static final String TAG = "ForgotAccountFragment";
@@ -64,13 +65,7 @@ public class ForgotAccountFragment extends Fragment implements View.OnClickListe
         View view = inflater.inflate(R.layout.fragment_forgot_account, container, false);
         Log.d(TAG, "onCreateView");
 
-        try {
-            Toolbar toolbar = getActivity().findViewById(R.id.main_toolbar);
-            mParentActivity.getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-            setHasOptionsMenu(true);
-        } catch (NullPointerException npe) {
-            Log.e(TAG, npe.getMessage());
-        }
+        setFragmentToolbar(mParentActivity, R.id.main_toolbar, R.drawable.ic_arrow_back_white_24dp, true, true);
 
         //  View
         mTextInputLayout = view.findViewById(R.id.forgot_account_frag_text_input_layout);
@@ -92,7 +87,7 @@ public class ForgotAccountFragment extends Fragment implements View.OnClickListe
         switch (item.getItemId())
         {
             case android.R.id.home:
-                mHandleFragment.inflateFragment(getString(R.string.fragment_main_auth),"");
+                mHandleFragment.inflateFragment(R.string.fragment_main_auth,"");
                 break;
             default:
                 Log.e(TAG, "This onClick doesn't exist");
@@ -123,7 +118,7 @@ public class ForgotAccountFragment extends Fragment implements View.OnClickListe
         {
             case R.id.forgot_account_frag_send_email_button:
                 if(resetEmailPassword(mEmailField.getText().toString()))
-                    mHandleFragment.inflateFragment(getString(R.string.fragment_main_auth),"");
+                    mHandleFragment.inflateFragment(R.string.fragment_main_auth,"");
                 break;
             default:
                 break;

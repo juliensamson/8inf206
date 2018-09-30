@@ -17,6 +17,10 @@ import ca.uqac.lecitoyen.Auth.MainAuthFragment;
 import ca.uqac.lecitoyen.Auth.CreateAccountFragment;
 import ca.uqac.lecitoyen.Interface.iHandleFragment;
 import ca.uqac.lecitoyen.User.UserMainActivity;
+import ca.uqac.lecitoyen.User.UserSettings.ChangeEmailFragment;
+import ca.uqac.lecitoyen.User.UserSettings.ChangePasswordFragment;
+import ca.uqac.lecitoyen.User.UserSettings.DeleteAccountFragment;
+import ca.uqac.lecitoyen.User.UserSettings.MainUserSettingsFragment;
 
 
 public class MainActivity extends BaseActivity implements iHandleFragment {
@@ -67,35 +71,37 @@ public class MainActivity extends BaseActivity implements iHandleFragment {
 
     }
 
+
     @Override
     public void setToolbarTitle(String fragmentTag) {
         mToolbarTitle.setText(fragmentTag);
     }
 
     @Override
-    public void inflateFragment(String fragmentTag, String message) {
+    public void inflateFragment(int fragmentTagId, String message) {
 
-        Log.d(TAG, "Inflate " + fragmentTag + " " + message);
+        Fragment fragment;
 
-        if(fragmentTag.equals(getString(R.string.fragment_main_auth)))
+        switch (fragmentTagId)
         {
-            MainAuthFragment fragment = new MainAuthFragment();
-            doFragmentTransaction(fragment, fragmentTag, false, message);
-        }
-        else if(fragmentTag.equals(getString(R.string.fragment_login_account)))
-        {
-            LoginAccountFragment fragment = new LoginAccountFragment();
-            doFragmentTransaction(fragment, fragmentTag, false, message);
-        }
-        else if (fragmentTag.equals(getString(R.string.fragment_create_account)))
-        {
-            CreateAccountFragment fragment = new CreateAccountFragment();
-            doFragmentTransaction(fragment, fragmentTag, false, message);
-        }
-        else if (fragmentTag.equals(getString(R.string.fragment_forgot_account)))
-        {
-            ForgotAccountFragment fragment = new ForgotAccountFragment();
-            doFragmentTransaction(fragment, fragmentTag, false, message);
+            case R.string.fragment_main_auth:
+                fragment = new MainAuthFragment();
+                doFragmentTransaction(fragment, getString(R.string.fragment_main_auth), false, "");
+                break;
+            case R.string.fragment_login_account:
+                fragment = new LoginAccountFragment();
+                doFragmentTransaction(fragment, getString(R.string.fragment_login_account), true, "");
+                break;
+            case R.string.fragment_create_account:
+                fragment = new CreateAccountFragment();
+                doFragmentTransaction(fragment, getString(R.string.fragment_create_account), true, "");
+                break;
+            case R.string.fragment_forgot_account:
+                fragment = new ForgotAccountFragment();
+                doFragmentTransaction(fragment, getString(R.string.fragment_forgot_account), true, "");
+                break;
+            default:
+                break;
         }
     }
 

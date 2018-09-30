@@ -8,7 +8,6 @@ import android.support.annotation.Nullable;
 import android.support.design.widget.TextInputEditText;
 import android.support.design.widget.TextInputLayout;
 import android.support.v4.app.Fragment;
-import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
 import android.util.Log;
@@ -18,7 +17,6 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -31,6 +29,7 @@ import com.google.firebase.auth.FirebaseAuthUserCollisionException;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DatabaseReference;
 
+import ca.uqac.lecitoyen.BaseFragment;
 import ca.uqac.lecitoyen.Interface.iHandleFragment;
 import ca.uqac.lecitoyen.Interface.iUpdate;
 import ca.uqac.lecitoyen.MainActivity;
@@ -39,7 +38,7 @@ import ca.uqac.lecitoyen.User.UserMainActivity;
 import ca.uqac.lecitoyen.database.DatabaseManager;
 import ca.uqac.lecitoyen.database.User;
 
-public class CreateAccountFragment extends Fragment implements iUpdate, View.OnClickListener {
+public class CreateAccountFragment extends BaseFragment implements iUpdate, View.OnClickListener {
 
     private static final String TAG = "CreateAccountFragment";
 
@@ -48,15 +47,11 @@ public class CreateAccountFragment extends Fragment implements iUpdate, View.OnC
     private iHandleFragment mHandleFragment;
 
     private TextInputLayout mTextInputLayout;
-    private TextInputEditText mFirstNameField;
-    private TextInputEditText mLastNameField;
+    private TextInputEditText mNameField;
     private TextInputEditText mUserNameField;
     private TextInputEditText mEmailField;
     private TextInputEditText mPasswordField;
     private TextInputEditText mVerifyPasswordField;
-
-    private TextView mLoginFragment;
-
 
     private FirebaseAuth auth;
 
@@ -64,7 +59,9 @@ public class CreateAccountFragment extends Fragment implements iUpdate, View.OnC
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         mParentActivity = (MainActivity) getActivity();
+
         mHandleFragment.setToolbarTitle(getTag());
+
 
         auth = mParentActivity.getAuth();
     }
@@ -74,17 +71,10 @@ public class CreateAccountFragment extends Fragment implements iUpdate, View.OnC
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_create_account, container, false);
 
-        try {
-            Toolbar toolbar = getActivity().findViewById(R.id.main_toolbar);
-            mParentActivity.getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-            setHasOptionsMenu(true);
-        } catch (NullPointerException npe) {
-            Log.e(TAG, npe.getMessage());
-        }
+        setFragmentToolbar(mParentActivity, R.id.main_toolbar, R.drawable.ic_close_white_24dp,true, true);
 
         //  Views
-        mFirstNameField = view.findViewById(R.id.create_account_first_name);
-        mLastNameField = view.findViewById(R.id.create_account_last_name);
+        mNameField = view.findViewById(R.id.create_account_first_name);
         mUserNameField = view.findViewById(R.id.create_account_frag_user_name);
         mEmailField = view.findViewById(R.id.create_account_frag_email);
         mPasswordField = view.findViewById(R.id.create_account_frag_password);
@@ -97,16 +87,11 @@ public class CreateAccountFragment extends Fragment implements iUpdate, View.OnC
     }
 
     @Override
-    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-        super.onCreateOptionsMenu(menu, inflater);
-    }
-
-    @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId())
         {
             case android.R.id.home:
-                mHandleFragment.inflateFragment(getString(R.string.fragment_main_auth),"");
+                mHandleFragment.inflateFragment(R.string.fragment_main_auth,"");
                 break;
             default:
                 Log.e(TAG, "This onClick doesn't exist");
@@ -116,15 +101,11 @@ public class CreateAccountFragment extends Fragment implements iUpdate, View.OnC
         return super.onOptionsItemSelected(item);
     }
 
-    @Override
-    public void onStart() {
-        super.onStart();
-    }
 
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
-        mHandleFragment = (MainActivity) getActivity();
+        mHandleFragment = (iHandleFragment) getActivity();
     }
 
     @Override
@@ -133,7 +114,7 @@ public class CreateAccountFragment extends Fragment implements iUpdate, View.OnC
         switch (view.getId())
         {
             case android.R.id.home:
-                mHandleFragment.inflateFragment(getString(R.string.fragment_main_auth),"");
+                mHandleFragment.inflateFragment(R.string.fragment_main_auth,"");
                 break;
             case R.id.create_account_frag_button:
                 createAccount(mEmailField.getText().toString(), mPasswordField.getText().toString());
@@ -160,9 +141,10 @@ public class CreateAccountFragment extends Fragment implements iUpdate, View.OnC
 
         User userData = new User(
                 user.getUid(),
-                mFirstNameField.getText().toString() + " " + mLastNameField.getText().toString(),
+                mNameField.getText().toString(),
                 mUserNameField.getText().toString(),
                 user.getEmail(),
+                "",
                 System.currentTimeMillis()
         );
 
@@ -204,7 +186,8 @@ public class CreateAccountFragment extends Fragment implements iUpdate, View.OnC
                             mParentActivity.hideProgressDialog();
                             // [END_EXCLUDE]
                         }
-                    }).addOnFailureListener(new OnFailureListener() {
+                    })
+                    .addOnFailureListener(new OnFailureListener() {
                 @Override
                 public void onFailure(@NonNull Exception e) {
                     Log.e(TAG, e.getCause().getMessage());
@@ -221,23 +204,16 @@ public class CreateAccountFragment extends Fragment implements iUpdate, View.OnC
     private boolean validateForm() {
         boolean valid = true;
 
-        String firstName = mFirstNameField.getText().toString();
-        if (TextUtils.isEmpty(firstName)) {
-            mFirstNameField.setError("Required.");
+        String name = mNameField.getText().toString();
+        if (TextUtils.isEmpty(name)) {
+            mNameField.setError("Required.");
             valid = false;
         } else {
-            mFirstNameField.setError(null);
+            mNameField.setError(null);
         }
 
-        String lastName = mLastNameField.getText().toString();
-        if (TextUtils.isEmpty(lastName)) {
-            mLastNameField.setError("Required.");
-            valid = false;
-        } else {
-            mLastNameField.setError(null);
-        }
         String userName = mUserNameField.getText().toString();
-        if (TextUtils.isEmpty(lastName)) {
+        if (TextUtils.isEmpty(userName)) {
             mUserNameField.setError("Required.");
             valid = false;
         } else {
@@ -245,7 +221,7 @@ public class CreateAccountFragment extends Fragment implements iUpdate, View.OnC
         }
 
         String email = mEmailField.getText().toString();
-        if (TextUtils.isEmpty(lastName)) {
+        if (TextUtils.isEmpty(email)) {
             mEmailField.setError("Required.");
             valid = false;
         } else {
@@ -253,14 +229,14 @@ public class CreateAccountFragment extends Fragment implements iUpdate, View.OnC
         }
 
         String password = mPasswordField.getText().toString();
-        if (TextUtils.isEmpty(lastName)) {
+        if (TextUtils.isEmpty(password)) {
             mPasswordField.setError("Required.");
             valid = false;
         } else {
             mPasswordField.setError(null);
         }
         String verifyPassword = mVerifyPasswordField.getText().toString();
-        if (TextUtils.isEmpty(lastName)) {
+        if (TextUtils.isEmpty(verifyPassword)) {
             mVerifyPasswordField.setError("Required.");
             valid = false;
         } else {
