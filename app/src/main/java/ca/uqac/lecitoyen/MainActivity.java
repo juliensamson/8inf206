@@ -11,12 +11,12 @@ import android.widget.TextView;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 
-import ca.uqac.lecitoyen.Auth.ForgotAccountFragment;
-import ca.uqac.lecitoyen.Auth.LoginAccountFragment;
-import ca.uqac.lecitoyen.Auth.MainAuthFragment;
-import ca.uqac.lecitoyen.Auth.CreateAccountFragment;
+import ca.uqac.lecitoyen.authUI.ForgotAccountFragment;
+import ca.uqac.lecitoyen.authUI.LoginAccountFragment;
+import ca.uqac.lecitoyen.authUI.MainAuthFragment;
+import ca.uqac.lecitoyen.authUI.CreateAccountFragment;
 import ca.uqac.lecitoyen.Interface.iHandleFragment;
-import ca.uqac.lecitoyen.User.UserMainActivity;
+import ca.uqac.lecitoyen.userUI.UserMainActivity;
 
 
 public class MainActivity extends BaseActivity implements iHandleFragment {

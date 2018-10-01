@@ -1,4 +1,4 @@
-package ca.uqac.lecitoyen.User.UserSettings;
+package ca.uqac.lecitoyen.userUI.settings;
 
 import android.content.Context;
 import android.os.Bundle;

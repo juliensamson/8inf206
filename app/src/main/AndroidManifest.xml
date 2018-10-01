@@ -27,15 +27,15 @@
 
         <!-- USER ACTIVITY -->
         <activity
-            android:name=".User.UserMainActivity"
+            android:name=".userUI.UserMainActivity"
             android:label="@string/title_activity_user" />
-        <activity android:name=".User.PostActivity" />
+        <activity android:name=".userUI.newsfeed.PostActivity" />
 
         <!-- USER SETTING ACTIVITY -->
         <activity
-            android:name=".User.UserSettings.UserSettingsActivity"
+            android:name=".userUI.settings.UserSettingsActivity"
             android:launchMode="standard"
-            android:parentActivityName=".User.UserMainActivity"
+            android:parentActivityName=".userUI.UserMainActivity"
             android:windowSoftInputMode="stateHidden|adjustResize"/>
 
         <!-- FACEBOOK LOGIN ACTIVITY -->

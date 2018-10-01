@@ -1,11 +1,9 @@
-package ca.uqac.lecitoyen.User.UserFragments;
+package ca.uqac.lecitoyen.userUI.newsfeed;
 
 
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
-import android.os.Handler;
-import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
@@ -14,7 +12,6 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Toast;
 
 
 import com.google.firebase.database.DatabaseReference;
@@ -24,10 +21,8 @@ import java.util.ArrayList;
 import ca.uqac.lecitoyen.BaseFragment;
 import ca.uqac.lecitoyen.Interface.iHandleFragment;
 import ca.uqac.lecitoyen.R;
-import ca.uqac.lecitoyen.User.PostActivity;
-import ca.uqac.lecitoyen.User.UserMainActivity;
+import ca.uqac.lecitoyen.userUI.UserMainActivity;
 import ca.uqac.lecitoyen.adapter.HomeAdapter;
-import ca.uqac.lecitoyen.adapter.HomeRecyclerViewAdapter;
 import ca.uqac.lecitoyen.database.DatabaseManager;
 import ca.uqac.lecitoyen.database.Post;
 import ca.uqac.lecitoyen.database.PostTest;

@@ -1,4 +1,4 @@
-package ca.uqac.lecitoyen.User;
+package ca.uqac.lecitoyen.userUI;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -25,10 +25,10 @@ import java.util.ArrayList;
 import ca.uqac.lecitoyen.BaseActivity;
 import ca.uqac.lecitoyen.Interface.iHandleFragment;
 import ca.uqac.lecitoyen.R;
-import ca.uqac.lecitoyen.User.UserFragments.CityFragment;
-import ca.uqac.lecitoyen.User.UserFragments.HomeFragment;
-import ca.uqac.lecitoyen.User.UserFragments.MessageFragment;
-import ca.uqac.lecitoyen.User.UserSettings.UserSettingsActivity;
+import ca.uqac.lecitoyen.userUI.cityfeed.CityFragment;
+import ca.uqac.lecitoyen.userUI.newsfeed.HomeFragment;
+import ca.uqac.lecitoyen.userUI.messaging.MessageFragment;
+import ca.uqac.lecitoyen.userUI.settings.UserSettingsActivity;
 import ca.uqac.lecitoyen.database.DatabaseManager;
 import ca.uqac.lecitoyen.database.Post;
 import ca.uqac.lecitoyen.database.PostTest;

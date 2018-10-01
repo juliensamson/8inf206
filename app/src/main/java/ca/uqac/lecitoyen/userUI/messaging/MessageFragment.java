@@ -1,4 +1,4 @@
-package ca.uqac.lecitoyen.User.UserFragments;
+package ca.uqac.lecitoyen.userUI.messaging;
 
 
 import android.content.Context;
@@ -12,7 +12,7 @@ import android.widget.TextView;
 
 import ca.uqac.lecitoyen.Interface.iHandleFragment;
 import ca.uqac.lecitoyen.R;
-import ca.uqac.lecitoyen.User.UserMainActivity;
+import ca.uqac.lecitoyen.userUI.UserMainActivity;
 
 /**
  * A simple {@link Fragment} subclass.

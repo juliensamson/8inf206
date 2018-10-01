@@ -1,4 +1,4 @@
-package ca.uqac.lecitoyen.User.UserSettings;
+package ca.uqac.lecitoyen.userUI.settings;
 
 
 import android.content.Context;
@@ -25,13 +25,11 @@ import com.google.firebase.auth.AuthCredential;
 import com.google.firebase.auth.EmailAuthProvider;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.database.DatabaseReference;
 
 import ca.uqac.lecitoyen.BaseFragment;
 import ca.uqac.lecitoyen.Interface.iHandleFragment;
 import ca.uqac.lecitoyen.R;
 import ca.uqac.lecitoyen.database.DatabaseManager;
-import ca.uqac.lecitoyen.database.User;
 
 /**
  * A simple {@link Fragment} subclass.

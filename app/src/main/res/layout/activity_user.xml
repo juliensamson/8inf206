@@ -6,7 +6,7 @@
     android:id="@+id/container"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="ca.uqac.lecitoyen.User.UserMainActivity">
+    tools:context="ca.uqac.lecitoyen.userUI.UserMainActivity">
 
     <include
         android:id="@+id/toolbar_user"

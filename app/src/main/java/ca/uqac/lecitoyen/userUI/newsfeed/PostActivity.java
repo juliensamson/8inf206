@@ -1,4 +1,4 @@
-package ca.uqac.lecitoyen.User;
+package ca.uqac.lecitoyen.userUI.newsfeed;
 
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -19,7 +19,6 @@ import com.google.firebase.database.ValueEventListener;
 import ca.uqac.lecitoyen.BaseActivity;
 import ca.uqac.lecitoyen.R;
 import ca.uqac.lecitoyen.database.DatabaseManager;
-import ca.uqac.lecitoyen.database.Post;
 import ca.uqac.lecitoyen.database.PostTest;
 import ca.uqac.lecitoyen.database.User;
 

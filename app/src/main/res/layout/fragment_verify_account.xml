@@ -2,7 +2,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="ca.uqac.lecitoyen.User.UserSettings.VerifyAccountFragment">
+    tools:context=".userUI.settings.VerifyAccountFragment">
 
     <!-- TODO: Update blank fragment layout -->
     <TextView

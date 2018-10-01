@@ -1,4 +1,4 @@
-package ca.uqac.lecitoyen.Auth;
+package ca.uqac.lecitoyen.authUI;
 
 
 import android.content.Context;
@@ -8,7 +8,6 @@ import android.support.annotation.Nullable;
 import android.support.design.widget.TextInputEditText;
 import android.support.design.widget.TextInputLayout;
 import android.support.v4.app.Fragment;
-import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -21,6 +20,7 @@ import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
+import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 
@@ -32,10 +32,12 @@ import ca.uqac.lecitoyen.R;
 /**
  * A simple {@link Fragment} subclass.
  */
-public class ForgotAccountFragment extends BaseFragment implements View.OnClickListener {
+
+//TODO: Check if the user is already connected on a device, because it bug everything so far
+public class LoginAccountFragment extends BaseFragment implements View.OnClickListener {
 
 
-    private static final String TAG = "ForgotAccountFragment";
+    private static final String TAG = "LoginAccountFragment";
 
     private iHandleFragment mHandleFragment;
 
@@ -45,14 +47,12 @@ public class ForgotAccountFragment extends BaseFragment implements View.OnClickL
 
     private FirebaseAuth mAuth;
 
-    boolean isEmailSent = false;
-
     MainActivity mParentActivity;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
+        Log.d(TAG, "onCreate");
         super.onCreate(savedInstanceState);
-
         mParentActivity = (MainActivity) getActivity();
         mHandleFragment.setToolbarTitle(getTag());
 
@@ -62,17 +62,19 @@ public class ForgotAccountFragment extends BaseFragment implements View.OnClickL
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_forgot_account, container, false);
+        View view = inflater.inflate(R.layout.fragment_login_account, container, false);
         Log.d(TAG, "onCreateView");
 
         setFragmentToolbar(mParentActivity, R.id.main_toolbar, R.drawable.ic_arrow_back_white_24dp, true, true);
 
         //  View
-        mTextInputLayout = view.findViewById(R.id.forgot_account_frag_text_input_layout);
-        mEmailField = view.findViewById(R.id.forgot_account_frag_text_input_email);
+        mTextInputLayout = view.findViewById(R.id.login_account_frag_text_input_layout);
+        mEmailField = view.findViewById(R.id.login_account_frag_text_input_email);
+        mPasswordField = view.findViewById(R.id.login_account_frag_text_input_password);
 
         //  Buttons
-        view.findViewById(R.id.forgot_account_frag_send_email_button).setOnClickListener(this);
+        view.findViewById(R.id.login_account_frag_email_button).setOnClickListener(this);
+        view.findViewById(R.id.login_account_frag_password_forgotten).setOnClickListener(this);
 
         return view;
     }
@@ -114,45 +116,51 @@ public class ForgotAccountFragment extends BaseFragment implements View.OnClickL
 
     @Override
     public void onClick(View view) {
+
         switch (view.getId())
         {
-            case R.id.forgot_account_frag_send_email_button:
-                if(resetEmailPassword(mEmailField.getText().toString()))
-                    mHandleFragment.inflateFragment(R.string.fragment_main_auth,"");
+            // TODO: Check connexion failure
+            case R.id.login_account_frag_email_button:
+                signInUser(mEmailField.getText().toString(), mPasswordField.getText().toString());
+                break;
+            case R.id.login_account_frag_password_forgotten:
+                mHandleFragment.inflateFragment(R.string.fragment_forgot_account,"");
                 break;
             default:
                 break;
         }
     }
 
-    private boolean resetEmailPassword(String email) {
+    private void signInUser(String email, String password) {
+        Log.d(TAG, "signInUser: " + email);
 
         if (TextUtils.isEmpty(email)) {
-            Toast.makeText(getContext(), R.string.toast_email_incorrect, Toast.LENGTH_SHORT).show();
-            return isEmailSent;
+            Toast.makeText(getContext(), R.string.toast_email_field_empty, Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        if (TextUtils.isEmpty(password)) {
+            Toast.makeText(getContext(), R.string.toast_password_field_empty, Toast.LENGTH_SHORT).show();
+            return;
         }
 
         mParentActivity.showProgressDialog();
 
-        FirebaseAuth.getInstance().sendPasswordResetEmail(email)
-                .addOnCompleteListener(new OnCompleteListener<Void>() {
-                    @Override
-                    public void onComplete(@NonNull Task<Void> task)
-                    {
-                        Log.w(TAG, "Email sent");
-                        if (task.isSuccessful())
-                        {
-                            Toast.makeText(getContext(), R.string.toast_reset_password_sent, Toast.LENGTH_SHORT).show();
-                            isEmailSent = true;
-                        }
-                        else
-                        {
-                            Toast.makeText(getContext(), R.string.toast_reset_password_fail, Toast.LENGTH_SHORT).show();
-                            isEmailSent = false;
-                        }
-                        mParentActivity.hideProgressDialog();
-                    }
-                });
-        return isEmailSent;
+        mAuth.signInWithEmailAndPassword(email, password).addOnCompleteListener(getActivity(), new OnCompleteListener<AuthResult>() {
+            @Override
+            public void onComplete(@NonNull Task<AuthResult> task) {
+                if (task.isSuccessful()) {
+                    Log.d(TAG, "signInWithEmail:success");
+                    FirebaseUser user = mAuth.getCurrentUser();
+                    mParentActivity.updateUI(user);
+                } else {
+                    Log.w(TAG, "signInWithEmail:failure", task.getException());
+                    Toast.makeText(getContext(), R.string.toast_email_auth_fail, Toast.LENGTH_LONG).show();
+                    mParentActivity.updateUI(null);
+                }
+                mParentActivity.hideProgressDialog();
+            }
+        });
     }
+
 }
