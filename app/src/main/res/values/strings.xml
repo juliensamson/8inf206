@@ -15,28 +15,42 @@
     <string name="fragment_messages">Messages</string>
 
     <string name="fragment_main_user_settings">Paramètres</string>
-    <string name="fragment_change_email">Email</string>
-    <string name="fragment_change_password">Mot de passe</string>
-    <string name="fragment_delete_account">Supprimer compte</string>
+    <string name="fragment_change_email">Changer email</string>
+    <string name="fragment_change_password">Changer mot de passe</string>
+    <string name="fragment_delete_account">Supprimer votre compte</string>
+    <string name="fragment_verify_account">Verifier votre compte</string>
+
 
     <string name="textview_forgot_password">Mot de passe oublié?</string>
+    <string name="textview_verify_account">Vérifier votre compte</string>
 
     <!--    EditField Hint-->
     <string name="email">Adresse courriel</string>
+    <string name="new_email">Nouvelle adresse courriel</string>
     <string name="email_again">Adresse courriel, un autre fois</string>
+
     <string name="password">Mot de passe</string>
     <string name="password_again">Mot de passe, encore un fois</string>
     <string name="password_verification">Vérification du mot de passe</string>
+    <string name="new_password">Nouveau mot de passe</string>
+    <string name="new_password_again">Nouveau mot de passe</string>
     <string name="name">Nom</string>
     <string name="user_name">Nom d\'utilisateur unique</string>
+    <string name="biography">Biographie</string>
+    <string name="location">Emplacement</string>
+    <string name="phone_number">Téléphone</string>
+    <string name="add_phone_number">Ajouter ton numéro de téléphone</string>
 
     <!--    BUTTON Text-->
     <string name="button_create_account">Créer un compte</string>
-    <string name="button_delete_account">Suprimer le compte</string>
+    <string name="button_delete_account">Suprimer votre compte</string>
     <string name="button_signin">Se connecter</string>
+    <string name="button_signout">Se déconnecter</string>
     <string name="button_signin_email_account">Connexion avec Email</string>
     <string name="button_signin_facebook_account">Connexion avec Facebook</string>
     <string name="button_email_reinitialization">Envoyer</string>
+    <string name="button_change_password">Changer de mot de passe</string>
+    <string name="button_verify_account">Vérifier</string>
 
 
     <string name="long_subtitle_app_mission">Une place pour partager ses créations et regarder les dernières nouvelles de la ville</string>

@@ -28,10 +28,6 @@ import ca.uqac.lecitoyen.R;
 import ca.uqac.lecitoyen.User.UserFragments.CityFragment;
 import ca.uqac.lecitoyen.User.UserFragments.HomeFragment;
 import ca.uqac.lecitoyen.User.UserFragments.MessageFragment;
-import ca.uqac.lecitoyen.User.UserSettings.ChangeEmailFragment;
-import ca.uqac.lecitoyen.User.UserSettings.ChangePasswordFragment;
-import ca.uqac.lecitoyen.User.UserSettings.DeleteAccountFragment;
-import ca.uqac.lecitoyen.User.UserSettings.MainUserSettingsFragment;
 import ca.uqac.lecitoyen.User.UserSettings.UserSettingsActivity;
 import ca.uqac.lecitoyen.database.DatabaseManager;
 import ca.uqac.lecitoyen.database.Post;
@@ -95,6 +91,8 @@ public class UserMainActivity extends BaseActivity implements iHandleFragment {
 
         //  Initialize auth
         mAuth = FirebaseAuth.getInstance();
+
+        //mAuth.signOut();
 
         init();
         getPostsData();

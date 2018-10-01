@@ -17,10 +17,6 @@ import ca.uqac.lecitoyen.Auth.MainAuthFragment;
 import ca.uqac.lecitoyen.Auth.CreateAccountFragment;
 import ca.uqac.lecitoyen.Interface.iHandleFragment;
 import ca.uqac.lecitoyen.User.UserMainActivity;
-import ca.uqac.lecitoyen.User.UserSettings.ChangeEmailFragment;
-import ca.uqac.lecitoyen.User.UserSettings.ChangePasswordFragment;
-import ca.uqac.lecitoyen.User.UserSettings.DeleteAccountFragment;
-import ca.uqac.lecitoyen.User.UserSettings.MainUserSettingsFragment;
 
 
 public class MainActivity extends BaseActivity implements iHandleFragment {

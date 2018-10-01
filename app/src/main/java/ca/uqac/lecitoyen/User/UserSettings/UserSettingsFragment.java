@@ -1,12 +1,8 @@
 package ca.uqac.lecitoyen.User.UserSettings;
 
 import android.content.Context;
-import android.content.Intent;
-import android.net.Uri;
 import android.os.Bundle;
-import android.provider.ContactsContract;
 import android.support.annotation.NonNull;
-import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -14,11 +10,13 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.EditText;
-import android.widget.TextView;
+import android.widget.FrameLayout;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.Toast;
 
-import com.facebook.login.LoginManager;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
@@ -30,18 +28,12 @@ import com.google.firebase.database.ValueEventListener;
 
 import ca.uqac.lecitoyen.BaseFragment;
 import ca.uqac.lecitoyen.Interface.iHandleFragment;
-import ca.uqac.lecitoyen.MainActivity;
 import ca.uqac.lecitoyen.R;
-import ca.uqac.lecitoyen.User.UserFragments.CityFragment;
-import ca.uqac.lecitoyen.User.UserFragments.HomeFragment;
-import ca.uqac.lecitoyen.User.UserFragments.MessageFragment;
 import ca.uqac.lecitoyen.database.DatabaseManager;
 import ca.uqac.lecitoyen.database.User;
 
-import static ca.uqac.lecitoyen.BaseActivity.currentTimeMillis;
 
-
-public class MainUserSettingsFragment extends BaseFragment implements View.OnClickListener {
+public class UserSettingsFragment extends BaseFragment implements View.OnClickListener {
 
     private static String TAG = "UserSettingsActivity";
 
@@ -51,14 +43,21 @@ public class MainUserSettingsFragment extends BaseFragment implements View.OnCli
     private FirebaseAuth mAuth;
     private FirebaseUser mUser;
 
+    private FrameLayout mVerifyAccountLayout;
+    private ImageView mCloseWarning;
+    private Button mVerifyAccount;
     private EditText mNameField;
-    private EditText mUserNameField;
-    private TextView mEmail;
+    private EditText mUsernameField;
+    private EditText mBiographyField;
+    private LinearLayout mEmailLayout;
+    private EditText mEmailField;
+    private EditText mPhoneField;
+    private EditText mLocationField;
 
     private UserSettingsActivity activity;
     private iHandleFragment mHandleFragment;
 
-    public MainUserSettingsFragment() {
+    public UserSettingsFragment() {
         // Required empty public constructor
     }
     @Override
@@ -71,28 +70,39 @@ public class MainUserSettingsFragment extends BaseFragment implements View.OnCli
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_main_user_settings, container, false);
+        View view = inflater.inflate(R.layout.fragment_user_settings, container, false);
 
         //  Toolbar
         mHandleFragment.setToolbarTitle(getTag());
         setFragmentToolbar(activity, R.id.toolbar_default, R.drawable.ic_arrow_back_white_24dp, true, true);
 
+        //  Verify Warning
+        mVerifyAccountLayout = view.findViewById(R.id.user_setting_verify_user_layout);
+        view.findViewById(R.id.user_setting_close_warning).setOnClickListener(this);
+        view.findViewById(R.id.user_setting_verify_user).setOnClickListener(this);
+
         //  View
         mNameField = view.findViewById(R.id.user_setting_realname);
-        mUserNameField = view.findViewById(R.id.user_setting_username);
-        mEmail = view. findViewById(R.id.user_setting_email);
+        mUsernameField = view.findViewById(R.id.user_setting_username);
+        mBiographyField = view.findViewById(R.id.user_setting_biography);
+        mEmailField = view.findViewById(R.id.user_setting_email);
+        mPhoneField = view.findViewById(R.id.user_setting_phone);
+        mLocationField = view.findViewById(R.id.user_setting_location);
 
         //  Button
         view.findViewById(R.id.change_email_button).setOnClickListener(this);
+        view.findViewById(R.id.user_setting_phone).setOnClickListener(this);
         view.findViewById(R.id.change_password_button).setOnClickListener(this);
-        view.findViewById(R.id.signout_account_button).setOnClickListener(this);
         view.findViewById(R.id.delete_account_button).setOnClickListener(this);
+        view.findViewById(R.id.signout_account_button).setOnClickListener(this);
+
         return view;
     }
 
     @Override
     public void onStart() {
         super.onStart();
+        //displayVerifyuUserWarning();
         updateUI(mUser);
     }
 
@@ -119,7 +129,7 @@ public class MainUserSettingsFragment extends BaseFragment implements View.OnCli
                 return true;
             case R.id.menu_confirm:
                 activity.showProgressDialog();
-                if(!mUserNameField.getText().toString().equals(""))
+                if(!mUsernameField.getText().toString().equals(""))
                     updateDB(mUser);
                 Log.w(TAG, "Information saved");
                 return true;
@@ -132,8 +142,17 @@ public class MainUserSettingsFragment extends BaseFragment implements View.OnCli
 
         switch (view.getId())
         {
+            case R.id.user_setting_verify_user:
+                mHandleFragment.inflateFragment(R.string.fragment_verify_account,"");
+                break;
+            case R.id.user_setting_close_warning:
+                mVerifyAccountLayout.setVisibility(View.GONE);
+                break;
             case R.id.change_email_button:
                 mHandleFragment.inflateFragment(R.string.fragment_change_email,"");
+                break;
+            case R.id.user_setting_phone:
+                Log.d(TAG, "phone");
                 break;
             case R.id.change_password_button:
                 mHandleFragment.inflateFragment(R.string.fragment_change_password,"");
@@ -149,43 +168,61 @@ public class MainUserSettingsFragment extends BaseFragment implements View.OnCli
         }
     }
 
+    private void setVerifyAccountWarning() {
+        if(!mUserData.isVerify()) {
+            mVerifyAccountLayout.setVisibility(View.VISIBLE);
+        } else {
+            mVerifyAccountLayout.setVisibility(View.GONE);
+        }
+    }
+
     public void updateUI(final FirebaseUser user) {
+       Log.d(TAG, "getUserData");
 
-        //  Initialize database manager
-        mUserReference = DatabaseManager.getInstance().getReference();
+       //activity.showProgressDialog();
 
-        activity.showProgressDialog();
+       DatabaseManager.getInstance().getReference()
+               .child("users")
+               .child(user.getUid())
+               .addListenerForSingleValueEvent(new ValueEventListener()
+               {
+                   @Override
+                   public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                       mUserData = dataSnapshot.getValue(User.class);
 
-        mUserReference.child("users").child(user.getUid()).addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                       //   Set Verify warning if necessary
+                       setVerifyAccountWarning();
 
-                //  Add the user to the database if he wasn't added before
-                mUserData = dataSnapshot.getValue(User.class);
-
-                mNameField.setText(mUserData.getName());
-                mUserNameField.setText(mUserData.getUsername());
-                mEmail.setText(mUserData.getEmail());
-
-                activity.hideProgressDialog();
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
-                Log.e(TAG, databaseError.getDetails());
-            }
-        });
+                       //   Set the field with data
+                       mNameField.setText(mUserData.getName());
+                       mUsernameField.setText(mUserData.getUsername());
+                       mBiographyField.setText(mUserData.getBiography());
+                       mEmailField.setText(mUserData.getEmail());
 
 
+                       //activity.hideProgressDialog();
+                   }
+                   @Override
+                   public void onCancelled(@NonNull DatabaseError databaseError) {
+                       Log.e(TAG, databaseError.getDetails());
+                   }
+               });
     }
 
     //TODO: Check if USERNAME already exist
+    //TODO: Check if field are empty
     public void updateDB(FirebaseUser user) {
 
         mUserData.setName(mNameField.getText().toString());
-        mUserData.setUsername(mUserNameField.getText().toString());
+        mUserData.setUsername(mUsernameField.getText().toString());
+        mUserData.setBiography(mBiographyField.getText().toString());
 
-        mUserReference.child("users").child(user.getUid()).setValue(mUser)
+        Log.d(TAG, "User: " + mUserData.getName());
+
+        DatabaseManager.getInstance().getReference()
+                .child("users")
+                .child(user.getUid())
+                .setValue(mUserData)
                 .addOnSuccessListener(new OnSuccessListener<Void>() {
                     @Override
                     public void onSuccess(Void aVoid) {
@@ -200,6 +237,6 @@ public class MainUserSettingsFragment extends BaseFragment implements View.OnCli
                         Log.e(TAG, "Something went wrong inserting data");
                     }
                 });
-        activity.hideProgressDialog();
+        //activity.hideProgressDialog();
     }
 }

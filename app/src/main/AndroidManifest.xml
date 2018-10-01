@@ -35,10 +35,8 @@
         <activity
             android:name=".User.UserSettings.UserSettingsActivity"
             android:launchMode="standard"
-            android:parentActivityName=".User.UserMainActivity" />
-        <activity android:name=".User.UserSettings.ChangePasswordActivity" />
-        <activity android:name=".User.UserSettings.ChangeEmailActivity" />
-        <activity android:name=".User.UserSettings.DeleteAccountActivity" />
+            android:parentActivityName=".User.UserMainActivity"
+            android:windowSoftInputMode="stateHidden|adjustResize"/>
 
         <!-- FACEBOOK LOGIN ACTIVITY -->
         <meta-data

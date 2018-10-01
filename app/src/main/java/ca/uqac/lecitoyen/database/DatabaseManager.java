@@ -25,6 +25,7 @@ public class DatabaseManager  {
     private String mUserId;
     private DatabaseReference mRootRef;
 
+    private User mUserData;
     ArrayList<PostTest> postList = new ArrayList<>();
     final ArrayList<User> userList = new ArrayList<>();
 
@@ -81,6 +82,24 @@ public class DatabaseManager  {
 
     //  Read data
 
+    public User getUserData(String userId) {
+        Log.d(TAG, "getUserData");
+        DatabaseManager.getInstance().getReference()
+                .child("users").child(userId)
+                .addListenerForSingleValueEvent(new ValueEventListener()
+                {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                        mUserData = dataSnapshot.getValue(User.class);
+                    }
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError databaseError) {
+                        Log.e(TAG, databaseError.getDetails());
+                    }
+                });
+        return mUserData;
+    }
+
     public ArrayList<PostTest> getPostListOrderByDate() {
 
         Log.d(TAG, "getPostList");
@@ -104,42 +123,6 @@ public class DatabaseManager  {
                         Log.e(TAG, databaseError.getDetails());
                     }
                 });
-        return postList;
-    }
-
-    public ArrayList<PostTest> getPostListOnChildChangeOrderByDate() {
-
-        Log.d(TAG, "getPostListChield");
-
-        DatabaseManager.getInstance().getReference()
-                .child("posts")
-                .addChildEventListener(new ChildEventListener() {
-                    @Override
-                    public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
-                        postList.add(dataSnapshot.getValue(PostTest.class));
-                    }
-
-                    @Override
-                    public void onChildChanged(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
-
-                    }
-
-                    @Override
-                    public void onChildRemoved(@NonNull DataSnapshot dataSnapshot) {
-
-                    }
-
-                    @Override
-                    public void onChildMoved(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
-
-                    }
-
-                    @Override
-                    public void onCancelled(@NonNull DatabaseError databaseError) {
-                        Log.e(TAG, databaseError.getDetails());
-                    }
-                });
-
         return postList;
     }
 

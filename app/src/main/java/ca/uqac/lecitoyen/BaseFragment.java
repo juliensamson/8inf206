@@ -3,6 +3,7 @@ package ca.uqac.lecitoyen;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -58,6 +59,13 @@ public abstract class BaseFragment extends Fragment {
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         super.onCreateOptionsMenu(menu, inflater);
+    }
+
+    protected void destroyPreviousActivity(Context currActivityContext, Class nextActivity) {
+        Log.e(TAG, "destroyPreviousActivity");
+        Intent intent = new Intent(currActivityContext, nextActivity);
+        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        startActivity(intent);
     }
 
 }

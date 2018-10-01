@@ -11,12 +11,10 @@
         android:id="@+id/toolbar_setting"
         layout="@layout/toolbar_default" />
 
-
     <FrameLayout
         android:id="@+id/setting_container"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_marginBottom="54dp"
         android:layout_marginTop="54dp">
 
     </FrameLayout>

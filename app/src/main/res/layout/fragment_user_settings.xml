@@ -1,0 +1,254 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    tools:context="ca.uqac.lecitoyen.User.UserSettings.UserSettingsFragment">
+
+    <!--    Verify  -->
+    <FrameLayout
+        android:id="@+id/user_setting_verify_user_layout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:background="@color/primary_50"
+        android:visibility="gone">
+
+        <ImageView
+            android:id="@+id/user_setting_close_warning"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_marginStart="@dimen/activity_horizontal_margin"
+            android:layout_gravity="start"
+            android:alpha="0.29"
+            app:srcCompat="@drawable/ic_cancel_black_24dp"/>
+
+        <TextView
+            android:id="@+id/textView"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_marginStart="64dp"
+            android:alpha="0.89"
+            android:gravity="center"
+            android:text="@string/textview_verify_account"
+            android:textColor="@color/black_900"
+            android:textStyle="bold" />
+
+        <Button
+            android:id="@+id/user_setting_verify_user"
+            style="@style/DeleteAccountButtonBorderlessStyle"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_marginStart="@dimen/activity_horizontal_margin"
+            android:layout_marginEnd="@dimen/activity_horizontal_margin"
+            android:layout_gravity="end"
+            android:text="@string/button_verify_account"
+            android:textSize="@dimen/edit_text_size_setting" />
+
+    </FrameLayout>
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:fillViewport="true">
+
+        <FrameLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_marginTop="@dimen/activity_vertical_margin"
+                android:layout_marginBottom="@dimen/activity_vertical_margin"
+                android:layout_marginStart="@dimen/activity_horizontal_margin"
+                android:layout_marginEnd="@dimen/activity_horizontal_margin"
+                android:orientation="vertical">
+
+                <!--    IMAGE   -->
+
+                <!--    name    -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="@dimen/activity_vertical_margin"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="@string/name" />
+
+                    <EditText
+                        android:id="@+id/user_setting_realname"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:textColorHint="@color/i_primary_800"
+                        android:textSize="@dimen/edit_text_size_setting"
+                        android:maxLines="1"/>
+
+                </LinearLayout>
+
+                <!--    username   -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="@dimen/activity_vertical_margin"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="@string/user_name" />
+
+                    <EditText
+                        android:id="@+id/user_setting_username"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:textSize="@dimen/edit_text_size_setting"
+                        android:maxLines="1"/>
+
+                </LinearLayout>
+
+                <!--    biography   -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="@dimen/activity_vertical_margin"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="@string/biography" />
+
+                    <EditText
+                        android:id="@+id/user_setting_biography"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:textSize="@dimen/edit_text_size_setting"
+                        android:maxLines="5"/>
+
+                </LinearLayout>
+
+                <!--    email    -->
+                <LinearLayout
+                    android:id="@+id/change_email_layout"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="@dimen/activity_vertical_margin"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="@string/email" />
+
+                    <FrameLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent">
+
+                        <EditText
+                            android:id="@+id/user_setting_email"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:layout_marginEnd="36dp"
+                            android:alpha="0.54"
+                            android:enabled="false"
+                            android:inputType="textEmailAddress"
+                            android:textColor="@color/black_900"
+                            android:textSize="@dimen/edit_text_size_setting" />
+
+                        <ImageView
+                            android:id="@+id/change_email_button"
+                            android:layout_width="wrap_content"
+                            android:layout_height="match_parent"
+                            android:layout_gravity="end"
+                            android:layout_marginStart="8dp"
+                            android:alpha="0.89"
+                            app:srcCompat="@drawable/ic_edit_black_24dp" />
+
+                    </FrameLayout>
+
+
+                </LinearLayout>
+
+                <!--    phone    -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="@dimen/activity_vertical_margin"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="@string/phone_number" />
+
+                    <EditText
+                        android:id="@+id/user_setting_phone"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:hint="@string/add_phone_number"
+                        android:inputType="phone"
+                        android:textSize="@dimen/edit_text_size_setting"
+                        android:clickable="true"
+                        android:focusable="true"
+                        android:enabled="false"/>
+
+                </LinearLayout>
+
+                <!--    location    -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="@dimen/activity_vertical_margin"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="@string/location"
+                       />
+
+                    <EditText
+                        android:id="@+id/user_setting_location"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:maxLines="1"/>
+
+                </LinearLayout>
+
+                <Button
+                    android:id="@+id/change_password_button"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="@dimen/activity_vertical_margin"
+                    style="@style/SettingsButtonBorderlessStyle"
+                    android:text="@string/button_change_password"/>
+
+                <Button
+                    android:id="@+id/delete_account_button"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="@dimen/activity_vertical_margin"
+                    style="@style/DeleteAccountButtonBorderlessStyle"
+                    android:text="@string/button_delete_account"/>
+
+                <Button
+                    android:id="@+id/signout_account_button"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    style="@style/CreateAccountButtonStyle"
+                    android:text="@string/button_signout"/>
+
+            </LinearLayout>
+
+        </FrameLayout>
+
+    </ScrollView>
+
+</LinearLayout>

@@ -1,40 +1,24 @@
 package ca.uqac.lecitoyen.User.UserSettings;
 
-import android.content.Intent;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
-import android.view.Menu;
-import android.view.MenuInflater;
-import android.view.MenuItem;
-import android.view.View;
 import android.widget.EditText;
 import android.widget.TextView;
-import android.widget.Toast;
 
 
 import com.facebook.login.LoginManager;
-import com.google.android.gms.tasks.OnFailureListener;
-import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.AuthCredential;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.ValueEventListener;
 
 import ca.uqac.lecitoyen.BaseActivity;
 import ca.uqac.lecitoyen.Interface.iHandleFragment;
-import ca.uqac.lecitoyen.Interface.iUpdate;
 import ca.uqac.lecitoyen.MainActivity;
 import ca.uqac.lecitoyen.R;
-import ca.uqac.lecitoyen.User.UserFragments.CityFragment;
-import ca.uqac.lecitoyen.User.UserFragments.HomeFragment;
-import ca.uqac.lecitoyen.User.UserFragments.MessageFragment;
 import ca.uqac.lecitoyen.database.DatabaseManager;
 import ca.uqac.lecitoyen.database.User;
 
@@ -76,7 +60,7 @@ public class UserSettingsActivity extends BaseActivity implements iHandleFragmen
             Log.e(TAG, "No Bundle was sent with the intent");
         }
 
-        MainUserSettingsFragment fragment = new MainUserSettingsFragment();
+        UserSettingsFragment fragment = new UserSettingsFragment();
         doFragmentTransaction(fragment, getString(R.string.fragment_main_user_settings), true, "");
 
 
@@ -91,7 +75,7 @@ public class UserSettingsActivity extends BaseActivity implements iHandleFragmen
         mSettingToolbar = findViewById(R.id.toolbar_setting);
         mSettingToolbarTitle = findViewById(R.id.toolbar_title);
         setSupportActionBar(mSettingToolbar);
-            }
+    }
 
     @Override
     public void setToolbarTitle(String fragmentTag) {
@@ -105,17 +89,21 @@ public class UserSettingsActivity extends BaseActivity implements iHandleFragmen
 
         switch (fragmentTagId)
         {
+            case R.string.fragment_verify_account:
+                fragment = new VerifyAccountFragment();
+                doFragmentTransaction(fragment, getString(R.string.fragment_verify_account), false, "");
+                break;
             case R.string.fragment_main_user_settings:
-                fragment = new MainUserSettingsFragment();
-                doFragmentTransaction(fragment, getString(R.string.fragment_main_user_settings), true, "");
+                fragment = new UserSettingsFragment();
+                doFragmentTransaction(fragment, getString(R.string.fragment_main_user_settings), false, "");
                 break;
             case R.string.fragment_change_email:
                 fragment = new ChangeEmailFragment();
-                doFragmentTransaction(fragment, getString(R.string.fragment_change_email), true, "");
+                doFragmentTransaction(fragment, getString(R.string.fragment_change_email), false, "");
                 break;
             case R.string.fragment_change_password:
                 fragment = new ChangePasswordFragment();
-                doFragmentTransaction(fragment, getString(R.string.fragment_change_password), true, "");
+                doFragmentTransaction(fragment, getString(R.string.fragment_change_password), false, "");
                 break;
             case R.string.fragment_delete_account:
                 fragment = new DeleteAccountFragment();
@@ -124,6 +112,13 @@ public class UserSettingsActivity extends BaseActivity implements iHandleFragmen
             default:
                 break;
         }
+    }
+
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+        Fragment fragment = new UserSettingsFragment();
+        doFragmentTransaction(fragment, getString(R.string.fragment_main_user_settings), true, "");
     }
 
     private void doFragmentTransaction(Fragment fragment, String tag, boolean addToBackStack, String message) {

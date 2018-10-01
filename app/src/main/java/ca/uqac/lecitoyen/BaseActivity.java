@@ -13,8 +13,6 @@ import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.TextView;
 
-import ca.uqac.lecitoyen.User.UserSettings.ChangePasswordActivity;
-
 public class BaseActivity extends AppCompatActivity {
 
     private static String TAG = "BaseActivity";

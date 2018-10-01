@@ -4,13 +4,14 @@ package ca.uqac.lecitoyen.database;
 
 public class User {
 
-
     //  Public info
     private String uid;
 
     private String name;
 
     private String username;
+
+    private String biography;
 
     //  Private info
     private String email;
@@ -73,6 +74,14 @@ public class User {
 
     public void setUsername(String username) {
         this.username = username;
+    }
+
+    public String getBiography() {
+        return biography;
+    }
+
+    public void setBiography(String biography) {
+        this.biography = biography;
     }
 
     public String getEmail() {
