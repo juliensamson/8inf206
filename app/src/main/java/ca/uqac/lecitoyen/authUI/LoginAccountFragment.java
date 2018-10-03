@@ -54,7 +54,7 @@ public class LoginAccountFragment extends BaseFragment implements View.OnClickLi
         Log.d(TAG, "onCreate");
         super.onCreate(savedInstanceState);
         mParentActivity = (MainActivity) getActivity();
-        mHandleFragment.setToolbarTitle(getTag());
+
 
         mAuth = FirebaseAuth.getInstance();
     }
@@ -65,7 +65,9 @@ public class LoginAccountFragment extends BaseFragment implements View.OnClickLi
         View view = inflater.inflate(R.layout.fragment_login_account, container, false);
         Log.d(TAG, "onCreateView");
 
-        setFragmentToolbar(mParentActivity, R.id.main_toolbar, R.drawable.ic_arrow_back_white_24dp, true, true);
+        //  Toolbar
+        mHandleFragment.setToolbarTitle(getTag());
+        setFragmentToolbar(mParentActivity, R.drawable.ic_arrow_back_white_24dp, true, true);
 
         //  View
         mTextInputLayout = view.findViewById(R.id.login_account_frag_text_input_layout);

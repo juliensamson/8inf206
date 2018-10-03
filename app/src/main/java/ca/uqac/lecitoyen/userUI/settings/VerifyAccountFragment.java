@@ -48,7 +48,7 @@ public class VerifyAccountFragment extends BaseFragment {
 
         //  Toolbar
         mHandleFragment.setToolbarTitle(getTag());
-        setFragmentToolbar(activity, R.id.toolbar_default, R.drawable.ic_close_white_24dp, true, true);
+        setFragmentToolbar(activity, R.drawable.ic_close_white_24dp, true, true);
 
 
         return view;

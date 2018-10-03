@@ -15,7 +15,7 @@ import java.util.ArrayList;
 import java.util.Date;
 
 import ca.uqac.lecitoyen.R;
-import ca.uqac.lecitoyen.database.PostTest;
+import ca.uqac.lecitoyen.database.Post;
 import ca.uqac.lecitoyen.database.User;
 
 public class HomeAdapter extends RecyclerView.Adapter<HomeAdapter.ViewHolder> {
@@ -30,12 +30,12 @@ public class HomeAdapter extends RecyclerView.Adapter<HomeAdapter.ViewHolder> {
 
     private Context mContext;
 
-    private User mUser = new User();
+    private User mUserPost = new User();
     private String mUserId;
-    private ArrayList<PostTest> mPostList = new ArrayList<>();
+    private ArrayList<Post> mPostList = new ArrayList<>();
     private ArrayList<User> mUserList = new ArrayList<>();
 
-    public HomeAdapter(ArrayList<PostTest> postList, ArrayList<User> userList) {
+    public HomeAdapter(ArrayList<Post> postList, ArrayList<User> userList) {
         Log.d(TAG, "HomeAdapter");
         this.mPostList = postList;
         this.mUserList = userList;
@@ -51,20 +51,30 @@ public class HomeAdapter extends RecyclerView.Adapter<HomeAdapter.ViewHolder> {
 
     @Override
     public void onBindViewHolder(@NonNull HomeAdapter.ViewHolder holder, final int position) {
-        Log.d(TAG, "onBindViewHolder");
+        Log.d(TAG, "onBindViewHolder " + position);
 
+        //  Get uid from the post
         mUserId = mPostList.get(position).getUserId();
+        Log.e(TAG, "UserSize: " + mUserList.size());
+        //  Get user data from the id
+        for(int it = 0; it < mUserList.size(); it++) {
+            Log.e(TAG, "User: " + mUserList.get(it).getName());
+            mUserPost = mUserList.get(it);
 
-        int it = 0;
+            if(mUserId.equals(mUserPost.getUid())) {
+               break;
+            }
+        }
+        /*int it = 0;
         do {
             mUser = mUserList.get(it);
             it++;
         } while (!mUserId.equals(mUser.getUid()));
 
+*/
 
-
-        holder.mAuthor.setText(mUser.getName());
-        holder.mUserName.setText(mUser.getUsername());
+        holder.mAuthor.setText(mUserPost.getName());
+        holder.mUserName.setText(mUserPost.getUsername());
 
         holder.mPost.setText(mPostList.get(position).getPost());
 
@@ -83,6 +93,14 @@ public class HomeAdapter extends RecyclerView.Adapter<HomeAdapter.ViewHolder> {
     @Override
     public int getItemCount() {
         return mPostList.size();
+    }
+
+
+
+    public void updatePostList(ArrayList<Post> postList) {
+        mPostList.clear();
+        mPostList.addAll(postList);
+        this.notifyDataSetChanged();
     }
 
     public class ViewHolder extends RecyclerView.ViewHolder {

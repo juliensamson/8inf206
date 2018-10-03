@@ -4,6 +4,7 @@ package ca.uqac.lecitoyen.userUI.newsfeed;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
@@ -14,7 +15,11 @@ import android.view.View;
 import android.view.ViewGroup;
 
 
+import com.google.firebase.database.ChildEventListener;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
 
@@ -25,7 +30,6 @@ import ca.uqac.lecitoyen.userUI.UserMainActivity;
 import ca.uqac.lecitoyen.adapter.HomeAdapter;
 import ca.uqac.lecitoyen.database.DatabaseManager;
 import ca.uqac.lecitoyen.database.Post;
-import ca.uqac.lecitoyen.database.PostTest;
 import ca.uqac.lecitoyen.database.User;
 
 /**
@@ -36,11 +40,11 @@ public class HomeFragment extends BaseFragment implements View.OnClickListener {
     final private static String TAG = "HomeFragment";
 
     private iHandleFragment mHandleFragment;
-    private UserMainActivity mParentActivity;
+    private UserMainActivity activity;
 
     private Post mPost;
 
-    DatabaseReference mReferenceFrag;
+    DatabaseReference mRootRef;
 
 
 
@@ -48,9 +52,8 @@ public class HomeFragment extends BaseFragment implements View.OnClickListener {
     private RecyclerView.Adapter mAdapter;
     private RecyclerView.LayoutManager mLayoutManager;
 
-    private ArrayList<Post> postList;
-    private ArrayList<PostTest> postTestList;
-    private ArrayList<User> userList;
+    private ArrayList<Post> postList = new ArrayList<>();
+    private ArrayList<User> userList = new ArrayList<>();
 
 
     public HomeFragment() {
@@ -62,7 +65,11 @@ public class HomeFragment extends BaseFragment implements View.OnClickListener {
         super.onCreate(savedInstanceState);
 
         mHandleFragment.setToolbarTitle(getTag());
-        mParentActivity = (UserMainActivity) getActivity();
+        activity = (UserMainActivity) getActivity();
+
+        mRootRef = DatabaseManager.getInstance().getReference();
+
+        //mRootRef.child("users").addListenerForSingleValueEvent(loadUserData());
     }
 
     @Override
@@ -78,7 +85,12 @@ public class HomeFragment extends BaseFragment implements View.OnClickListener {
         mLayoutManager = new LinearLayoutManager(getActivity());
         mRecyclerView.setLayoutManager(mLayoutManager);
 
-        initUI();
+        mAdapter = new HomeAdapter(postList, activity.getUserList());
+        mRecyclerView.setAdapter(mAdapter);
+
+        //initUI();
+
+        //updateUI();
 
         return view;
     }
@@ -110,20 +122,65 @@ public class HomeFragment extends BaseFragment implements View.OnClickListener {
 
     private void initUI() {
         Log.d(TAG, "initUI");
-        postTestList = DatabaseManager.getInstance().getPostListOrderByDate();
-        userList = DatabaseManager.getInstance().getUserList();
-
-        mAdapter = new HomeAdapter(postTestList, userList);
-        mRecyclerView.setAdapter(mAdapter);
+        mRootRef.child("posts")
+                .orderByChild("inverseDat")
+                .addValueEventListener(loadUserPostData());
     }
-
 
     private void updateUI() {
         Log.d(TAG, "updateUI");
-        postTestList = DatabaseManager.getInstance().getPostListOrderByDate();
-        userList = DatabaseManager.getInstance().getUserList();
 
-        mAdapter.notifyDataSetChanged();
-        mRecyclerView.setAdapter(mAdapter);
+        activity.showProgressDialog();
+
+        mRootRef.child("posts")
+                .orderByChild("inverseDate")
+                .addValueEventListener(loadUserPostData());
     }
+
+    private ValueEventListener loadUserPostData() {
+        return new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                        postList.clear();
+
+                        final long[] pendingLoadCount = { dataSnapshot.getChildrenCount() };
+
+                        for (DataSnapshot postSnapshot : dataSnapshot.getChildren()) {
+                            postList.add(postSnapshot.getValue(Post.class));
+                            pendingLoadCount[0] = pendingLoadCount[0] - 1;
+                        }
+
+
+                        if (pendingLoadCount[0] == 0) {
+                            mAdapter = new HomeAdapter(postList, activity.getUserList());
+                            mRecyclerView.setAdapter(mAdapter);
+                            activity.hideProgressDialog();
+                        }
+
+                    }
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError databaseError) {
+                        Log.e(TAG, "loadUserPostData failed " + databaseError.getMessage());
+                    }
+                };
+    }
+
+    private ValueEventListener loadUserData() {
+        return new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                for(DataSnapshot userSnapshot: dataSnapshot.getChildren()) {
+                    userList.add(userSnapshot.getValue(User.class));
+                    Log.e(TAG, "Size UserList: " + userList.size());
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+                Log.e(TAG, "loadUserData failed " + databaseError.getMessage());
+            }
+        };
+    }
+
+
 }

@@ -74,7 +74,7 @@ public class UserSettingsFragment extends BaseFragment implements View.OnClickLi
 
         //  Toolbar
         mHandleFragment.setToolbarTitle(getTag());
-        setFragmentToolbar(activity, R.id.toolbar_default, R.drawable.ic_arrow_back_white_24dp, true, true);
+        setFragmentToolbar(activity, R.drawable.ic_arrow_back_white_24dp, true, true);
 
         //  Verify Warning
         mVerifyAccountLayout = view.findViewById(R.id.user_setting_verify_user_layout);
@@ -125,7 +125,7 @@ public class UserSettingsFragment extends BaseFragment implements View.OnClickLi
         switch (item.getItemId())
         {
             case android.R.id.home:
-                activity.onBackPressed();
+                activity.finish();
                 return true;
             case R.id.menu_confirm:
                 activity.showProgressDialog();
@@ -194,11 +194,14 @@ public class UserSettingsFragment extends BaseFragment implements View.OnClickLi
                        setVerifyAccountWarning();
 
                        //   Set the field with data
-                       mNameField.setText(mUserData.getName());
-                       mUsernameField.setText(mUserData.getUsername());
-                       mBiographyField.setText(mUserData.getBiography());
-                       mEmailField.setText(mUserData.getEmail());
-
+                       if(mUserData.getName() != null && !mUserData.getName().isEmpty())
+                           mNameField.setText(mUserData.getName());
+                       if(mUserData.getUsername() != null && !mUserData.getUsername().isEmpty())
+                           mUsernameField.setText(mUserData.getUsername());
+                       if(mUserData.getBiography() != null && !mUserData.getBiography().isEmpty())
+                           mBiographyField.setText(mUserData.getBiography());
+                       if(mUserData.getEmail() != null && !mUserData.getEmail().isEmpty())
+                           mEmailField.setText(mUserData.getEmail());
 
                        //activity.hideProgressDialog();
                    }

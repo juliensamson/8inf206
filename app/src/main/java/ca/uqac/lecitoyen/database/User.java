@@ -20,30 +20,34 @@ public class User {
 
     private boolean verify;
 
-    private String sexe;
-
+    private String gender;
 
     //  Metadata
     private long creationTimestamp;
 
     private long lastSigninTimestamp;
 
-    private long location;
+    private String provider;
+
+    private String location;
 
 
     //  Constructor
     public User() { }
 
-    public User(String uid, String name, String username, String email, String phone, long creationTimestamp) {
+    public User(String uid, String name, String username, String email, String phone, long creationTimestamp, String provider) {
         this.uid = uid;
         this.name = name;
         this.username = username;
+        this.biography = "";
         this.email = email;
         this.phone = phone;
+        this.gender = "";
         this.verify = false;
         this.creationTimestamp = creationTimestamp;
         this.lastSigninTimestamp = 0;
-        this.location = 0;
+        this.location = "";
+        this.provider = provider;
     }
 
 
@@ -108,12 +112,12 @@ public class User {
         this.verify = verify;
     }
 
-    public String getSexe() {
-        return sexe;
+    public String getGender() {
+        return gender;
     }
 
-    public void setSexe(String sexe) {
-        this.sexe = sexe;
+    public void setGender(String gender) {
+        this.gender = gender;
     }
 
     public long getCreationTimestamp() {
@@ -132,11 +136,19 @@ public class User {
         this.lastSigninTimestamp = lastSigninTimestamp;
     }
 
-    public long getLocation() {
+    public String getProvider() {
+        return provider;
+    }
+
+    public void setProvider(String provider) {
+        this.provider = provider;
+    }
+
+    public String getLocation() {
         return location;
     }
 
-    public void setLocation(long location) {
+    public void setLocation(String location) {
         this.location = location;
     }
 }

@@ -19,7 +19,7 @@ import com.google.firebase.database.ValueEventListener;
 import ca.uqac.lecitoyen.BaseActivity;
 import ca.uqac.lecitoyen.R;
 import ca.uqac.lecitoyen.database.DatabaseManager;
-import ca.uqac.lecitoyen.database.PostTest;
+import ca.uqac.lecitoyen.database.Post;
 import ca.uqac.lecitoyen.database.User;
 
 public class PostActivity extends BaseActivity {
@@ -100,11 +100,10 @@ public class PostActivity extends BaseActivity {
                 {
                     userData = dataSnapshot.child(mUserId).getValue(User.class);
 
-                    PostTest post = new PostTest(
+                    Post post = new Post(
                             mUser.getUid(),
                             mMessage.getText().toString(),
-                            System.currentTimeMillis(),
-                            0);
+                            System.currentTimeMillis());
                     mDatabaseManager.writePost(ref, post);
                     Toast.makeText(getApplicationContext(), "Data inserted", Toast.LENGTH_SHORT).show();
 

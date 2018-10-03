@@ -23,7 +23,9 @@ import ca.uqac.lecitoyen.Interface.iHandleFragment;
 
 public abstract class BaseFragment extends Fragment {
 
-    private static String TAG = "BaseActivity";
+    final private static String TAG = "BaseFragment";
+
+    final private static long mCurrentTime = System.currentTimeMillis();
 
     private iHandleFragment mHandleFragment;
 
@@ -43,11 +45,9 @@ public abstract class BaseFragment extends Fragment {
         return super.onCreateView(inflater, container, savedInstanceState);
     }
 
-    protected void setFragmentToolbar(Activity parentActivity, int toolbarResid, int returnHomeIcon,
-                                      boolean isDisplayHomeEnable, boolean hasOptionMenu) {
-
+    protected void setFragmentToolbar(Activity parentActivity, int returnHomeIcon, boolean isDisplayHomeEnable, boolean hasOptionMenu) {
         try {
-            Toolbar toolbar = parentActivity.findViewById(toolbarResid);
+            Toolbar toolbar = parentActivity.findViewById(R.id.toolbar_default);
             ((AppCompatActivity) parentActivity).getSupportActionBar().setDisplayHomeAsUpEnabled(isDisplayHomeEnable);
             ((AppCompatActivity) parentActivity).getSupportActionBar().setHomeAsUpIndicator(returnHomeIcon);
             setHasOptionsMenu(hasOptionMenu);
@@ -56,9 +56,9 @@ public abstract class BaseFragment extends Fragment {
         }
     }
 
-    @Override
-    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-        super.onCreateOptionsMenu(menu, inflater);
+
+    protected long getCurrentTime() {
+        return mCurrentTime;
     }
 
     protected void destroyPreviousActivity(Context currActivityContext, Class nextActivity) {

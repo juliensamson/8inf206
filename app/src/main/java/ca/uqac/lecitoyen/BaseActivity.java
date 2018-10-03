@@ -86,12 +86,6 @@ public class BaseActivity extends AppCompatActivity {
         mToolbarByDefault.setVisibility(View.GONE);
     }
 
-    @Override
-    public void onBackPressed() {
-        Log.d(TAG, "onBackPressed");
-        this.finish();
-    }
-
     protected void destroyPreviousActivity(Context currActivityContext, Class nextActivity) {
         Log.e(TAG, "destroyPreviousActivity");
         Intent intent = new Intent(currActivityContext, nextActivity);

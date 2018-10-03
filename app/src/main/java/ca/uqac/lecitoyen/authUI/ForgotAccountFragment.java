@@ -64,7 +64,7 @@ public class ForgotAccountFragment extends BaseFragment implements View.OnClickL
         View view = inflater.inflate(R.layout.fragment_forgot_account, container, false);
         Log.d(TAG, "onCreateView");
 
-        setFragmentToolbar(mParentActivity, R.id.main_toolbar, R.drawable.ic_arrow_back_white_24dp, true, true);
+        setFragmentToolbar(mParentActivity, R.drawable.ic_arrow_back_white_24dp, true, true);
 
         //  View
         mTextInputLayout = view.findViewById(R.id.forgot_account_frag_text_input_layout);

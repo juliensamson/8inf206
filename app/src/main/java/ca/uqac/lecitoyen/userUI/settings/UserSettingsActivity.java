@@ -35,6 +35,8 @@ public class UserSettingsActivity extends BaseActivity implements iHandleFragmen
     private DatabaseReference mUserReference;
     private User mUserData;
 
+    private String currFragment;
+
     private EditText mNameField;
     private EditText mUserNameField;
     private TextView mEmail;
@@ -47,6 +49,8 @@ public class UserSettingsActivity extends BaseActivity implements iHandleFragmen
     private FirebaseUser mUser;
     private AuthCredential mCredential;
     private String mUserId;
+
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -117,14 +121,20 @@ public class UserSettingsActivity extends BaseActivity implements iHandleFragmen
     @Override
     public void onBackPressed() {
         super.onBackPressed();
-        Fragment fragment = new UserSettingsFragment();
-        doFragmentTransaction(fragment, getString(R.string.fragment_main_user_settings), true, "");
+
+        if(!currFragment.equals(getString(R.string.fragment_main_user_settings))) {
+            Fragment fragment = new UserSettingsFragment();
+            doFragmentTransaction(fragment, getString(R.string.fragment_main_user_settings), true, "");
+        } else {
+            this.finish();
+        }
     }
 
     private void doFragmentTransaction(Fragment fragment, String tag, boolean addToBackStack, String message) {
         Log.d(TAG, "doFragmentTransaction");
         FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
 
+        currFragment = tag;
         transaction.replace(R.id.setting_container, fragment, tag);
 
         if(addToBackStack) {
@@ -135,8 +145,8 @@ public class UserSettingsActivity extends BaseActivity implements iHandleFragmen
 
     public void signOutAccount() {
         Log.d(TAG, "signOutAccount");
-        mAuth.signOut();
         LoginManager.getInstance().logOut();
+        mAuth.signOut();
         destroyPreviousActivity(UserSettingsActivity.this, MainActivity.class);
     }
 

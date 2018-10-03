@@ -61,7 +61,7 @@ public class ChangePasswordFragment extends BaseFragment {
 
         //  Toolbar
         mHandleFragment.setToolbarTitle(getTag());
-        setFragmentToolbar(activity, R.id.toolbar_default, R.drawable.ic_close_white_24dp, true, true);
+        setFragmentToolbar(activity, R.drawable.ic_close_white_24dp, true, true);
 
         //  View
         mActualPasswordField = view.findViewById(R.id.change_password_actual_password);

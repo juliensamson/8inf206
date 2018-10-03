@@ -37,7 +37,7 @@ public class CreateAccountFragment extends BaseFragment implements iUpdate, View
 
     private static final String TAG = "CreateAccountFragment";
 
-    MainActivity mParentActivity;
+    MainActivity activity;
 
     private iHandleFragment mHandleFragment;
 
@@ -53,12 +53,7 @@ public class CreateAccountFragment extends BaseFragment implements iUpdate, View
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        mParentActivity = (MainActivity) getActivity();
-
-        mHandleFragment.setToolbarTitle(getTag());
-
-
-        auth = mParentActivity.getAuth();
+        activity = (MainActivity) getActivity();
     }
 
     @Nullable
@@ -66,7 +61,9 @@ public class CreateAccountFragment extends BaseFragment implements iUpdate, View
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_create_account, container, false);
 
-        setFragmentToolbar(mParentActivity, R.id.main_toolbar, R.drawable.ic_close_white_24dp,true, true);
+        //  Toolbar
+        mHandleFragment.setToolbarTitle(getTag());
+        setFragmentToolbar(activity, R.drawable.ic_close_white_24dp,true, true);
 
         //  Views
         mNameField = view.findViewById(R.id.create_account_first_name);
@@ -123,9 +120,10 @@ public class CreateAccountFragment extends BaseFragment implements iUpdate, View
 
     @Override
     public void updateUI(FirebaseUser user) {
-        if (user != null)
-        {
+        if (user != null) {
             startActivity(new Intent(getContext(), UserMainActivity.class));
+        } else {
+            Log.e(TAG, "No user connected");
         }
     }
 
@@ -140,10 +138,36 @@ public class CreateAccountFragment extends BaseFragment implements iUpdate, View
                 mUserNameField.getText().toString(),
                 user.getEmail(),
                 "",
-                System.currentTimeMillis()
+                getCurrentTime(),
+                user.getProviderId()
         );
+        userData.setVerify(false);
+        db.writeUserInformation(ref, user.getUid(), userData);
+    }
 
-        db.writeUserInformation(ref, userData);
+    private OnCompleteListener<AuthResult> getAuthResult(final FirebaseUser user) {
+        return new OnCompleteListener<AuthResult>() {
+            @Override
+            public void onComplete(@NonNull Task<AuthResult> task) {
+                if (task.isSuccessful())
+                {
+                    Log.d(TAG, "createUserWithEmail:success");
+                    updateDB(user);
+                    updateUI(user);
+                }
+                else
+                {
+                    Log.w(TAG, "createUserWithEmail:failure", task.getException());
+
+                    if (task.getException() instanceof FirebaseAuthUserCollisionException) {
+                        Toast.makeText(getContext(), "User with this email already exist.", Toast.LENGTH_SHORT).show();
+                    }
+
+                    updateUI(null);
+                }
+
+            }
+        };
     }
 
     private void createAccount(String email, String password) {
@@ -155,33 +179,13 @@ public class CreateAccountFragment extends BaseFragment implements iUpdate, View
 
         if (password.equals(mVerifyPasswordField.getText().toString()))
         {
-            mParentActivity.showProgressDialog();
+            activity.showProgressDialog();
 
-            // [START create_user_with_email]
+            FirebaseAuth auth = FirebaseAuth.getInstance();
+            FirebaseUser user = auth.getCurrentUser();
+
             auth.createUserWithEmailAndPassword(email, password)
-                    .addOnCompleteListener(mParentActivity, new OnCompleteListener<AuthResult>() {
-                        @Override
-                        public void onComplete(@NonNull Task<AuthResult> task) {
-                            if (task.isSuccessful()) {
-                                // Sign in success, update UI with the signed-in user's information
-                                Log.d(TAG, "createUserWithEmail:success");
-                                FirebaseUser user = auth.getCurrentUser();
-                                updateDB(user);
-                                updateUI(user);
-                            } else {
-                                // If sign in fails, display a message to the user.
-                                Log.w(TAG, "createUserWithEmail:failure", task.getException());
-                                if (task.getException() instanceof FirebaseAuthUserCollisionException) {
-                                    Toast.makeText(getContext(), "User with this email already exist.", Toast.LENGTH_SHORT).show();
-                                }
-                                updateUI(null);
-                            }
-
-                            // [START_EXCLUDE]
-                            mParentActivity.hideProgressDialog();
-                            // [END_EXCLUDE]
-                        }
-                    })
+                    .addOnCompleteListener(activity, getAuthResult(user))
                     .addOnFailureListener(new OnFailureListener() {
                 @Override
                 public void onFailure(@NonNull Exception e) {

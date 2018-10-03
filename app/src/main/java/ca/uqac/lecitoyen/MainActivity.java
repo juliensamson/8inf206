@@ -8,6 +8,7 @@ import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.widget.TextView;
 
+import com.facebook.appevents.AppEventsLogger;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 
@@ -122,11 +123,7 @@ public class MainActivity extends BaseActivity implements iHandleFragment {
     public void updateUI(FirebaseUser user) {
         hideProgressDialog();
         if (user != null) {
-            Intent intent = new Intent(this, UserMainActivity.class);
-            Bundle extras = new Bundle();
-            extras.putString("display_button", "login");
-            intent.putExtras(extras);
-            startActivity(intent);
+            startActivity(new Intent(this, UserMainActivity.class));
         }
     }
 }

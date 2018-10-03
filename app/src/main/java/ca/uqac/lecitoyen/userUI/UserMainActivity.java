@@ -25,13 +25,14 @@ import java.util.ArrayList;
 import ca.uqac.lecitoyen.BaseActivity;
 import ca.uqac.lecitoyen.Interface.iHandleFragment;
 import ca.uqac.lecitoyen.R;
+import ca.uqac.lecitoyen.adapter.BottomNavigationViewHelper;
 import ca.uqac.lecitoyen.userUI.cityfeed.CityFragment;
 import ca.uqac.lecitoyen.userUI.newsfeed.HomeFragment;
 import ca.uqac.lecitoyen.userUI.messaging.MessageFragment;
+import ca.uqac.lecitoyen.userUI.profile.ProfileFragment;
 import ca.uqac.lecitoyen.userUI.settings.UserSettingsActivity;
 import ca.uqac.lecitoyen.database.DatabaseManager;
 import ca.uqac.lecitoyen.database.Post;
-import ca.uqac.lecitoyen.database.PostTest;
 import ca.uqac.lecitoyen.database.User;
 
 //TODO: Make the RecyclerView load automatically after making a post
@@ -42,11 +43,9 @@ public class UserMainActivity extends BaseActivity implements iHandleFragment {
 
     private iHandleFragment mHandleFragment;
 
-    public DatabaseManager mDatabaseManager;
-    public DatabaseReference mReference;
+    private DatabaseReference mRootRef;
 
     public ArrayList<Post> mPostList = new ArrayList<>();
-    public ArrayList<PostTest> mPostTestList = new ArrayList<>();
     public ArrayList<User> mUserList = new ArrayList<>();
 
     private Toolbar mUserToolbar;
@@ -64,15 +63,20 @@ public class UserMainActivity extends BaseActivity implements iHandleFragment {
 
             Log.d(TAG, "OnNavigationItem");
 
-            switch (item.getItemId()) {
+            switch (item.getItemId())
+            {
                 case R.id.navigation_city:
                     inflateFragment(R.string.fragment_city, "");
+
                     return true;
                 case R.id.navigation_home:
                     inflateFragment(R.string.fragment_home, "");
                     return true;
                 case R.id.navigation_messages:
                     inflateFragment(R.string.fragment_messages, "");
+                    return true;
+                case R.id.navigation_profile:
+                    inflateFragment(R.string.fragment_profile, "");
                     return true;
             }
             return false;
@@ -86,16 +90,17 @@ public class UserMainActivity extends BaseActivity implements iHandleFragment {
         Log.d(TAG, "Activity created");
 
         //  Database
-        mDatabaseManager = DatabaseManager.getInstance();
-        mReference = mDatabaseManager.getReference();
+        mRootRef = DatabaseManager.getInstance().getReference();
 
         //  Initialize auth
         mAuth = FirebaseAuth.getInstance();
 
         //mAuth.signOut();
 
+        mRootRef.child("users").addListenerForSingleValueEvent(loadUserData());
+
         init();
-        getPostsData();
+
         //getThreadsData();
         //  Views
         mUserToolbar = findViewById(R.id.toolbar_user);
@@ -103,6 +108,7 @@ public class UserMainActivity extends BaseActivity implements iHandleFragment {
         setSupportActionBar(mUserToolbar);
 
         BottomNavigationView navigation = findViewById(R.id.navigation);
+        BottomNavigationViewHelper.disableShiftMode(navigation);
         navigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener);
     }
 
@@ -139,13 +145,7 @@ public class UserMainActivity extends BaseActivity implements iHandleFragment {
         moveTaskToBack(true);
     }
 
-    public ArrayList<Post> getPostArrayList() {
-        return this.mPostList;
-    }
-    public ArrayList<PostTest> getPostTestArrayList() {
-        return this.mPostTestList;
-    }
-    public ArrayList<User> getUserArrayList() {
+    public ArrayList<User> getUserList() {
         return this.mUserList;
     }
 
@@ -191,9 +191,29 @@ public class UserMainActivity extends BaseActivity implements iHandleFragment {
                 fragment = new MessageFragment();
                 doFragmentTransaction(fragment, getString(R.string.fragment_messages), false, "");
                 break;
+            case R.string.fragment_profile:
+                fragment = new ProfileFragment();
+                doFragmentTransaction(fragment, getString(R.string.fragment_profile), false, "");
             default:
                 break;
         }
+    }
+
+    private ValueEventListener loadUserData() {
+        return new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                for(DataSnapshot userSnapshot: dataSnapshot.getChildren()) {
+                    mUserList.add(userSnapshot.getValue(User.class));
+                    Log.e(TAG, "Size UserList: " + mUserList.size());
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+                Log.e(TAG, "loadUserData failed " + databaseError.getMessage());
+            }
+        };
     }
 
     //  TODO: - Make Key,Value a list, map, etc. in order to add more "extras" to the Bundle
@@ -209,40 +229,4 @@ public class UserMainActivity extends BaseActivity implements iHandleFragment {
         intent.putExtras(extras);
         startActivity(intent);
     }
-
-    private void getPostsData() {
-        mPostTestList = mDatabaseManager.getPostListOrderByDate();
-        mUserList = mDatabaseManager.getUserList();
-    }
-
-    private void getThreadsData() {
-        DatabaseManager
-                .getInstance()
-                .getReference()
-                .child("threads")
-                .orderByChild("inverseDate")
-                .addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot)
-            {
-                for (DataSnapshot postSnapshot: dataSnapshot.getChildren())
-                {
-                    Log.d(TAG, "onDataChange:" + dataSnapshot.getKey());
-                    Post post = postSnapshot.getValue(Post.class);
-                    mPostList.add(post);
-                }
-            }
-
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-                // Getting Post failed, log a message
-                Log.w(TAG, "loadPost:onCancelled", databaseError.toException());
-                // ...
-            }
-        });
-
-    }
-
-
-
 }

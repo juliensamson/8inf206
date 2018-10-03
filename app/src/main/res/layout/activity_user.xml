@@ -12,14 +12,12 @@
         android:id="@+id/toolbar_user"
         layout="@layout/toolbar_default" />
 
-
     <FrameLayout
         android:id="@+id/user_container"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_marginBottom="54dp"
         android:layout_marginTop="54dp">
-
     </FrameLayout>
 
     <android.support.design.widget.BottomNavigationView

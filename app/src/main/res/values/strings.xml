@@ -13,6 +13,7 @@
     <string name="fragment_city">Ma Ville</string>
     <string name="fragment_home">Accueil</string>
     <string name="fragment_messages">Messages</string>
+    <string name="fragment_profile">Profil</string>
 
     <string name="fragment_main_user_settings">Paramètres</string>
     <string name="fragment_change_email">Changer email</string>

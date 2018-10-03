@@ -78,7 +78,7 @@ public class ChangeEmailFragment extends BaseFragment {
 
         //  Toolbar
         mHandleFragment.setToolbarTitle(getTag());
-        setFragmentToolbar(activity, R.id.toolbar_default, R.drawable.ic_close_white_24dp, true, true);
+        setFragmentToolbar(activity, R.drawable.ic_close_white_24dp, true, true);
 
         mActualPasswordField = view.findViewById(R.id.change_email_actual_password);
         mNewEmailField= view.findViewById(R.id.change_email_new_email);
