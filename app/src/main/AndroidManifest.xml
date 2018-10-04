@@ -25,6 +25,7 @@
 
         <!-- LOGIN ACTIVITY -->
 
+
         <!-- USER ACTIVITY -->
         <activity
             android:name=".userUI.UserMainActivity"
@@ -36,7 +37,7 @@
             android:name=".userUI.settings.UserSettingsActivity"
             android:launchMode="standard"
             android:parentActivityName=".userUI.UserMainActivity"
-            android:windowSoftInputMode="stateHidden|adjustResize"/>
+            android:windowSoftInputMode="stateHidden|adjustResize" />
 
         <!-- FACEBOOK LOGIN ACTIVITY -->
         <meta-data
@@ -59,7 +60,7 @@
                 <data android:scheme="@string/fb_login_protocol_scheme" />
             </intent-filter>
         </activity>
-
+        <activity android:name=".userUI.newsfeed.EditPostActivity"></activity>
     </application>
 
 </manifest>

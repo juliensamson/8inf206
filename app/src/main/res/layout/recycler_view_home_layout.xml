@@ -37,8 +37,15 @@
                 android:id="@+id/recycler_view_username"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_marginEnd="8dp"
                 android:text="user name"
                 android:textStyle="italic" />
+
+            <TextView
+                android:id="@+id/recycler_view_date"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="date of posting"/>
 
         </LinearLayout>
 
@@ -46,16 +53,10 @@
             android:id="@+id/recycler_view_message"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
+            android:layout_marginTop="@dimen/activity_vertical_margin"
+            android:layout_marginBottom="@dimen/activity_vertical_margin"
             android:text="Some message here..."
             android:textSize="18dp" />
-
-        <TextView
-            android:id="@+id/recycler_view_date"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
-            android:text="The Date of posting"/>
 
     </LinearLayout>
 

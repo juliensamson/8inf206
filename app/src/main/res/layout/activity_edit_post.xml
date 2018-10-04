@@ -1,11 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.constraint.ConstraintLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="ca.uqac.lecitoyen.userUI.newsfeed.PostActivity">
+    tools:context="ca.uqac.lecitoyen.userUI.newsfeed.EditPostActivity">
 
     <include
         layout="@layout/toolbar_default"
@@ -22,29 +21,27 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
 
-        <LinearLayout
-            android:id="@+id/post_layout"
+        <EditText
+            android:id="@+id/edit_post"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical"
+            android:layout_marginStart="@dimen/activity_horizontal_margin"
+            android:layout_marginEnd="@dimen/activity_horizontal_margin"
+            android:maxLines="6"
+            android:lines="6"/>
+
+        <Button
+            android:id="@+id/delete_post"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/activity_vertical_margin"
             android:layout_marginBottom="@dimen/activity_vertical_margin"
             android:layout_marginStart="@dimen/activity_horizontal_margin"
-            android:layout_marginEnd="@dimen/activity_horizontal_margin">
-
-            <EditText
-                android:id="@+id/post_message"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="@dimen/activity_vertical_margin"
-                android:hint="Entrer un message public"
-                android:inputType="textLongMessage"
-                android:lines="6"
-                android:maxLines="6"/>
-
-        </LinearLayout>
+            android:layout_marginEnd="@dimen/activity_horizontal_margin"
+            android:layout_gravity="bottom"
+            style="@style/DeleteAccountButtonStyle"
+            android:text="Supprimer post"/>
 
     </FrameLayout>
-
 
 </android.support.constraint.ConstraintLayout>

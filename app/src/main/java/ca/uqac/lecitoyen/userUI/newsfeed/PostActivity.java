@@ -1,5 +1,6 @@
 package ca.uqac.lecitoyen.userUI.newsfeed;
 
+import android.annotation.SuppressLint;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.util.Log;
@@ -16,10 +17,14 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.ValueEventListener;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import ca.uqac.lecitoyen.BaseActivity;
 import ca.uqac.lecitoyen.R;
 import ca.uqac.lecitoyen.database.DatabaseManager;
 import ca.uqac.lecitoyen.database.Post;
+import ca.uqac.lecitoyen.database.PostModification;
 import ca.uqac.lecitoyen.database.User;
 
 public class PostActivity extends BaseActivity {
@@ -85,6 +90,7 @@ public class PostActivity extends BaseActivity {
         return super.onOptionsItemSelected(item);
     }
 
+    @SuppressWarnings("unchecked")
     private void update() {
 
         final DatabaseReference ref = mDatabaseManager.getReference();
@@ -98,12 +104,23 @@ public class PostActivity extends BaseActivity {
 
                 if(dataSnapshot.hasChildren())
                 {
+                    long currentTime = System.currentTimeMillis();
                     userData = dataSnapshot.child(mUserId).getValue(User.class);
 
                     Post post = new Post(
                             mUser.getUid(),
                             mMessage.getText().toString(),
-                            System.currentTimeMillis());
+                            currentTime);
+
+                    List modifications = new ArrayList<PostModification>();
+                    PostModification postModification = new PostModification(
+                            0,
+                            mMessage.getText().toString(),
+                            currentTime
+                    );
+                    modifications.add(postModification);
+                    post.setModifications(modifications);
+
                     mDatabaseManager.writePost(ref, post);
                     Toast.makeText(getApplicationContext(), "Data inserted", Toast.LENGTH_SHORT).show();
 

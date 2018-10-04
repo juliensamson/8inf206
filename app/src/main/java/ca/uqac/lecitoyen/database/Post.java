@@ -3,13 +3,15 @@ package ca.uqac.lecitoyen.database;
 import com.google.firebase.database.Exclude;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public class Post {
 
     //  Data
+    private String postid;
 
-    private String userId;
+    private String uid;
 
     private long date;
 
@@ -17,14 +19,17 @@ public class Post {
 
     private String post;
 
+    //  metadata
+    private List<PostModification> modifications;
+
     //  Constructor
 
     public Post() {
         //  Default Constructor
     }
 
-    public Post(String userId, String post, long date) {
-        this.userId = userId;
+    public Post(String uid, String post, long date) {
+        this.uid = uid;
         this.post = post;
         this.date = date;
         this.inverseDate = 0 - date;
@@ -32,12 +37,21 @@ public class Post {
 
     //  Getter & Setter
 
-    public String getUserId() {
-        return userId;
+
+    public String getPostid() {
+        return postid;
     }
 
-    public void setUserId(String userId) {
-        this.userId = userId;
+    public void setPostid(String postid) {
+        this.postid = postid;
+    }
+
+    public String getUid() {
+        return uid;
+    }
+
+    public void setUid(String uid) {
+        this.uid = uid;
     }
 
     public long getDate() {
@@ -64,13 +78,23 @@ public class Post {
         this.post = post;
     }
 
+    public List<PostModification> getModifications() {
+        return modifications;
+    }
+
+    public void setModifications(List<PostModification> modifications) {
+        this.modifications = modifications;
+    }
+
     @Exclude
     public Map<String, Object> toMap() {
         HashMap<String, Object> result = new HashMap<>();
-        result.put("userId", userId);
+        result.put("postid", postid);
+        result.put("uid", uid);
         result.put("post", post);
         result.put("date", date);
         result.put("inverseDate", inverseDate);
+        result.put("modifications", modifications);
         return result;
     }
 

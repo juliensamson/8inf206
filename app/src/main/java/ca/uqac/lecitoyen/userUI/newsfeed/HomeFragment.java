@@ -13,6 +13,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ProgressBar;
 
 
 import com.google.firebase.database.ChildEventListener;
@@ -32,12 +33,11 @@ import ca.uqac.lecitoyen.database.DatabaseManager;
 import ca.uqac.lecitoyen.database.Post;
 import ca.uqac.lecitoyen.database.User;
 
-/**
- * A simple {@link Fragment} subclass.
- */
 public class HomeFragment extends BaseFragment implements View.OnClickListener {
 
     final private static String TAG = "HomeFragment";
+
+    private ProgressBar mLoadingBar;
 
     private iHandleFragment mHandleFragment;
     private UserMainActivity activity;
@@ -69,7 +69,6 @@ public class HomeFragment extends BaseFragment implements View.OnClickListener {
 
         mRootRef = DatabaseManager.getInstance().getReference();
 
-        //mRootRef.child("users").addListenerForSingleValueEvent(loadUserData());
     }
 
     @Override
@@ -78,14 +77,17 @@ public class HomeFragment extends BaseFragment implements View.OnClickListener {
 
         View view = inflater.inflate(R.layout.fragment_home, container, false);
 
+        //  Button
         view.findViewById(R.id.home_fragment_add_message).setOnClickListener(this);
 
-        mRecyclerView = view.findViewById(R.id.home_fragment_recycler_view);
+        //  View
+        mRecyclerView = view.findViewById(R.id.home_fragment_recycler_view);;
+
 
         mLayoutManager = new LinearLayoutManager(getActivity());
         mRecyclerView.setLayoutManager(mLayoutManager);
 
-        mAdapter = new HomeAdapter(postList, activity.getUserList());
+        mAdapter = new HomeAdapter(getContext(), postList, activity.getUserList());
         mRecyclerView.setAdapter(mAdapter);
 
         //initUI();
@@ -120,17 +122,8 @@ public class HomeFragment extends BaseFragment implements View.OnClickListener {
         }
     }
 
-    private void initUI() {
-        Log.d(TAG, "initUI");
-        mRootRef.child("posts")
-                .orderByChild("inverseDat")
-                .addValueEventListener(loadUserPostData());
-    }
-
     private void updateUI() {
         Log.d(TAG, "updateUI");
-
-        activity.showProgressDialog();
 
         mRootRef.child("posts")
                 .orderByChild("inverseDate")
@@ -152,9 +145,8 @@ public class HomeFragment extends BaseFragment implements View.OnClickListener {
 
 
                         if (pendingLoadCount[0] == 0) {
-                            mAdapter = new HomeAdapter(postList, activity.getUserList());
+                            mAdapter = new HomeAdapter(getContext(), postList, activity.getUserList());
                             mRecyclerView.setAdapter(mAdapter);
-                            activity.hideProgressDialog();
                         }
 
                     }

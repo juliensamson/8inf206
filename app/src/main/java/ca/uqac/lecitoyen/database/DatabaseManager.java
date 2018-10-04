@@ -49,14 +49,14 @@ public class DatabaseManager  {
         Log.d(TAG, "writePost");
 
         String key = db.child("posts").push().getKey();
+        post.setPostid(key);
         Map<String, Object> postValues = post.toMap();
 
         //  write on firebase
         Map<String, Object> childUpdates = new HashMap<>();
         childUpdates.put("/posts/" + key, postValues);
-        childUpdates.put("/user-post/" + post.getUserId() + "/" + key, postValues);
+        childUpdates.put("/user-post/" + post.getUid() + "/" + key, postValues);
 
         db.updateChildren(childUpdates);
     }
-
 }
