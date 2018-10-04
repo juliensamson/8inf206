@@ -10,6 +10,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.FrameLayout;
 import android.widget.TextView;
 
 import com.google.firebase.auth.FirebaseAuth;
@@ -23,14 +24,14 @@ import java.util.Locale;
 import ca.uqac.lecitoyen.R;
 import ca.uqac.lecitoyen.database.Post;
 import ca.uqac.lecitoyen.database.User;
-import ca.uqac.lecitoyen.userUI.UserMainActivity;
 import ca.uqac.lecitoyen.userUI.newsfeed.EditPostActivity;
+import de.hdodenhof.circleimageview.CircleImageView;
 
 public class HomeAdapter extends RecyclerView.Adapter<HomeAdapter.ViewHolder> {
 
     private static String TAG = "HomeAdapter";
 
-    private static String longDateFormat = "HH:mm:ss - dd MMM yyyy";
+    private static String longDateFormat = "dd MMM yyyy";
 
     private static long second = 1000;
     private static long minute = 60 * 1000;
@@ -57,7 +58,7 @@ public class HomeAdapter extends RecyclerView.Adapter<HomeAdapter.ViewHolder> {
     @Override
     public HomeAdapter.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         Log.d(TAG, "onCreateViewHolder");
-        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.recycler_view_home_layout, parent, false);
+        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.listview_home, parent, false);
         return new HomeAdapter.ViewHolder(view);
     }
 
@@ -69,25 +70,63 @@ public class HomeAdapter extends RecyclerView.Adapter<HomeAdapter.ViewHolder> {
         User userFromPost = getUserPost(holder.getAdapterPosition());
         //userDataFromPost = getUserPost(position);
 
-        holder.mAuthor.setText(userFromPost.getName());
-        holder.mUserName.setText(userFromPost.getUsername());
-        holder.mPost.setText(currentPost.getPost());
-        holder.mDate.setText(getTimeElapseSincePost(holder.getAdapterPosition()));
+        //holder.profileImage.setImageResource();
+        holder.name.setText(userFromPost.getName());
+        holder.userName.setText(userFromPost.getUsername());
+        holder.post.setText(currentPost.getPost());
+        holder.time.setText(getTimeElapseSincePost(holder.getAdapterPosition()));
 
-
-        holder.mParentLayout.setOnClickListener(new View.OnClickListener() {
+        ////  TODO: display post information
+        //  onClick
+        holder.profileLayout.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Log.d(TAG, "profile_layout clicked");
+            }
+        });
+        holder.moreLayout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 if(currentUser.getUid().equals(currentPost.getUid()))
                 {
-                    Bundle extras = new Bundle();
                     Intent intent = new Intent(mContext, EditPostActivity.class);
                     intent.putExtra("postid", currentPost.getPostid());
                     mContext.startActivity(intent);
                 }
             }
         });
+        holder.postLayout.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Log.d(TAG, "post_layout clicked");
+            }
+        });
     }
+
+    public class ViewHolder extends RecyclerView.ViewHolder {
+
+        FrameLayout postLayout, profileLayout, moreLayout;
+        CircleImageView profileImage;
+        TextView name, userName, post, time;
+
+        public ViewHolder(View itemView) {
+            super(itemView);
+
+            //  View
+            profileImage = itemView.findViewById(R.id.listview_home_profil_image);
+            name = itemView.findViewById(R.id.listview_home_name);
+            userName = itemView.findViewById(R.id.listview_home_username);
+            post  = itemView.findViewById(R.id.listview_home_post);
+            time  = itemView.findViewById(R.id.listview_home_time);
+
+            //  Layout
+            profileLayout = itemView.findViewById(R.id.listview_home_profil_layout);
+            moreLayout = itemView.findViewById(R.id.listview_more_layout);
+            postLayout = itemView.findViewById(R.id.listview_home_post_layout);
+        }
+    }
+
+    //  METHODS
 
     @Override
     public int getItemCount() {
@@ -139,24 +178,6 @@ public class HomeAdapter extends RecyclerView.Adapter<HomeAdapter.ViewHolder> {
                     Locale.CANADA_FRENCH)
                     .format(postDate);
             return timeDisplayed;
-        }
-    }
-
-    public class ViewHolder extends RecyclerView.ViewHolder {
-        ConstraintLayout mParentLayout;
-        TextView mAuthor;
-        TextView mUserName;
-        TextView mPost;
-        TextView mDate;
-
-        public ViewHolder(View itemView) {
-            super(itemView);
-
-            mAuthor = itemView.findViewById(R.id.recycler_view_realname);
-            mUserName = itemView.findViewById(R.id.recycler_view_username);
-            mPost  = itemView.findViewById(R.id.recycler_view_message);
-            mDate  = itemView.findViewById(R.id.recycler_view_date);
-            mParentLayout = itemView.findViewById(R.id.recycler_view_layout);
         }
     }
 

@@ -31,6 +31,8 @@ dependencies {
     implementation 'com.android.support:support-vector-drawable:27.1.1'
     implementation 'com.android.support:support-v4:27.1.1'
 
+    implementation 'de.hdodenhof:circleimageview:2.2.0'
+
     //  Recycler View
     compile 'com.android.support:recyclerview-v7:27.0.0-alpha1'
 
