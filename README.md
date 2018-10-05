@@ -29,8 +29,13 @@ d'intérêt des citoyens pour par exemple :
 Créer un "réseau social" faciliant la découverte d'artiste de la région par les citoyens. 
 
 ## Backlog et fonctionnalités
-- Permettre à un utilisateur de se connecter/déconnecter/inscrire/désinscrire
+~~Permettre à un utilisateur de se connecter/déconnecter/inscrire/désinscrire~~
+
+~~Créer une publication text (et afficher)~~
+
 - Permettre la publication d'images, fichier audio, pdf, ou lien vers d'autre site internet de publication (afficher l'image du lein)
+  - Modifier une publication (afficher la liste de modification apporté)
+  - Supprimer une publication
 - Permettre l'interaction entre usager (seulement si inscrit): Message privé, Commentaire sur l'art, Appréciation , Partage de lien, Demande d'avis (sondage), etc.
 - Permettre à l'usager de suivre les actualités d'autre usager
 - Permettre la création / partage d'évènement avec emplacement, date, heure, etc.
