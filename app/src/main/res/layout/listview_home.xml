@@ -84,15 +84,23 @@
                 android:id="@+id/listview_more_layout"
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
-                android:paddingStart="@dimen/activity_horizontal_margin"
                 android:layout_gravity="end">
 
                 <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:layout_gravity="end"
+                    android:alpha="0.54"
+                    app:srcCompat="@drawable/ic_more_vert_black_24dp"/>
+                <!--
+                <Spinner
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center_vertical"
                     android:alpha="0.54"
-                    app:srcCompat="@drawable/ic_more_vert_black_24dp"/>
+                    android:background="@drawable/ic_more_vert_black_24dp" />
+                    -->
+
 
             </FrameLayout>
 

@@ -28,7 +28,7 @@ import ca.uqac.lecitoyen.database.Post;
 import ca.uqac.lecitoyen.database.PostModification;
 import ca.uqac.lecitoyen.database.User;
 
-public class EditPostActivity extends BaseActivity implements View.OnClickListener {
+public class EditPostActivity extends BaseActivity {
 
     private static final String TAG = "EditPostActivity" ;
 
@@ -48,9 +48,6 @@ public class EditPostActivity extends BaseActivity implements View.OnClickListen
 
         //  View
         mMessage = findViewById(R.id.edit_post);
-
-        //  Button
-        findViewById(R.id.delete_post).setOnClickListener(this);
 
         //  Get intent
         Intent intent = getIntent();
@@ -159,28 +156,5 @@ public class EditPostActivity extends BaseActivity implements View.OnClickListen
         });
         hideProgressDialog();
         this.finish();
-    }
-
-    private void deleteDB() {
-        DatabaseManager.getInstance().getReference()
-                .child("posts")
-                .child(mCurrentPost.getPostid())
-                .removeValue();
-        DatabaseManager.getInstance().getReference()
-                .child("user-post")
-                .child(mCurrentPost.getUid())
-                .child(mCurrentPost.getPostid())
-                .removeValue();
-        this.finish();
-    }
-
-    @Override
-    public void onClick(View view) {
-        switch (view.getId())
-        {
-            case R.id.delete_post:
-                deleteDB();
-                break;
-        }
     }
 }

@@ -71,6 +71,16 @@
 
     <string name="toast_email_auth_fail">Échec d\'authentification avec email</string>
 
+    <string-array name="public_more_choice_list">
+        <item>Historique</item>
+    </string-array>
+
+    <string-array name="private_more_choice_list">
+        <item>Historique</item>
+        <item>Modifer</item>
+        <item>Supprimer</item>
+    </string-array>
+
 
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>

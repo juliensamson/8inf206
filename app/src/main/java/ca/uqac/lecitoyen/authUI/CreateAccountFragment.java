@@ -17,6 +17,7 @@ import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
@@ -33,7 +34,7 @@ import ca.uqac.lecitoyen.userUI.UserMainActivity;
 import ca.uqac.lecitoyen.database.DatabaseManager;
 import ca.uqac.lecitoyen.database.User;
 
-public class CreateAccountFragment extends BaseFragment implements iUpdate, View.OnClickListener {
+public class CreateAccountFragment extends BaseFragment implements View.OnClickListener {
 
     private static final String TAG = "CreateAccountFragment";
 
@@ -48,12 +49,14 @@ public class CreateAccountFragment extends BaseFragment implements iUpdate, View
     private TextInputEditText mPasswordField;
     private TextInputEditText mVerifyPasswordField;
 
-    private FirebaseAuth auth;
+    private FirebaseAuth mAuth;
+    private FirebaseUser mNewUser;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         activity = (MainActivity) getActivity();
+        mAuth = FirebaseAuth.getInstance();
     }
 
     @Nullable
@@ -118,78 +121,55 @@ public class CreateAccountFragment extends BaseFragment implements iUpdate, View
         }
     }
 
-    @Override
-    public void updateUI(FirebaseUser user) {
-        if (user != null) {
+    private void updateUI() {
+        if (mNewUser != null) {
             startActivity(new Intent(getContext(), UserMainActivity.class));
         } else {
             Log.e(TAG, "No user connected");
         }
     }
 
-    @Override
-    public void updateDB(FirebaseUser user) {
+    private void updateDB() {
         DatabaseManager db = DatabaseManager.getInstance();
         DatabaseReference ref = db.getReference();
 
-        User userData = new User(
-                user.getUid(),
-                mNameField.getText().toString(),
-                mUserNameField.getText().toString(),
-                user.getEmail(),
-                "",
-                getCurrentTime(),
-                user.getProviderId()
-        );
-        userData.setVerify(false);
-        db.writeUserInformation(ref, user.getUid(), userData);
+        if(mNewUser != null) {
+            Log.e(TAG, "uid: " + mNewUser.getUid());
+            User userData = new User(
+                    mNewUser.getUid(),
+                    mNameField.getText().toString(),
+                    mUserNameField.getText().toString(),
+                    mEmailField.getText().toString(),
+                    "",
+                    getCurrentTime(),
+                    "email"
+            );
+            userData.setVerify(false);
+            db.writeUserInformation(ref, userData);
+        } else {
+            Log.e(TAG, "user null?");
+        }
     }
 
-    private OnCompleteListener<AuthResult> getAuthResult(final FirebaseUser user) {
-        return new OnCompleteListener<AuthResult>() {
-            @Override
-            public void onComplete(@NonNull Task<AuthResult> task) {
-                if (task.isSuccessful())
-                {
-                    Log.d(TAG, "createUserWithEmail:success");
-                    updateDB(user);
-                    updateUI(user);
-                }
-                else
-                {
-                    Log.w(TAG, "createUserWithEmail:failure", task.getException());
-
-                    if (task.getException() instanceof FirebaseAuthUserCollisionException) {
-                        Toast.makeText(getContext(), "User with this email already exist.", Toast.LENGTH_SHORT).show();
-                    }
-
-                    updateUI(null);
-                }
-
-            }
-        };
-    }
-
+    //  TODO: somehow this create an post?
     private void createAccount(String email, String password) {
-        Log.d(TAG, "createAccount:" + email);
 
         if (!validateForm()) {
             return;
         }
 
+        Log.d(TAG, "createAccount:" + email);
+
         if (password.equals(mVerifyPasswordField.getText().toString()))
         {
             activity.showProgressDialog();
 
-            FirebaseAuth auth = FirebaseAuth.getInstance();
-            FirebaseUser user = auth.getCurrentUser();
-
-            auth.createUserWithEmailAndPassword(email, password)
-                    .addOnCompleteListener(activity, getAuthResult(user))
-                    .addOnFailureListener(new OnFailureListener() {
+            mAuth.createUserWithEmailAndPassword(email, password).addOnSuccessListener(new OnSuccessListener<AuthResult>() {
                 @Override
-                public void onFailure(@NonNull Exception e) {
-                    Log.e(TAG, e.getCause().getMessage());
+                public void onSuccess(AuthResult authResult) {
+                    mNewUser = authResult.getUser();
+                    updateDB();
+                    updateUI();
                 }
             });
             // [END create_user_with_email]

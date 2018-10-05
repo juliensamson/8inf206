@@ -142,6 +142,7 @@ public class MainAuthFragment extends BaseFragment implements View.OnClickListen
 
     //  FACEBOOK CONNECTION
 
+    //  TODO: Bug lors de la connection. Enlève le username. Et parfois ajoute données à firebase
     private void initFacebookLogin() {
 
         mCallbackManager = CallbackManager.Factory.create();
@@ -254,6 +255,7 @@ public class MainAuthFragment extends BaseFragment implements View.OnClickListen
         DatabaseManager db = DatabaseManager.getInstance();
         DatabaseReference ref = db.getReference();
 
+        // TODO: hange where you the info
         User userData = new User(
                 user.getUid(),
                 bFacebookData.getString("first_name") + " " +
@@ -266,7 +268,7 @@ public class MainAuthFragment extends BaseFragment implements View.OnClickListen
         );
         userData.setVerify(true);
 
-        db.writeUserInformation(ref, user.getUid(), userData);
+        db.writeUserInformation(ref, userData);
     }
 
 }

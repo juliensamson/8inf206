@@ -40,8 +40,13 @@ public class DatabaseManager  {
     }
 
     @Exclude
-    public void writeUserInformation(DatabaseReference db, String uid, User userdata) {
-        db.child("users").child(uid).setValue(userdata);
+    public void writeUserInformation(DatabaseReference db, User userdata) {
+        if(!userdata.getUid().equals("") && userdata.getUid() != null)
+            db.child("users").child(userdata.getUid()).setValue(userdata);
+        else {
+            String key = db.child("users").push().getKey();
+            db.child("users").child(key).setValue(userdata);
+        }
     }
 
     @Exclude

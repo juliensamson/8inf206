@@ -116,6 +116,8 @@ public class UserMainActivity extends BaseActivity implements iHandleFragment {
     protected void onStart() {
         super.onStart();
         mUser = mAuth.getCurrentUser();
+
+        //mAuth.signOut();
     }
 
     @Override

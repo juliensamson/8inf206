@@ -1,16 +1,21 @@
 package ca.uqac.lecitoyen.adapter;
 
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.constraint.ConstraintLayout;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.FrameLayout;
+import android.widget.ListView;
 import android.widget.TextView;
 
 import com.google.firebase.auth.FirebaseAuth;
@@ -22,6 +27,7 @@ import java.util.Date;
 import java.util.Locale;
 
 import ca.uqac.lecitoyen.R;
+import ca.uqac.lecitoyen.database.DatabaseManager;
 import ca.uqac.lecitoyen.database.Post;
 import ca.uqac.lecitoyen.database.User;
 import ca.uqac.lecitoyen.userUI.newsfeed.EditPostActivity;
@@ -32,6 +38,8 @@ public class HomeAdapter extends RecyclerView.Adapter<HomeAdapter.ViewHolder> {
     private static String TAG = "HomeAdapter";
 
     private static String longDateFormat = "dd MMM yyyy";
+    private String[] publicChoiceString;
+    private String[] privateChoiceString;
 
     private static long second = 1000;
     private static long minute = 60 * 1000;
@@ -40,16 +48,18 @@ public class HomeAdapter extends RecyclerView.Adapter<HomeAdapter.ViewHolder> {
 
     private Context mContext;
 
-    private FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
+    private FirebaseUser mCurrentUser;
 
+    private Post mCurrentPost;
     private User userDataFromPost = new User();
     private String mUserId;
     private ArrayList<Post> mPostList = new ArrayList<>();
     private ArrayList<User> mUserList = new ArrayList<>();
 
-    public HomeAdapter(Context context, ArrayList<Post> postList, ArrayList<User> userList) {
+    public HomeAdapter(Context context, FirebaseUser currentUser, ArrayList<Post> postList, ArrayList<User> userList) {
         Log.d(TAG, "HomeAdapter");
         this.mContext = context;
+        this.mCurrentUser = currentUser;
         this.mPostList = postList;
         this.mUserList = userList;
     }
@@ -65,7 +75,6 @@ public class HomeAdapter extends RecyclerView.Adapter<HomeAdapter.ViewHolder> {
     @Override
     public void onBindViewHolder(@NonNull final HomeAdapter.ViewHolder holder, final int position) {
         Log.d(TAG, "onBindViewHolder " + position);
-
         final Post currentPost = mPostList.get(holder.getAdapterPosition());
         User userFromPost = getUserPost(holder.getAdapterPosition());
         //userDataFromPost = getUserPost(position);
@@ -87,12 +96,7 @@ public class HomeAdapter extends RecyclerView.Adapter<HomeAdapter.ViewHolder> {
         holder.moreLayout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if(currentUser.getUid().equals(currentPost.getUid()))
-                {
-                    Intent intent = new Intent(mContext, EditPostActivity.class);
-                    intent.putExtra("postid", currentPost.getPostid());
-                    mContext.startActivity(intent);
-                }
+                setMoreChoiceDialog(currentPost);
             }
         });
         holder.postLayout.setOnClickListener(new View.OnClickListener() {
@@ -180,5 +184,69 @@ public class HomeAdapter extends RecyclerView.Adapter<HomeAdapter.ViewHolder> {
             return timeDisplayed;
         }
     }
+
+    private void setMoreChoiceDialog(final Post currentPost) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(mContext);
+        ListView moreChoiceView = new ListView(mContext);
+
+        String [] choiceString;
+        Log.e(TAG, "uid in post: " + currentPost.getUid());
+        Log.e(TAG, "uid connect: " + mCurrentUser.getUid());
+        if(mCurrentUser.getUid().equals(currentPost.getUid()))
+        {
+            builder.setItems(R.array.private_more_choice_list, new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialogInterface, int i) {
+                    switch (i) {
+                        case 0:     //Historique
+                            Log.e(TAG, "0");
+                            break;
+                        case 1:     //Modifier
+                            Log.e(TAG, "1");
+                            Intent intent = new Intent(mContext, EditPostActivity.class);
+                            intent.putExtra("postid", currentPost.getPostid());
+                            mContext.startActivity(intent);
+                            break;
+                        case 2:     //Supprimer
+                            Log.e(TAG, "2");
+                            DatabaseManager.getInstance().getReference()
+                                    .child("posts")
+                                    .child(currentPost.getPostid())
+                                    .removeValue();
+                            DatabaseManager.getInstance().getReference()
+                                    .child("user-post")
+                                    .child(currentPost.getUid())
+                                    .child(currentPost.getPostid())
+                                    .removeValue();
+                            break;
+                        default:
+                            break;
+                    }
+                }
+            });
+        }
+        else
+        {
+            builder.setItems(R.array.public_more_choice_list, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                    switch (i) {
+                        case 0:     //Historique
+                            Log.e(TAG, "0");
+                            break;
+                        default:
+                            break;
+                    }
+                }
+                });
+        }
+        builder.show();
+              /*
+                if(currentUser.getUid().equals(currentPost.getUid()))
+                {
+                    Intent intent = new Intent(mContext, EditPostActivity.class);
+                    intent.putExtra("postid", currentPost.getPostid());
+                    mContext.startActivity(intent);
+                }*/}
 
 }

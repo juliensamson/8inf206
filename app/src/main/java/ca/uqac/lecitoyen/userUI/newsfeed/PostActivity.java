@@ -107,6 +107,7 @@ public class PostActivity extends BaseActivity {
                     long currentTime = System.currentTimeMillis();
                     userData = dataSnapshot.child(mUserId).getValue(User.class);
 
+                    Log.e(TAG, "post by " + mUser.getEmail());
                     Post post = new Post(
                             mUser.getUid(),
                             mMessage.getText().toString(),

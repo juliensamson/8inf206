@@ -189,7 +189,6 @@ public class UserSettingsFragment extends BaseFragment implements View.OnClickLi
                    @Override
                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                        mUserData = dataSnapshot.getValue(User.class);
-
                        //   Set Verify warning if necessary
                        setVerifyAccountWarning();
 
