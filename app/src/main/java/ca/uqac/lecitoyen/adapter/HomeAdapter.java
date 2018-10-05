@@ -7,6 +7,7 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.constraint.ConstraintLayout;
 import android.support.v7.app.AlertDialog;
+import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -29,6 +30,7 @@ import java.util.Locale;
 import ca.uqac.lecitoyen.R;
 import ca.uqac.lecitoyen.database.DatabaseManager;
 import ca.uqac.lecitoyen.database.Post;
+import ca.uqac.lecitoyen.database.PostModification;
 import ca.uqac.lecitoyen.database.User;
 import ca.uqac.lecitoyen.userUI.newsfeed.EditPostActivity;
 import de.hdodenhof.circleimageview.CircleImageView;
@@ -86,7 +88,13 @@ public class HomeAdapter extends RecyclerView.Adapter<HomeAdapter.ViewHolder> {
         holder.time.setText(getTimeElapseSincePost(holder.getAdapterPosition()));
 
         ////  TODO: display post information
-        //  onClick
+        holder.postLayout.setOnLongClickListener(new View.OnLongClickListener() {
+            @Override
+            public boolean onLongClick(View view) {
+                showPostHistory(currentPost);
+                return true;
+            }
+        });
         holder.profileLayout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -109,6 +117,7 @@ public class HomeAdapter extends RecyclerView.Adapter<HomeAdapter.ViewHolder> {
 
     public class ViewHolder extends RecyclerView.ViewHolder {
 
+        ConstraintLayout mainLayout;
         FrameLayout postLayout, profileLayout, moreLayout;
         CircleImageView profileImage;
         TextView name, userName, post, time;
@@ -124,6 +133,7 @@ public class HomeAdapter extends RecyclerView.Adapter<HomeAdapter.ViewHolder> {
             time  = itemView.findViewById(R.id.listview_home_time);
 
             //  Layout
+            mainLayout = itemView.findViewById(R.id.listview_home_main_layout);
             profileLayout = itemView.findViewById(R.id.listview_home_profil_layout);
             moreLayout = itemView.findViewById(R.id.listview_more_layout);
             postLayout = itemView.findViewById(R.id.listview_home_post_layout);
@@ -189,11 +199,10 @@ public class HomeAdapter extends RecyclerView.Adapter<HomeAdapter.ViewHolder> {
         AlertDialog.Builder builder = new AlertDialog.Builder(mContext);
         ListView moreChoiceView = new ListView(mContext);
 
-        String [] choiceString;
+        String[] choiceString;
         Log.e(TAG, "uid in post: " + currentPost.getUid());
         Log.e(TAG, "uid connect: " + mCurrentUser.getUid());
-        if(mCurrentUser.getUid().equals(currentPost.getUid()))
-        {
+        if (mCurrentUser.getUid().equals(currentPost.getUid())) {
             builder.setItems(R.array.private_more_choice_list, new DialogInterface.OnClickListener() {
                 @Override
                 public void onClick(DialogInterface dialogInterface, int i) {
@@ -209,27 +218,17 @@ public class HomeAdapter extends RecyclerView.Adapter<HomeAdapter.ViewHolder> {
                             break;
                         case 2:     //Supprimer
                             Log.e(TAG, "2");
-                            DatabaseManager.getInstance().getReference()
-                                    .child("posts")
-                                    .child(currentPost.getPostid())
-                                    .removeValue();
-                            DatabaseManager.getInstance().getReference()
-                                    .child("user-post")
-                                    .child(currentPost.getUid())
-                                    .child(currentPost.getPostid())
-                                    .removeValue();
+                            deleteCurrentPost(currentPost);
                             break;
                         default:
                             break;
                     }
                 }
             });
-        }
-        else
-        {
+        } else {
             builder.setItems(R.array.public_more_choice_list, new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialogInterface, int i) {
+                @Override
+                public void onClick(DialogInterface dialogInterface, int i) {
                     switch (i) {
                         case 0:     //Historique
                             Log.e(TAG, "0");
@@ -238,15 +237,45 @@ public class HomeAdapter extends RecyclerView.Adapter<HomeAdapter.ViewHolder> {
                             break;
                     }
                 }
-                });
+            });
         }
         builder.show();
-              /*
-                if(currentUser.getUid().equals(currentPost.getUid()))
-                {
-                    Intent intent = new Intent(mContext, EditPostActivity.class);
-                    intent.putExtra("postid", currentPost.getPostid());
-                    mContext.startActivity(intent);
-                }*/}
+    }
+
+    private void showPostHistory(final Post currentPost) {
+        RecyclerView mRecyclerView = new RecyclerView(mContext);
+
+        RecyclerView.Adapter adapter = new PostHistoryAdapter(
+                mContext,
+                (ArrayList<PostModification>) currentPost.getModifications());
+
+        RecyclerView.LayoutManager mLayoutManager = new LinearLayoutManager(mContext);
+        mRecyclerView.setLayoutManager(mLayoutManager);
+        mRecyclerView.setAdapter(adapter);
+
+        AlertDialog.Builder builder = new AlertDialog.Builder(mContext);
+
+        builder.setTitle("Historique")
+                .setView(mRecyclerView)
+                .setPositiveButton("Annuler", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        dialogInterface.dismiss();
+                    }
+                })
+                .show();
+    }
+
+    private void deleteCurrentPost(final Post currentPost) {
+        DatabaseManager.getInstance().getReference()
+                .child("posts")
+                .child(currentPost.getPostid())
+                .removeValue();
+        DatabaseManager.getInstance().getReference()
+                .child("user-post")
+                .child(currentPost.getUid())
+                .child(currentPost.getPostid())
+                .removeValue();
+    }
 
 }
