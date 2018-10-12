@@ -18,7 +18,10 @@ import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
 
 import java.util.ArrayList;
 
@@ -29,6 +32,7 @@ import ca.uqac.lecitoyen.adapter.BottomNavigationViewHelper;
 import ca.uqac.lecitoyen.userUI.cityfeed.CityFragment;
 import ca.uqac.lecitoyen.userUI.newsfeed.HomeFragment;
 import ca.uqac.lecitoyen.userUI.messaging.MessageFragment;
+import ca.uqac.lecitoyen.userUI.profile.EditProfileFragment;
 import ca.uqac.lecitoyen.userUI.profile.ProfileFragment;
 import ca.uqac.lecitoyen.userUI.settings.UserSettingsActivity;
 import ca.uqac.lecitoyen.database.DatabaseManager;
@@ -44,6 +48,8 @@ public class UserMainActivity extends BaseActivity implements iHandleFragment {
     private iHandleFragment mHandleFragment;
 
     private DatabaseReference mRootRef;
+    private DatabaseReference mDatabaseRef;
+    private StorageReference mStorageRef;
 
     public ArrayList<Post> mPostList = new ArrayList<>();
     public ArrayList<User> mUserList = new ArrayList<>();
@@ -67,7 +73,6 @@ public class UserMainActivity extends BaseActivity implements iHandleFragment {
             {
                 case R.id.navigation_city:
                     inflateFragment(R.string.fragment_city, "");
-
                     return true;
                 case R.id.navigation_home:
                     inflateFragment(R.string.fragment_home, "");
@@ -90,14 +95,15 @@ public class UserMainActivity extends BaseActivity implements iHandleFragment {
         Log.d(TAG, "Activity created");
 
         //  Database
-        mRootRef = DatabaseManager.getInstance().getReference();
+        mDatabaseRef = FirebaseDatabase.getInstance().getReference();
+        mStorageRef  = FirebaseStorage.getInstance().getReference();
 
         //  Initialize auth
         mAuth = FirebaseAuth.getInstance();
 
         //mAuth.signOut();
 
-        mRootRef.child("users").addListenerForSingleValueEvent(loadUserData());
+        mDatabaseRef.child("users").addListenerForSingleValueEvent(loadUserData());
 
         init();
 
@@ -196,6 +202,11 @@ public class UserMainActivity extends BaseActivity implements iHandleFragment {
             case R.string.fragment_profile:
                 fragment = new ProfileFragment();
                 doFragmentTransaction(fragment, getString(R.string.fragment_profile), false, "");
+                break;
+            case R.string.fragment_edit_profile:
+                fragment = new EditProfileFragment();
+                doFragmentTransaction(fragment, getString(R.string.fragment_edit_profile), false, "");
+                break;
             default:
                 break;
         }
@@ -230,5 +241,17 @@ public class UserMainActivity extends BaseActivity implements iHandleFragment {
         Intent intent = new Intent(this, activity);
         intent.putExtras(extras);
         startActivity(intent);
+    }
+
+    public FirebaseAuth getUserAuth() {
+        return this.mAuth;
+    }
+
+    public DatabaseReference getDatabaseRef() {
+        return this.mDatabaseRef;
+    }
+
+    public StorageReference getStorageRef() {
+        return this.mStorageRef;
     }
 }

@@ -12,27 +12,26 @@
         android:layout_marginEnd="@dimen/activity_horizontal_margin"
         android:orientation="vertical">
 
+        <TextView
+            android:id="@+id/listview_post_history_number"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="@color/i_primary_800"
+            android:text="modif. 1"/>
+
+        <TextView
+            android:id="@+id/listview_post_history_date"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="date"
+            android:textStyle="bold"/>
+
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_marginTop="8dp"
             android:layout_marginBottom="8dp"
             android:orientation="horizontal">
 
-            <TextView
-                android:id="@+id/listview_post_history_number"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:textColor="@color/i_primary_800"
-                android:text="modif. 1"/>
-
-            <TextView
-                android:id="@+id/listview_post_history_date"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="8dp"
-                android:text="date"
-                android:textStyle="bold"/>
 
         </LinearLayout>
 

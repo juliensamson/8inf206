@@ -4,6 +4,24 @@
     <string name="unsub">Se désinscrire</string>
     <string name="title_activity_user">UserActivity</string>
 
+    <!--    Format date & time-->
+    <string name="long_date_format">dd MMM yyyy HH:MM:ss</string>
+    <string name="short_date_format">dd MMM yyyy</string>
+    <string name="time_format">HH:MM</string>
+    <string name="time_format_with_seconds">HH:MM:ss</string>
+    <string name="time_short_second">s</string>
+    <string name="time_long_second">seconde</string>
+    <string name="time_long_seconds">secondes</string>
+    <string name="time_short_minute">m</string>
+    <string name="time_long_minute">minute</string>
+    <string name="time_long_minutes">minutes</string>
+    <string name="time_short_hour">h</string>
+    <string name="time_long_hour">heure</string>
+    <string name="time_long_hours">heures</string>
+    <string name="text_time_ago">Il y a </string>
+    <string name="text_time_the">Le </string>
+    <string name="text_time_at"> à </string>
+
     <!-- fragment tags -->
     <string name="fragment_main_auth">Bienvenue</string>
     <string name="fragment_login_account">Se connecter</string>
@@ -14,6 +32,7 @@
     <string name="fragment_home">Accueil</string>
     <string name="fragment_messages">Messages</string>
     <string name="fragment_profile">Profil</string>
+    <string name="fragment_edit_profile">Modifier profil</string>
 
     <string name="fragment_main_user_settings">Paramètres</string>
     <string name="fragment_change_email">Changer email</string>
@@ -29,7 +48,6 @@
     <string name="email">Adresse courriel</string>
     <string name="new_email">Nouvelle adresse courriel</string>
     <string name="email_again">Adresse courriel, un autre fois</string>
-
     <string name="password">Mot de passe</string>
     <string name="password_again">Mot de passe, encore un fois</string>
     <string name="password_verification">Vérification du mot de passe</string>
@@ -43,6 +61,7 @@
     <string name="add_phone_number">Ajouter ton numéro de téléphone</string>
 
     <!--    BUTTON Text-->
+    <string name="button_cancel">Annuler</string>
     <string name="button_create_account">Créer un compte</string>
     <string name="button_delete_account">Suprimer votre compte</string>
     <string name="button_signin">Se connecter</string>
@@ -54,9 +73,15 @@
     <string name="button_verify_account">Vérifier</string>
 
 
+    <!--    Title & others-->
     <string name="long_subtitle_app_mission">Une place pour partager ses créations et regarder les dernières nouvelles de la ville</string>
     <string name="long_subtitle_forgot_account">"Vous avez oublié votre mot de passe? \n\nVous n'avez qu'à entrer votre addresse courriel dans le champ si-dessus. Vous recevrez un courriel sous peu."</string>
 
+    <!--    Listview & Adapter    -->
+    <string name="post_history">Historique</string>
+    <string name="post_history_original">Publication originale</string>
+    <string name="post_history_modify">(modifié)</string>
+    <string name="post_history_number_modify">Modification</string>
 
     <!--    TOAST Text-->
     <string name="toast_email_field_empty">Aucun email</string>
@@ -79,6 +104,13 @@
         <item>Historique</item>
         <item>Modifer</item>
         <item>Supprimer</item>
+    </string-array>
+
+    <string name="edit_profil_title">Établir photo de profil</string>
+    <string-array name="edit_profil_change_photo">
+        <item>Prendre un photo</item>
+        <item>Importer photo</item>
+        <item>Supprimer photo</item>
     </string-array>
 
 

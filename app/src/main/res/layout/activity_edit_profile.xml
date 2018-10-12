@@ -1,22 +1,21 @@
 <?xml version="1.0" encoding="utf-8"?>
 <android.support.constraint.ConstraintLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".userUI.settings.UserSettingsActivity">
+    tools:context="ca.uqac.lecitoyen.userUI.profile.EditProfileActivity">
 
     <include
-        android:id="@+id/toolbar_setting"
+        android:id="@+id/edit_profil_toolbar"
         layout="@layout/toolbar_default" />
 
-    <ScrollView
-        android:id="@+id/setting_container"
+    <FrameLayout
+        android:id="@+id/edit_profil_container"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_marginTop="54dp">
 
-    </ScrollView>
+    </FrameLayout>
 
 </android.support.constraint.ConstraintLayout>

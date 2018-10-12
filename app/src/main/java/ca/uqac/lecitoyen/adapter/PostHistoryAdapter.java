@@ -21,13 +21,11 @@ import ca.uqac.lecitoyen.database.PostModification;
 public class PostHistoryAdapter extends RecyclerView.Adapter<PostHistoryAdapter.ViewHolder> {
 
     final private static String TAG = "PostHistoryAdapter";
-    final private static String dateFormat = "dd MMM yyyy";
-    final private static String timeFormat = "HH:MM:ss";
-    final private static long second = 1000;
-    final private static long minute = 60 * 1000;
-    final private static long hour = 60 * 60 * 1000;
-    final private static long day = 24 * 60 * 60 * 1000;
 
+    private static long second = 1000;
+    private static long minute = 60 * second;
+    private static long hour = 60 * minute;
+    private static long day = 24 * hour;
 
     private Context mContext;
 
@@ -69,20 +67,29 @@ public class PostHistoryAdapter extends RecyclerView.Adapter<PostHistoryAdapter.
             number = itemView.findViewById(R.id.listview_post_history_number);
             date = itemView.findViewById(R.id.listview_post_history_date);
             post = itemView.findViewById(R.id.listview_post_history_original);
-
         }
     }
 
     private String getHistoryNumber(final PostModification postHistory) {
+        String textOriginal = mContext.getResources().getString(R.string.post_history_original);
+        String textModif    = mContext.getResources().getString(R.string.post_history_number_modify);
         int num = postHistory.getModifcationNumber();
+
         if(num == 0)
-            return "Original";
+            return textOriginal;
         else
-            return "#" + num + " modifié";
+            return textModif + " " + num;
     }
 
-
+    @NonNull
     private String getTimeElapseSincePost(final PostModification postHistory) {
+
+        String textBeforeAgo = mContext.getResources().getString(R.string.text_time_ago) + " ";
+        String textBeforeThe  = mContext.getResources().getString(R.string.text_time_the) + " ";
+        String textBeforeAt  = mContext.getResources().getString(R.string.text_time_at);
+        String textSecond = mContext.getResources().getString(R.string.time_short_second);
+        String textMinute = mContext.getResources().getString(R.string.time_short_minute);
+        String textHour   = mContext.getResources().getString(R.string.time_short_hour);
 
         long postTime = postHistory.getModificationTimestamp();
         long timeElapse = System.currentTimeMillis() - postTime;
@@ -93,29 +100,33 @@ public class PostHistoryAdapter extends RecyclerView.Adapter<PostHistoryAdapter.
         if(timeElapse < minute)
         {
             timeDisplayed = String.valueOf(timeElapse / second);
-            return "il y a " + timeDisplayed + "s";
+            return textBeforeAgo + timeDisplayed + textSecond;
         }
         else if(timeElapse >= minute && timeElapse < hour)
         {
             timeDisplayed = String.valueOf(timeElapse / minute);
-            return "il y a " + timeDisplayed + "m";
+            return textBeforeAgo + timeDisplayed + textMinute;
         }
         else if(timeElapse >= hour && timeElapse < day)
         {
             timeDisplayed = String.valueOf(timeElapse / hour);
-            return "il y a " + timeDisplayed + "h";
+            return textBeforeAgo + timeDisplayed + textHour;
         }
         else
         {
             String dateDisplayed = new SimpleDateFormat(
-                dateFormat,
+                mContext.getResources().getString(R.string.short_date_format),
                 Locale.CANADA_FRENCH)
                 .format(postDate);
             timeDisplayed = new SimpleDateFormat(
-                    timeFormat,
+                    mContext.getResources().getString(R.string.time_format),
                     Locale.CANADA_FRENCH)
                     .format(postDate);
-            return "Le " + dateDisplayed + " à " + timeDisplayed;
+            return textBeforeThe + dateDisplayed + textBeforeAt + timeDisplayed;
         }
+    }
+
+    private void comparePostModification() {
+
     }
 }

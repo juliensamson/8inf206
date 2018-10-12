@@ -19,14 +19,18 @@ import android.widget.FrameLayout;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import com.bumptech.glide.Glide;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.Locale;
 
+import ca.uqac.lecitoyen.BaseActivity;
 import ca.uqac.lecitoyen.R;
 import ca.uqac.lecitoyen.database.DatabaseManager;
 import ca.uqac.lecitoyen.database.Post;
@@ -39,22 +43,17 @@ public class HomeAdapter extends RecyclerView.Adapter<HomeAdapter.ViewHolder> {
 
     private static String TAG = "HomeAdapter";
 
-    private static String longDateFormat = "dd MMM yyyy";
-    private String[] publicChoiceString;
-    private String[] privateChoiceString;
-
     private static long second = 1000;
-    private static long minute = 60 * 1000;
-    private static long hour = 60 * 60 * 1000;
-    private static long day = 24 * 60 * 60 * 1000;
+    private static long minute = 60 * second;
+    private static long hour = 60 * minute;
+    private static long day = 24 * hour;
 
     private Context mContext;
 
     private FirebaseUser mCurrentUser;
+    private StorageReference mUserProfileImageRef;
+    private StorageReference mStorageRef = FirebaseStorage.getInstance().getReference();
 
-    private Post mCurrentPost;
-    private User userDataFromPost = new User();
-    private String mUserId;
     private ArrayList<Post> mPostList = new ArrayList<>();
     private ArrayList<User> mUserList = new ArrayList<>();
 
@@ -77,50 +76,33 @@ public class HomeAdapter extends RecyclerView.Adapter<HomeAdapter.ViewHolder> {
     @Override
     public void onBindViewHolder(@NonNull final HomeAdapter.ViewHolder holder, final int position) {
         Log.d(TAG, "onBindViewHolder " + position);
+
         final Post currentPost = mPostList.get(holder.getAdapterPosition());
-        User userFromPost = getUserPost(holder.getAdapterPosition());
-        //userDataFromPost = getUserPost(position);
+        final User userData = getUserDataFromPost(currentPost);
+        StorageReference userProfilImage = mStorageRef
+                .child("users")
+                .child(userData.getUid())
+                .child("profil-image");
 
-        //holder.profileImage.setImageResource();
-        holder.name.setText(userFromPost.getName());
-        holder.userName.setText(userFromPost.getUsername());
+        //  View
+        Glide.with(mContext).load(userProfilImage).into(holder.profileImage);
+        holder.name.setText(userData.getName());
+        holder.userName.setText(userData.getUsername());
         holder.post.setText(currentPost.getPost());
-        holder.time.setText(getTimeElapseSincePost(holder.getAdapterPosition()));
+        holder.time.setText(getTimeDifference(currentPost));
+        if(currentPost.getModifications().size() > 1) {
+            holder.modify.setVisibility(View.VISIBLE);
+        }
 
-        ////  TODO: display post information
-        holder.postLayout.setOnLongClickListener(new View.OnLongClickListener() {
-            @Override
-            public boolean onLongClick(View view) {
-                showPostHistory(currentPost);
-                return true;
-            }
-        });
-        holder.profileLayout.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Log.d(TAG, "profile_layout clicked");
-            }
-        });
-        holder.moreLayout.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                setMoreChoiceDialog(currentPost);
-            }
-        });
-        holder.postLayout.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Log.d(TAG, "post_layout clicked");
-            }
-        });
+        //  setOnClickListener
+        onClickItem(holder, currentPost);
     }
 
     public class ViewHolder extends RecyclerView.ViewHolder {
 
-        ConstraintLayout mainLayout;
         FrameLayout postLayout, profileLayout, moreLayout;
         CircleImageView profileImage;
-        TextView name, userName, post, time;
+        TextView name, userName, post, time, modify;
 
         public ViewHolder(View itemView) {
             super(itemView);
@@ -131,9 +113,9 @@ public class HomeAdapter extends RecyclerView.Adapter<HomeAdapter.ViewHolder> {
             userName = itemView.findViewById(R.id.listview_home_username);
             post  = itemView.findViewById(R.id.listview_home_post);
             time  = itemView.findViewById(R.id.listview_home_time);
+            modify = itemView.findViewById(R.id.listview_home_modify);
 
             //  Layout
-            mainLayout = itemView.findViewById(R.id.listview_home_main_layout);
             profileLayout = itemView.findViewById(R.id.listview_home_profil_layout);
             moreLayout = itemView.findViewById(R.id.listview_more_layout);
             postLayout = itemView.findViewById(R.id.listview_home_post_layout);
@@ -147,24 +129,65 @@ public class HomeAdapter extends RecyclerView.Adapter<HomeAdapter.ViewHolder> {
         return mPostList.size();
     }
 
-    private User getUserPost(int position) {
+    private void onClickItem(final HomeAdapter.ViewHolder holder, final Post currentPost) {
+        //  Handle onClickListener on the "post layout" where the message is.
+        holder.postLayout.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Log.d(TAG, "post_layout clicked");
+            }
+        });
+        if(currentPost.getModifications().size() > 1) {
+            holder.postLayout.setOnLongClickListener(new View.OnLongClickListener() {
+                @Override
+                public boolean onLongClick(View view) {
+                    showPostHistory(currentPost);
+                    return true;
+                }
+            });
+        }
+
+        //  Handle onClickListener on the "profle layout"
+        holder.profileLayout.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Log.d(TAG, "profile_layout clicked");
+            }
+        });
+
+        //  Handle onClickListener on the "more layout" where the message is.
+        holder.moreLayout.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                setMoreChoiceDialog(currentPost);
+            }
+        });
+    }
+
+    private User getUserDataFromPost(final Post currentPost) {
         //  Get uid for the post encounter
-        mUserId = mPostList.get(position).getUid();
+        String uid = currentPost.getUid();
 
         //  Get the detail of the user from the post
         User user = new User();
         for(int it = 0; it < mUserList.size(); it++) {
             user = mUserList.get(it);
-            if(mUserId.equals(user.getUid())) {
+            if(uid.equals(user.getUid())) {
                 break;
             }
         }
         return user;
     }
 
-    private String getTimeElapseSincePost(int position) {
+    private String getTimeDifference(final Post currentPost) {
 
-        long postTime = mPostList.get(position).getDate();
+        String textBeforeAgo = mContext.getResources().getString(R.string.text_time_ago) + " ";
+        String textBeforeThe  = mContext.getResources().getString(R.string.text_time_the) + " ";
+        String textSecond = mContext.getResources().getString(R.string.time_short_second);
+        String textMinute = mContext.getResources().getString(R.string.time_short_minute);
+        String textHour   = mContext.getResources().getString(R.string.time_short_hour);
+
+        long postTime = currentPost.getDate();
         long timeElapse = System.currentTimeMillis() - postTime;
 
         Date postDate = new Date(postTime) ;
@@ -173,51 +196,44 @@ public class HomeAdapter extends RecyclerView.Adapter<HomeAdapter.ViewHolder> {
         if(timeElapse < minute)
         {
             timeDisplayed = String.valueOf(timeElapse / second);
-            return timeDisplayed + "s";
+            return textBeforeAgo + timeDisplayed + textSecond;
         }
         else if(timeElapse >= minute && timeElapse < hour)
         {
             timeDisplayed = String.valueOf(timeElapse / minute);
-            return timeDisplayed + "m";
+            return textBeforeAgo = timeDisplayed + textMinute;
         }
         else if(timeElapse >= hour && timeElapse < day)
         {
             timeDisplayed = String.valueOf(timeElapse / hour);
-            return timeDisplayed + "h";
+            return textBeforeAgo + timeDisplayed + textHour;
         }
         else
         {
             timeDisplayed = new SimpleDateFormat(
-                    longDateFormat,
+                    mContext.getResources().getString(R.string.short_date_format),
                     Locale.CANADA_FRENCH)
                     .format(postDate);
-            return timeDisplayed;
+            return textBeforeThe + timeDisplayed;
         }
     }
 
     private void setMoreChoiceDialog(final Post currentPost) {
         AlertDialog.Builder builder = new AlertDialog.Builder(mContext);
-        ListView moreChoiceView = new ListView(mContext);
 
-        String[] choiceString;
-        Log.e(TAG, "uid in post: " + currentPost.getUid());
-        Log.e(TAG, "uid connect: " + mCurrentUser.getUid());
         if (mCurrentUser.getUid().equals(currentPost.getUid())) {
             builder.setItems(R.array.private_more_choice_list, new DialogInterface.OnClickListener() {
                 @Override
                 public void onClick(DialogInterface dialogInterface, int i) {
                     switch (i) {
                         case 0:     //Historique
-                            Log.e(TAG, "0");
                             break;
                         case 1:     //Modifier
-                            Log.e(TAG, "1");
                             Intent intent = new Intent(mContext, EditPostActivity.class);
                             intent.putExtra("postid", currentPost.getPostid());
                             mContext.startActivity(intent);
                             break;
                         case 2:     //Supprimer
-                            Log.e(TAG, "2");
                             deleteCurrentPost(currentPost);
                             break;
                         default:
@@ -255,7 +271,7 @@ public class HomeAdapter extends RecyclerView.Adapter<HomeAdapter.ViewHolder> {
 
         AlertDialog.Builder builder = new AlertDialog.Builder(mContext);
 
-        builder.setTitle("Historique")
+        builder.setTitle(mContext.getResources().getString(R.string.post_history))
                 .setView(mRecyclerView)
                 .setPositiveButton("Annuler", new DialogInterface.OnClickListener() {
                     @Override
@@ -264,6 +280,11 @@ public class HomeAdapter extends RecyclerView.Adapter<HomeAdapter.ViewHolder> {
                     }
                 })
                 .show();
+    }
+
+    private void delete(final int position){
+        mPostList.remove(position);
+        notifyItemRemoved(position);
     }
 
     private void deleteCurrentPost(final Post currentPost) {
