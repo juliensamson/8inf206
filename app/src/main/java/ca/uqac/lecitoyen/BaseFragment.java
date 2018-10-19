@@ -2,12 +2,14 @@ package ca.uqac.lecitoyen;
 
 
 import android.app.Activity;
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.annotation.VisibleForTesting;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
@@ -19,6 +21,9 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
+
 import ca.uqac.lecitoyen.Interface.iHandleFragment;
 
 public abstract class BaseFragment extends Fragment {
@@ -27,7 +32,13 @@ public abstract class BaseFragment extends Fragment {
 
     final private static long mCurrentTime = System.currentTimeMillis();
 
+
+
     private iHandleFragment mHandleFragment;
+
+    @VisibleForTesting
+    private ProgressDialog mProgressDialog;
+    private Toolbar mToolbarByDefault;
 
 
     public BaseFragment() {
@@ -45,6 +56,12 @@ public abstract class BaseFragment extends Fragment {
         return super.onCreateView(inflater, container, savedInstanceState);
     }
 
+    /*
+
+            Views
+
+     */
+
     protected void setFragmentToolbar(Activity parentActivity, int returnHomeIcon, boolean isDisplayHomeEnable, boolean hasOptionMenu) {
         try {
             Toolbar toolbar = parentActivity.findViewById(R.id.toolbar_default);
@@ -56,6 +73,27 @@ public abstract class BaseFragment extends Fragment {
         }
     }
 
+    public void showProgressDialog() {
+        if (mProgressDialog == null) {
+            mProgressDialog = new ProgressDialog(getContext());
+            mProgressDialog.setMessage("Loading");
+            mProgressDialog.setIndeterminate(true);
+        }
+
+        mProgressDialog.show();
+    }
+
+    public void hideProgressDialog() {
+        if (mProgressDialog != null && mProgressDialog.isShowing()) {
+            mProgressDialog.dismiss();
+        }
+    }
+
+    /*
+
+            Others
+
+    */
 
     protected long getCurrentTime() {
         return mCurrentTime;

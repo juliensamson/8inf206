@@ -21,6 +21,7 @@ import ca.uqac.lecitoyen.MainActivity;
 import ca.uqac.lecitoyen.R;
 import ca.uqac.lecitoyen.database.DatabaseManager;
 import ca.uqac.lecitoyen.database.User;
+import ca.uqac.lecitoyen.userUI.profile.ChangeEmailFragment;
 
 //TODO: Add Verify email button
 //TODO: Make sure FAcebook user is added on the database
@@ -49,8 +50,6 @@ public class UserSettingsActivity extends BaseActivity implements iHandleFragmen
     private FirebaseUser mUser;
     private AuthCredential mCredential;
     private String mUserId;
-
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

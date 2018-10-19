@@ -9,6 +9,8 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.Exclude;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -19,13 +21,17 @@ public class DatabaseManager  {
 
     private static String TAG = "DatabaseManager";
 
+    public static String CHILD_USERS = "users";
+    public static String CHILD_USER_PICTURE = "user-picture";
+    public static String CHILD_PROFIL_PICTURE = "profil-picture";
+    public static String CHILD_USER_POST = "user-post";
+
     private static DatabaseManager mInstance = null;
     private String mUserId;
     private DatabaseReference mRootRef;
 
 
-    public static synchronized DatabaseManager getInstance()
-    {
+    public static synchronized DatabaseManager getInstance() {
         if(mInstance == null)
             mInstance = new DatabaseManager();
         return mInstance;
@@ -38,6 +44,50 @@ public class DatabaseManager  {
     public DatabaseReference getReference() {
         return mRootRef;
     }
+
+    /*
+
+            Database reference
+
+     */
+
+    public DatabaseReference getDatabaseUser(String uid) {
+        return FirebaseDatabase.getInstance().getReference()
+                .child(DatabaseManager.CHILD_USERS)
+                .child(uid);
+    }
+
+    public DatabaseReference getDatabaseUserProfilPicture(String uid) {
+        return FirebaseDatabase.getInstance().getReference()
+                .child(CHILD_USER_PICTURE)
+                .child(uid)
+                .child(CHILD_PROFIL_PICTURE);
+    }
+
+    public DatabaseReference getDatabaseUserPost(String uid) {
+        return FirebaseDatabase.getInstance().getReference()
+                .child(CHILD_USER_POST)
+                .child(uid);
+    }
+
+    /*
+
+            Storage reference
+
+     */
+
+    public StorageReference getStorageUserProfilPicture(String uid) {
+        return FirebaseStorage.getInstance().getReference()
+                .child(CHILD_USERS)
+                .child(uid)
+                .child(CHILD_PROFIL_PICTURE);
+    }
+
+    /*
+
+            Write data into firebase
+
+     */
 
     @Exclude
     public void writeUserInformation(DatabaseReference db, User userdata) {

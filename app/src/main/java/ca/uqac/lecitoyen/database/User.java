@@ -2,6 +2,8 @@ package ca.uqac.lecitoyen.database;
 
 //TODO: Store user data locally
 
+import java.util.List;
+
 public class User {
 
     //  Public info
@@ -12,6 +14,8 @@ public class User {
     private String username;
 
     private String biography;
+
+    private List<UserStorage> storage;
 
     //  Private info
     private String email;

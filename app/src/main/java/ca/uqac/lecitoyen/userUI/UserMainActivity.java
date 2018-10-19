@@ -29,6 +29,7 @@ import ca.uqac.lecitoyen.BaseActivity;
 import ca.uqac.lecitoyen.Interface.iHandleFragment;
 import ca.uqac.lecitoyen.R;
 import ca.uqac.lecitoyen.adapter.BottomNavigationViewHelper;
+import ca.uqac.lecitoyen.database.UserStorage;
 import ca.uqac.lecitoyen.userUI.cityfeed.CityFragment;
 import ca.uqac.lecitoyen.userUI.newsfeed.HomeFragment;
 import ca.uqac.lecitoyen.userUI.messaging.MessageFragment;
@@ -49,8 +50,10 @@ public class UserMainActivity extends BaseActivity implements iHandleFragment {
 
     private DatabaseReference mRootRef;
     private DatabaseReference mDatabaseRef;
+    private DatabaseReference dbProfilPictureRef;
     private StorageReference mStorageRef;
 
+    public UserStorage mUserStorage;
     public ArrayList<Post> mPostList = new ArrayList<>();
     public ArrayList<User> mUserList = new ArrayList<>();
 
@@ -96,6 +99,7 @@ public class UserMainActivity extends BaseActivity implements iHandleFragment {
 
         //  Database
         mDatabaseRef = FirebaseDatabase.getInstance().getReference();
+
         mStorageRef  = FirebaseStorage.getInstance().getReference();
 
         //  Initialize auth
@@ -104,6 +108,9 @@ public class UserMainActivity extends BaseActivity implements iHandleFragment {
         //mAuth.signOut();
 
         mDatabaseRef.child("users").addListenerForSingleValueEvent(loadUserData());
+        mDatabaseRef.child("user-picture")
+                .child(mAuth.getCurrentUser().getUid())
+                .child("profil-picture").addListenerForSingleValueEvent(loadUserProfilPicture());
 
         init();
 
@@ -229,6 +236,21 @@ public class UserMainActivity extends BaseActivity implements iHandleFragment {
         };
     }
 
+    private ValueEventListener loadUserProfilPicture() {
+        return new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                mUserStorage = dataSnapshot.getValue(UserStorage.class);
+                Log.e(TAG, "loadUserProfilPicture succeed");
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+                Log.e(TAG, "loadUserProfilPicture failed " + databaseError.getMessage());
+            }
+        };
+    }
+
     //  TODO: - Make Key,Value a list, map, etc. in order to add more "extras" to the Bundle
     //        - Allow to sent the class User to get the info directly. and not call mAuth on setting. (make it faster)
     void startActivityWithBundle(Class activity, String key, String value) {
@@ -253,5 +275,9 @@ public class UserMainActivity extends BaseActivity implements iHandleFragment {
 
     public StorageReference getStorageRef() {
         return this.mStorageRef;
+    }
+
+    public UserStorage getUserStorage() {
+        return this.mUserStorage;
     }
 }

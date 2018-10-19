@@ -1,4 +1,4 @@
-package ca.uqac.lecitoyen.userUI.settings;
+package ca.uqac.lecitoyen.userUI.profile;
 
 
 import android.content.Context;
@@ -30,6 +30,7 @@ import ca.uqac.lecitoyen.BaseFragment;
 import ca.uqac.lecitoyen.Interface.iHandleFragment;
 import ca.uqac.lecitoyen.R;
 import ca.uqac.lecitoyen.database.DatabaseManager;
+import ca.uqac.lecitoyen.userUI.settings.UserSettingsActivity;
 
 /**
  * A simple {@link Fragment} subclass.
