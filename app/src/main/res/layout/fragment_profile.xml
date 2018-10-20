@@ -1,4 +1,4 @@
-<ScrollView
+<FrameLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
@@ -8,173 +8,28 @@
 
     <!-- TODO: Update blank fragment layout -->
 
-    <LinearLayout
+    <android.support.v4.widget.NestedScrollView
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="vertical">
-
-        <android.support.constraint.ConstraintLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content">
-
-            <de.hdodenhof.circleimageview.CircleImageView
-                android:id="@+id/profil_picture"
-                android:layout_width="96dp"
-                android:layout_height="96dp"
-                android:layout_marginBottom="16dp"
-                android:layout_marginEnd="16dp"
-                android:layout_marginStart="16dp"
-                android:layout_marginTop="16dp"
-                android:src="@mipmap/ic_launcher_round"
-                app:civ_border_color="@color/black_900"
-                app:civ_border_width="1dp"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toStartOf="@+id/linearLayout"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
-
-            <TextView
-                android:id="@+id/button_edit_profile"
-                android:layout_width="217dp"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="16dp"
-                android:layout_marginEnd="16dp"
-                android:layout_marginStart="16dp"
-                android:layout_marginTop="16dp"
-                android:padding="8dp"
-                android:background="@drawable/button_rectangle_shape"
-                android:text="Editer profil"
-                android:textAlignment="center"
-                android:textColor="@color/black_900"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toEndOf="@+id/listview_home_profil_image"
-                app:layout_constraintTop_toBottomOf="@+id/linearLayout" />
-
-            <LinearLayout
-                android:id="@+id/linearLayout"
-                android:layout_width="235dp"
-                android:layout_height="wrap_content"
-                android:layout_marginEnd="16dp"
-                android:layout_marginTop="16dp"
-                android:orientation="vertical"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toTopOf="parent">
-
-                <TextView
-                    android:id="@+id/profil_name"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:text="Name"
-                    android:textColor="@color/black_900"
-                    android:textStyle="bold" />
-
-                <TextView
-                    android:id="@+id/profil_biography"
-                    android:layout_width="match_parent"
-                    android:layout_height="43dp"
-                    android:text="Biographie"
-                    android:textColor="@color/black_600" />
-
-            </LinearLayout>
-
-        </android.support.constraint.ConstraintLayout>
+        android:layout_height="wrap_content">
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:weightSum="3"
-            android:orientation="horizontal">
+            android:orientation="vertical">
 
-            <LinearLayout
+            <include
+                android:id="@+id/layout_profil_user_information"
+                layout="@layout/layout_profil_user_information" />
+
+            <android.support.v7.widget.RecyclerView
+                android:id="@+id/profil_publication_recycler_view"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:gravity="center_horizontal"
-                android:layout_weight="1"
-                android:orientation="vertical">
+                android:layout_height="match_parent">
 
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Publications"
-                    android:textAlignment="center" />
-
-                <TextView
-                    android:id="@+id/profil_publication_count"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_margin="8dp"
-                    android:text="0"
-                    android:textColor="@color/black_900"
-                    android:textStyle="bold" />
-
-            </LinearLayout>
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:gravity="center_horizontal"
-                android:orientation="vertical">
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:textAlignment="center"
-                    android:text="Following" />
-
-                <TextView
-                    android:id="@+id/profil_following_count"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_margin="8dp"
-                    android:text="0"
-                    android:textColor="@color/black_900"
-                    android:textStyle="bold" />
-
-            </LinearLayout>
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:gravity="center_horizontal"
-                android:orientation="vertical">
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Followers" />
-
-                <TextView
-                    android:id="@+id/profil_followers_count"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_margin="8dp"
-                    android:text="0"
-                    android:textColor="@color/black_900"
-                    android:textStyle="bold" />
-
-            </LinearLayout>
+            </android.support.v7.widget.RecyclerView>
 
         </LinearLayout>
 
-        <!--    divider     -->
-        <View
-            android:layout_width="match_parent"
-            android:layout_height="1dp"
-            android:background="@color/black_900"
-            android:alpha="0.1"
-            app:layout_constraintBottom_toBottomOf="parent"/>
+    </android.support.v4.widget.NestedScrollView>
 
-        <android.support.v7.widget.RecyclerView
-            android:id="@+id/profil_publication_recycler_view"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:scrollbars="vertical">
-
-        </android.support.v7.widget.RecyclerView>
-
-    </LinearLayout>
-
-</ScrollView>
+</FrameLayout>

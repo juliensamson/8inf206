@@ -1,18 +1,14 @@
 package ca.uqac.lecitoyen.database;
 
-import android.support.annotation.NonNull;
 import android.util.Log;
 
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.Exclude;
 import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.database.Query;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -22,9 +18,11 @@ public class DatabaseManager  {
     private static String TAG = "DatabaseManager";
 
     public static String CHILD_USERS = "users";
-    public static String CHILD_USER_PICTURE = "user-picture";
-    public static String CHILD_PROFIL_PICTURE = "profil-picture";
+    public static String CHILD_USER_PROFIL_PICTURE = "user-profil-picture";
+    public static String CHILD_POSTS = "posts";
     public static String CHILD_USER_POST = "user-post";
+    public static String CHILD_POST_STORAGE = "post-storage";
+    public static String ORDER_BY_DATE = "inverseDate";
 
     private static DatabaseManager mInstance = null;
     private String mUserId;
@@ -57,11 +55,21 @@ public class DatabaseManager  {
                 .child(uid);
     }
 
+    public DatabaseReference getDatabaseUsers() {
+        return FirebaseDatabase.getInstance().getReference()
+                .child(DatabaseManager.CHILD_USERS);
+    }
+
     public DatabaseReference getDatabaseUserProfilPicture(String uid) {
         return FirebaseDatabase.getInstance().getReference()
-                .child(CHILD_USER_PICTURE)
-                .child(uid)
-                .child(CHILD_PROFIL_PICTURE);
+                .child(CHILD_USER_PROFIL_PICTURE)
+                .child(uid);
+    }
+
+    public Query getDatabasePostsOrderByDate() {
+        return FirebaseDatabase.getInstance().getReference()
+                .child(CHILD_POSTS)
+                .orderByChild(ORDER_BY_DATE);
     }
 
     public DatabaseReference getDatabaseUserPost(String uid) {
@@ -76,11 +84,16 @@ public class DatabaseManager  {
 
      */
 
+    public StorageReference getStoragePost(String postId) {
+        return FirebaseStorage.getInstance().getReference()
+                .child(CHILD_POST_STORAGE)
+                .child(postId);
+    }
+
     public StorageReference getStorageUserProfilPicture(String uid) {
         return FirebaseStorage.getInstance().getReference()
-                .child(CHILD_USERS)
-                .child(uid)
-                .child(CHILD_PROFIL_PICTURE);
+                .child(CHILD_USER_PROFIL_PICTURE)
+                .child(uid);
     }
 
     /*

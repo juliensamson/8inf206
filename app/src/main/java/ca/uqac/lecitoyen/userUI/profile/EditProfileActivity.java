@@ -43,9 +43,6 @@ public class EditProfileActivity extends BaseActivity implements iHandleFragment
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_edit_profile);
 
-        //  Set view
-
-
         //  SetToolbar
         mToolbar = findViewById(R.id.edit_profil_toolbar);
         mToolbarTitle = findViewById(R.id.toolbar_title);

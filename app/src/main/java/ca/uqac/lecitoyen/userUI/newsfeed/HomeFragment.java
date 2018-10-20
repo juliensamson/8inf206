@@ -6,7 +6,6 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -18,10 +17,10 @@ import android.widget.ProgressBar;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
@@ -29,8 +28,8 @@ import java.util.ArrayList;
 import ca.uqac.lecitoyen.BaseFragment;
 import ca.uqac.lecitoyen.Interface.iHandleFragment;
 import ca.uqac.lecitoyen.R;
+import ca.uqac.lecitoyen.adapter.FeedAdapter;
 import ca.uqac.lecitoyen.userUI.UserMainActivity;
-import ca.uqac.lecitoyen.adapter.HomeAdapter;
 import ca.uqac.lecitoyen.database.DatabaseManager;
 import ca.uqac.lecitoyen.database.Post;
 import ca.uqac.lecitoyen.database.User;
@@ -46,9 +45,11 @@ public class HomeFragment extends BaseFragment implements View.OnClickListener {
 
     private Post mPost;
 
-    DatabaseReference mRootRef;
-
-    private FirebaseUser mCurrentUser;
+    private DatabaseManager dbManager;
+    private FirebaseAuth fbAuth;
+    private FirebaseUser fbUser;
+    private DatabaseReference dbUsersData;
+    private Query dbPostsOrderByDate;
 
     private RecyclerView mRecyclerView;
     private RecyclerView.Adapter mAdapter;
@@ -65,46 +66,55 @@ public class HomeFragment extends BaseFragment implements View.OnClickListener {
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
-        mHandleFragment.setToolbarTitle(getTag());
-        activity = (UserMainActivity) getActivity();
-
-        mRootRef = DatabaseManager.getInstance().getReference();
-        mCurrentUser = FirebaseAuth.getInstance().getCurrentUser();
-
+        this.activity = (UserMainActivity) getActivity();
+        this.dbManager = DatabaseManager.getInstance();
+        this.fbAuth = FirebaseAuth.getInstance();
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        Log.d(TAG, "onCreateView");
-
         View view = inflater.inflate(R.layout.fragment_home, container, false);
+
+        //  Toolbar
+        mHandleFragment.setToolbarTitle(getTag());
+
+        //  View
+        mRecyclerView = view.findViewById(R.id.home_fragment_recycler_view);
 
         //  Button
         view.findViewById(R.id.home_fragment_add_message).setOnClickListener(this);
 
-        //  View
-        mRecyclerView = view.findViewById(R.id.home_fragment_recycler_view);;
-
-
+        //  Set recycler view
         mLayoutManager = new LinearLayoutManager(getActivity());
         mRecyclerView.setLayoutManager(mLayoutManager);
 
-        mAdapter = new HomeAdapter(getContext(), mCurrentUser, postList, activity.getUserList());
-        mRecyclerView.setAdapter(mAdapter);
-
-        //initUI();
-
-        //updateUI();
-
+       // mRecyclerView.setAdapter(mAdapter);
         return view;
     }
 
     @Override
     public void onStart() {
         super.onStart();
-        updateUI();
-        Log.d(TAG, "onStart");
+        if(fbAuth != null) {
+
+            fbUser = fbAuth.getCurrentUser();
+
+            if(fbUser != null) {
+
+                String uid = fbUser.getUid();
+
+                //  Get database & storage reference
+                dbUsersData = dbManager.getDatabaseUsers();
+                dbPostsOrderByDate = dbManager.getDatabasePostsOrderByDate();
+                //dbUserProfilPicture = dbManager.getDatabaseUserProfilPicture(uid);
+                //dbUserPost = dbManager.getDatabaseUserPost(uid);
+                //stUserProfilPicture = dbManager.getStorageUserProfilPicture(uid);
+
+                updateUI();
+            }
+        } else {
+            Log.e(TAG, "auth is null");
+        }
     }
 
     @Override
@@ -126,38 +136,38 @@ public class HomeFragment extends BaseFragment implements View.OnClickListener {
     }
 
     private void updateUI() {
-        Log.d(TAG, "updateUI");
+        //  Load user-data
+        //dbUsersData.addListenerForSingleValueEvent();
+        //  Load posts
+        dbPostsOrderByDate.addValueEventListener(loadUserPostData());
 
-        mRootRef.child("posts")
-                .orderByChild("inverseDate")
-                .addValueEventListener(loadUserPostData());
     }
 
     private ValueEventListener loadUserPostData() {
         return new ValueEventListener() {
-                    @Override
-                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                        postList.clear();
+                @Override
+                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                    postList.clear();
 
-                        final long[] pendingLoadCount = { dataSnapshot.getChildrenCount() };
+                    final long[] pendingLoadCount = { dataSnapshot.getChildrenCount() };
 
-                        for (DataSnapshot postSnapshot : dataSnapshot.getChildren()) {
-                            postList.add(postSnapshot.getValue(Post.class));
-                            pendingLoadCount[0] = pendingLoadCount[0] - 1;
-                        }
-
-
-                        if (pendingLoadCount[0] == 0) {
-                            mAdapter = new HomeAdapter(getContext(), mCurrentUser, postList, activity.getUserList());
-                            mRecyclerView.setAdapter(mAdapter);
-                        }
-
+                    for (DataSnapshot postSnapshot : dataSnapshot.getChildren()) {
+                        postList.add(postSnapshot.getValue(Post.class));
+                        pendingLoadCount[0] = pendingLoadCount[0] - 1;
                     }
-                    @Override
-                    public void onCancelled(@NonNull DatabaseError databaseError) {
-                        Log.e(TAG, "loadUserPostData failed " + databaseError.getMessage());
+
+
+                    if (pendingLoadCount[0] == 0) {
+                        mAdapter = new FeedAdapter(getContext(), fbUser, postList, activity.getUserList());
+                        mRecyclerView.setAdapter(mAdapter);
                     }
-                };
+
+                }
+                @Override
+                public void onCancelled(@NonNull DatabaseError databaseError) {
+                    Log.e(TAG, "loadUserPostData failed " + databaseError.getMessage());
+                }
+        };
     }
 
     private ValueEventListener loadUserData() {

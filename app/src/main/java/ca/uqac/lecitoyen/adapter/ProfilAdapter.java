@@ -3,9 +3,7 @@ package ca.uqac.lecitoyen.adapter;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.os.Bundle;
 import android.support.annotation.NonNull;
-import android.support.constraint.ConstraintLayout;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -13,14 +11,10 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
 import android.widget.FrameLayout;
-import android.widget.ListView;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
-import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
@@ -30,18 +24,18 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.Locale;
 
-import ca.uqac.lecitoyen.BaseActivity;
 import ca.uqac.lecitoyen.R;
 import ca.uqac.lecitoyen.database.DatabaseManager;
 import ca.uqac.lecitoyen.database.Post;
 import ca.uqac.lecitoyen.database.PostModification;
 import ca.uqac.lecitoyen.database.User;
+import ca.uqac.lecitoyen.database.UserStorage;
 import ca.uqac.lecitoyen.userUI.newsfeed.EditPostActivity;
 import de.hdodenhof.circleimageview.CircleImageView;
 
-public class HomeAdapter extends RecyclerView.Adapter<HomeAdapter.ViewHolder> {
+public class ProfilAdapter extends RecyclerView.Adapter<ProfilAdapter.ViewHolder> {
 
-    private static String TAG = "HomeAdapter";
+    private static String TAG = "FeedAdapter";
 
     private static long second = 1000;
     private static long minute = 60 * second;
@@ -53,72 +47,70 @@ public class HomeAdapter extends RecyclerView.Adapter<HomeAdapter.ViewHolder> {
     private FirebaseUser mCurrentUser;
     private StorageReference mUserProfileImageRef;
     private StorageReference mStorageRef = FirebaseStorage.getInstance().getReference();
+    private DatabaseManager dbManager = DatabaseManager.getInstance();
+    private StorageReference stProfilPicture;
 
-    private ArrayList<Post> mPostList = new ArrayList<>();
-    private ArrayList<User> mUserList = new ArrayList<>();
+    //  For profil fragment
+    private User mUserProfil;
+    private ArrayList<Post> mUserPost = new ArrayList<>();
 
-    public HomeAdapter(Context context, FirebaseUser currentUser, ArrayList<Post> postList, ArrayList<User> userList) {
-        Log.d(TAG, "HomeAdapter");
+    public ProfilAdapter(Context context, User user, ArrayList<Post> userPost) {
+        Log.d(TAG, "FeedAdapter");
         this.mContext = context;
-        this.mCurrentUser = currentUser;
-        this.mPostList = postList;
-        this.mUserList = userList;
+        this.mUserProfil = user;
+        this.mUserPost = userPost;
     }
 
     @NonNull
     @Override
-    public HomeAdapter.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+    public ProfilAdapter.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         Log.d(TAG, "onCreateViewHolder");
-        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.listview_home, parent, false);
-        return new HomeAdapter.ViewHolder(view);
+        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.listview_feed, parent, false);
+        return new ProfilAdapter.ViewHolder(view);
     }
 
     @Override
-    public void onBindViewHolder(@NonNull final HomeAdapter.ViewHolder holder, final int position) {
+    public void onBindViewHolder(@NonNull final ProfilAdapter.ViewHolder holder, final int position) {
         Log.d(TAG, "onBindViewHolder " + position);
 
-        final Post currentPost = mPostList.get(holder.getAdapterPosition());
-        final User userData = getUserDataFromPost(currentPost);
-        StorageReference userProfilImage = mStorageRef
-                .child("users")
-                .child(userData.getUid())
-                .child("profil-image");
+        //  Get post & user data
+        final Post currPost = mUserPost.get(holder.getAdapterPosition());
+        final User currUser = mUserProfil;
+        StorageReference storage = dbManager.getStorageUserProfilPicture(currUser.getUid());
 
-        //  View
-        Glide.with(mContext).load(userProfilImage).into(holder.profileImage);
-        holder.name.setText(userData.getName());
-        holder.userName.setText(userData.getUsername());
-        holder.post.setText(currentPost.getPost());
-        holder.time.setText(getTimeDifference(currentPost));
-        if(currentPost.getModifications().size() > 1) {
-            holder.modify.setVisibility(View.VISIBLE);
-        }
+        //  Views
+        Glide.with(mContext).load(storage.child(currUser.getPid())).into(holder.profilPicture);
+        holder.name.setText(currUser.getName());
+        holder.userName.setText(currUser.getUsername());
+        holder.post.setText(currPost.getPost());
+        holder.time.setText(getTimeDifference(currPost));
+        if(currPost.getModifications().size() > 1) { holder.modify.setVisibility(View.VISIBLE);}
 
-        //  setOnClickListener
-        onClickItem(holder, currentPost);
+        //  OnClickItem
+        onClickItem(holder, currPost);
     }
 
     public class ViewHolder extends RecyclerView.ViewHolder {
 
         FrameLayout postLayout, profileLayout, moreLayout;
-        CircleImageView profileImage;
+        CircleImageView profilPicture;
         TextView name, userName, post, time, modify;
 
         public ViewHolder(View itemView) {
             super(itemView);
 
             //  View
-            profileImage = itemView.findViewById(R.id.listview_home_profil_image);
-            name = itemView.findViewById(R.id.listview_home_name);
-            userName = itemView.findViewById(R.id.listview_home_username);
-            post  = itemView.findViewById(R.id.listview_home_post);
-            time  = itemView.findViewById(R.id.listview_home_time);
-            modify = itemView.findViewById(R.id.listview_home_modify);
+            profilPicture = itemView.findViewById(R.id.listview_feed_profil_picture);
+            name = itemView.findViewById(R.id.listview_feed_name);
+            userName = itemView.findViewById(R.id.listview_feed_username);
+            post  = itemView.findViewById(R.id.listview_feed_post);
+            time  = itemView.findViewById(R.id.listview_feed_time);
+            modify = itemView.findViewById(R.id.listview_feed_modify);
 
             //  Layout
-            profileLayout = itemView.findViewById(R.id.listview_home_profil_layout);
-            moreLayout = itemView.findViewById(R.id.listview_more_layout);
-            postLayout = itemView.findViewById(R.id.listview_home_post_layout);
+            profileLayout = itemView.findViewById(R.id.listview_feed_profil_layout);
+            moreLayout = itemView.findViewById(R.id.listview_feed_more_layout);
+            postLayout = itemView.findViewById(R.id.listview_feed_post_layout);
         }
     }
 
@@ -126,10 +118,10 @@ public class HomeAdapter extends RecyclerView.Adapter<HomeAdapter.ViewHolder> {
 
     @Override
     public int getItemCount() {
-        return mPostList.size();
+        return mUserPost.size();
     }
 
-    private void onClickItem(final HomeAdapter.ViewHolder holder, final Post currentPost) {
+    private void onClickItem(final ProfilAdapter.ViewHolder holder, final Post currentPost) {
         //  Handle onClickListener on the "post layout" where the message is.
         holder.postLayout.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -162,21 +154,6 @@ public class HomeAdapter extends RecyclerView.Adapter<HomeAdapter.ViewHolder> {
                 setMoreChoiceDialog(currentPost);
             }
         });
-    }
-
-    private User getUserDataFromPost(final Post currentPost) {
-        //  Get uid for the post encounter
-        String uid = currentPost.getUid();
-
-        //  Get the detail of the user from the post
-        User user = new User();
-        for(int it = 0; it < mUserList.size(); it++) {
-            user = mUserList.get(it);
-            if(uid.equals(user.getUid())) {
-                break;
-            }
-        }
-        return user;
     }
 
     private String getTimeDifference(final Post currentPost) {
@@ -283,7 +260,7 @@ public class HomeAdapter extends RecyclerView.Adapter<HomeAdapter.ViewHolder> {
     }
 
     private void delete(final int position){
-        mPostList.remove(position);
+        mUserPost.remove(position);
         notifyItemRemoved(position);
     }
 
@@ -298,5 +275,4 @@ public class HomeAdapter extends RecyclerView.Adapter<HomeAdapter.ViewHolder> {
                 .child(currentPost.getPostid())
                 .removeValue();
     }
-
 }

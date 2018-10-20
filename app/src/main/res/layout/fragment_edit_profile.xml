@@ -35,9 +35,7 @@
                         android:id="@+id/edit_profil_photo"
                         android:layout_width="96dp"
                         android:layout_height="96dp"
-                        android:src="@mipmap/ic_launcher_round"
-                        app:civ_border_color="@color/black_900"
-                        app:civ_border_width="1dp"/>
+                        android:src="@mipmap/ic_launcher_round" />
 
                     <Button
                         android:id="@+id/edit_profil_change_photo"

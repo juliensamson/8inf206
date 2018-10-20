@@ -96,6 +96,21 @@
 
     <string name="toast_email_auth_fail">Échec d\'authentification avec email</string>
 
+
+    <!--***********     ListView    ***********-->
+    <string-array name="user_settings_not_verify">
+        <item>Vérifier votre comptre</item>
+        <item>Changer mot de passe</item>
+        <item>Supprimer votre compte</item>
+        <item>Se déconnecter</item>
+    </string-array>
+
+    <string-array name="user_settings_verify">
+        <item>Changer mot de passe</item>
+        <item>Supprimer votre compte</item>
+        <item>Se déconnecter</item>
+    </string-array>
+
     <string-array name="public_more_choice_list">
         <item>Historique</item>
     </string-array>

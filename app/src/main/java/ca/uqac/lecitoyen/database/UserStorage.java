@@ -5,8 +5,6 @@ public class UserStorage {
 
     private String pid;
 
-    private String location;
-
     private String format;
 
     private String description;
@@ -17,9 +15,8 @@ public class UserStorage {
 
     public UserStorage() {}
 
-    public UserStorage(String pid, String location, long uploadTimestamp) {
-        this.pid = location + pid;
-        this.location = location;
+    public UserStorage(String pid, long uploadTimestamp) {
+        this.pid = "profil-picture" + pid;
         this.format = "";
         this.description = "";
         this.uploadTimestamp = uploadTimestamp;
@@ -32,14 +29,6 @@ public class UserStorage {
 
     public void setIid(String iid) {
         this.pid = iid;
-    }
-
-    public String getLocation() {
-        return location;
-    }
-
-    public void setLocation(String location) {
-        this.location = location;
     }
 
     public String getFormat() {

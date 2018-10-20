@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <android.support.constraint.ConstraintLayout
-    android:id="@+id/listview_home_main_layout"
+    android:id="@+id/listview_feed_main_layout"
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
@@ -27,18 +27,16 @@
 
             <!---   PROFILE LAYOUT: onClick goes to profile    -->
             <FrameLayout
-                android:id="@+id/listview_home_profil_layout"
+                android:id="@+id/listview_feed_profil_layout"
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
                 android:layout_gravity="start">
 
                 <de.hdodenhof.circleimageview.CircleImageView
-                    android:id="@+id/listview_home_profil_image"
+                    android:id="@+id/listview_feed_profil_picture"
                     android:layout_width="48dp"
                     android:layout_height="48dp"
-                    android:src="@mipmap/ic_launcher_round"
-                    app:civ_border_width="1dp"
-                    app:civ_border_color="@color/black_900"/>
+                    android:src="@mipmap/ic_launcher_round" />
 
                 <LinearLayout
                     android:layout_width="wrap_content"
@@ -53,7 +51,7 @@
                         android:orientation="horizontal">
 
                         <TextView
-                            android:id="@+id/listview_home_name"
+                            android:id="@+id/listview_feed_name"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_marginEnd="8dp"
@@ -69,14 +67,14 @@
                             android:textStyle="bold" />
 
                         <TextView
-                            android:id="@+id/listview_home_time"
+                            android:id="@+id/listview_feed_time"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_marginEnd="8dp"
                             android:text="date of posting"/>
 
                         <TextView
-                            android:id="@+id/listview_home_modify"
+                            android:id="@+id/listview_feed_modify"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:visibility="gone"
@@ -86,7 +84,7 @@
                     </LinearLayout>
 
                     <TextView
-                        android:id="@+id/listview_home_username"
+                        android:id="@+id/listview_feed_username"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginEnd="8dp"
@@ -99,7 +97,7 @@
 
             <!---   MORE LAYOUT: onClick shows list item to select    -->
             <FrameLayout
-                android:id="@+id/listview_more_layout"
+                android:id="@+id/listview_feed_more_layout"
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
                 android:layout_gravity="end">
@@ -116,13 +114,13 @@
         </FrameLayout>
 
         <FrameLayout
-            android:id="@+id/listview_home_post_layout"
+            android:id="@+id/listview_feed_post_layout"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:longClickable="true">
 
             <TextView
-                android:id="@+id/listview_home_post"
+                android:id="@+id/listview_feed_post"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="@dimen/activity_vertical_margin"

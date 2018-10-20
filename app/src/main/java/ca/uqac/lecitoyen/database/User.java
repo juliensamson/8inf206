@@ -9,13 +9,13 @@ public class User {
     //  Public info
     private String uid;
 
+    private String pid;
+
     private String name;
 
     private String username;
 
     private String biography;
-
-    private List<UserStorage> storage;
 
     //  Private info
     private String email;
@@ -41,6 +41,7 @@ public class User {
 
     public User(String uid, String name, String username, String email, String phone, long creationTimestamp, String provider) {
         this.uid = uid;
+        this.pid = "";
         this.name = name;
         this.username = username;
         this.biography = "";
@@ -54,11 +55,11 @@ public class User {
         this.provider = provider;
     }
 
+    /*
 
-    //
-    //  Getter & Setter
-    //
+            Getter & Setter
 
+     */
 
     public String getUid() {
         return uid;
@@ -66,6 +67,14 @@ public class User {
 
     public void setUid(String uid) {
         this.uid = uid;
+    }
+
+    public String getPid() {
+        return pid;
+    }
+
+    public void setPid(String pid) {
+        this.pid = pid;
     }
 
     public String getName() {

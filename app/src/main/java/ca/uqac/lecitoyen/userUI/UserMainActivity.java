@@ -48,21 +48,22 @@ public class UserMainActivity extends BaseActivity implements iHandleFragment {
 
     private iHandleFragment mHandleFragment;
 
-    private DatabaseReference mRootRef;
-    private DatabaseReference mDatabaseRef;
-    private DatabaseReference dbProfilPictureRef;
-    private StorageReference mStorageRef;
+    private DatabaseManager dbManager;
+    private DatabaseReference dbUsersData;
+    private DatabaseReference dbUserProfilPicture;
+    private DatabaseReference dbUsersProfilPicture;
 
     public UserStorage mUserStorage;
     public ArrayList<Post> mPostList = new ArrayList<>();
     public ArrayList<User> mUserList = new ArrayList<>();
+    private ArrayList<UserStorage> listUserProfilPicture = new ArrayList<>();
 
     private Toolbar mUserToolbar;
     private TextView mUserToolbarTitle;
 
     //Firebase
-    private FirebaseAuth mAuth;
-    private FirebaseUser mUser;
+    private FirebaseAuth fbAuth;
+    private FirebaseUser fbUser;
 
     private BottomNavigationView.OnNavigationItemSelectedListener mOnNavigationItemSelectedListener
             = new BottomNavigationView.OnNavigationItemSelectedListener() {
@@ -98,19 +99,10 @@ public class UserMainActivity extends BaseActivity implements iHandleFragment {
         Log.d(TAG, "Activity created");
 
         //  Database
-        mDatabaseRef = FirebaseDatabase.getInstance().getReference();
-
-        mStorageRef  = FirebaseStorage.getInstance().getReference();
+        dbManager = DatabaseManager.getInstance();
 
         //  Initialize auth
-        mAuth = FirebaseAuth.getInstance();
-
-        //mAuth.signOut();
-
-        mDatabaseRef.child("users").addListenerForSingleValueEvent(loadUserData());
-        mDatabaseRef.child("user-picture")
-                .child(mAuth.getCurrentUser().getUid())
-                .child("profil-picture").addListenerForSingleValueEvent(loadUserProfilPicture());
+        fbAuth = FirebaseAuth.getInstance();
 
         init();
 
@@ -128,9 +120,29 @@ public class UserMainActivity extends BaseActivity implements iHandleFragment {
     @Override
     protected void onStart() {
         super.onStart();
-        mUser = mAuth.getCurrentUser();
 
-        //mAuth.signOut();
+        if(fbAuth != null)
+        {
+            fbUser = fbAuth.getCurrentUser();
+
+            if(fbUser != null)
+            {
+                String uid = fbUser.getUid();
+
+                //  Get main user profil picture
+                dbUserProfilPicture = dbManager.getDatabaseUserProfilPicture(uid);
+
+                //  Get the list of all users
+                dbUsersData = dbManager.getDatabaseUser("");
+
+                //  Get the list of all picture id
+                dbUsersProfilPicture = dbManager.getReference().child("user-picture");
+
+                updateUI();
+            }
+        } else {
+            Log.e(TAG, "auth is null");
+        }
     }
 
     @Override
@@ -148,7 +160,7 @@ public class UserMainActivity extends BaseActivity implements iHandleFragment {
         {
             case R.id.menu_setting:
                 Log.w(TAG, "menu_setting clicked");
-                startActivityWithBundle(UserSettingsActivity.class, "userid", mUser.getUid());
+                startActivityWithBundle(UserSettingsActivity.class, "userid", fbUser.getUid());
                 return true;
         }
         return super.onOptionsItemSelected(item);
@@ -160,8 +172,15 @@ public class UserMainActivity extends BaseActivity implements iHandleFragment {
         moveTaskToBack(true);
     }
 
-    public ArrayList<User> getUserList() {
-        return this.mUserList;
+    private void updateUI() {
+        //  Main user profil picture
+        //dbUserProfilPicture.addListenerForSingleValueEvent(loadUserProfilPicture());
+
+        //  List of user list data
+        dbUsersData.addListenerForSingleValueEvent(loadUserList());
+
+        //  List of user profil picture
+        //dbUsersProfilPicture.addListenerForSingleValueEvent(loadListUserProfilPicture());
     }
 
     private void init() {
@@ -219,16 +238,20 @@ public class UserMainActivity extends BaseActivity implements iHandleFragment {
         }
     }
 
-    private ValueEventListener loadUserData() {
+    /*
+
+            Firebase data
+
+     */
+
+    private ValueEventListener loadUserList() {
         return new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 for(DataSnapshot userSnapshot: dataSnapshot.getChildren()) {
                     mUserList.add(userSnapshot.getValue(User.class));
-                    Log.e(TAG, "Size UserList: " + mUserList.size());
                 }
             }
-
             @Override
             public void onCancelled(@NonNull DatabaseError databaseError) {
                 Log.e(TAG, "loadUserData failed " + databaseError.getMessage());
@@ -236,7 +259,34 @@ public class UserMainActivity extends BaseActivity implements iHandleFragment {
         };
     }
 
-    private ValueEventListener loadUserProfilPicture() {
+    /*private ValueEventListener loadListUserProfilPicture() {
+        return new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+
+                DataSnapshot userPicture = dataSnapshot.child("profil-picture");
+
+                Log.e(TAG, "User: " + userPicture.getValue());
+                for(DataSnapshot picture: userPicture.getChildren()) {
+                    Log.e(TAG, "User: " + picture.getValue());
+                    if(picture.getValue(UserStorage.class).isProfilPicture())
+                        listUserProfilPicture.add(picture.getValue(UserStorage.class));
+                    //for(DataSnapshot userPicture: user.getChildren()) {
+                    //    if(userPicture.getValue(UserStorage.class).isProfilPicture())
+                    //        listUserProfilPicture.add(userPicture.getValue(UserStorage.class));
+                    //}
+                }
+                Log.e(TAG, "loadUserSProfilPicture succeed");
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+                Log.e(TAG, "loadUserProfilPicture failed " + databaseError.getMessage());
+            }
+        };
+    }*/
+
+    /*private ValueEventListener loadUserProfilPicture() {
         return new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
@@ -249,7 +299,7 @@ public class UserMainActivity extends BaseActivity implements iHandleFragment {
                 Log.e(TAG, "loadUserProfilPicture failed " + databaseError.getMessage());
             }
         };
-    }
+    }*/
 
     //  TODO: - Make Key,Value a list, map, etc. in order to add more "extras" to the Bundle
     //        - Allow to sent the class User to get the info directly. and not call mAuth on setting. (make it faster)
@@ -265,16 +315,17 @@ public class UserMainActivity extends BaseActivity implements iHandleFragment {
         startActivity(intent);
     }
 
+    public ArrayList<User> getUserList() {
+        return this.mUserList;
+    }
+
+    public ArrayList<UserStorage> getListUserProfilPicture() {
+        return this.listUserProfilPicture;
+    }
+
+
     public FirebaseAuth getUserAuth() {
-        return this.mAuth;
-    }
-
-    public DatabaseReference getDatabaseRef() {
-        return this.mDatabaseRef;
-    }
-
-    public StorageReference getStorageRef() {
-        return this.mStorageRef;
+        return this.fbAuth;
     }
 
     public UserStorage getUserStorage() {
