@@ -1,15 +1,28 @@
 <?xml version="1.0" encoding="utf-8"?>
-<menu xmlns:android="http://schemas.android.com/apk/res/android">
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    app:bbn_itemColorActive="@color/i_primary_800"
+    app:bbn_itemColorInactive="@color/white_600"
+    app:bbn_badgeColor="@color/i_secondary_700"
+    app:bbn_alwaysShowLabels="false"
+    app:itemIconTint="@drawable/bottom_navigation_color_selector"
+    app:itemTextColor="@drawable/bottom_navigation_color_selector">
 
     <item
-        android:id="@+id/navigation_city"
-        android:icon="@drawable/ic_location_city_black_24dp"
-        android:title="@string/fragment_city" />
-
-    <item
-        android:id="@+id/navigation_home"
+        android:id="@+id/navigation_newsfeed"
         android:icon="@drawable/ic_home_black_24dp"
-        android:title="@string/fragment_home" />
+        android:title="@string/fragment_newsfeed" />
+
+    <item
+        android:id="@+id/navigation_search"
+        android:icon="@drawable/ic_search_black_24dp"
+        android:title="@string/fragment_search" />
+
+    <item
+        android:id="@+id/navigation_cityfeed"
+        android:icon="@drawable/ic_location_city_black_24dp"
+        android:title="@string/fragment_cityfeed" />
+
 
     <item
         android:id="@+id/navigation_messages"
@@ -17,8 +30,8 @@
         android:title="@string/fragment_messages" />
 
     <item
-        android:id="@+id/navigation_profile"
+        android:id="@+id/navigation_profil"
         android:icon="@drawable/ic_account_box_black_24dp"
-        android:title="@string/fragment_profile" />
+        android:title="@string/fragment_profil" />
 
 </menu>

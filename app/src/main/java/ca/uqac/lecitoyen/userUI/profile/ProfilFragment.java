@@ -36,7 +36,7 @@ import ca.uqac.lecitoyen.database.UserStorage;
 import ca.uqac.lecitoyen.userUI.UserMainActivity;
 import de.hdodenhof.circleimageview.CircleImageView;
 
-public class ProfileFragment extends BaseFragment implements View.OnClickListener {
+public class ProfilFragment extends BaseFragment implements View.OnClickListener {
 
     private static final String TAG = "ProfilFragment";
     private UserMainActivity activity;
@@ -76,7 +76,7 @@ public class ProfileFragment extends BaseFragment implements View.OnClickListene
     private DatabaseReference dbUserPost;
     private StorageReference  stUserProfilPicture;
 
-    public ProfileFragment() {
+    public ProfilFragment() {
         // Required empty public constructor
     }
 
@@ -154,7 +154,7 @@ public class ProfileFragment extends BaseFragment implements View.OnClickListene
                 Log.d(TAG, "edit_post clicked");
                 startActivity(new Intent(activity.getApplicationContext(), EditProfileActivity.class ));
                 activity.overridePendingTransition(R.anim.fadein, R.anim.fadeout);
-                //mHandleFragment.inflateFragment(R.string.fragment_edit_profile, "");
+                //mHandleFragment.inflateFragment(R.string.fragment_edit_profil, "");
                 break;
         }
     }
@@ -168,8 +168,6 @@ public class ProfileFragment extends BaseFragment implements View.OnClickListene
     private void updateUI() {
         //  Load database user data & update UI
         dbUserData.addListenerForSingleValueEvent(loadUserData());
-        //  Load database user profil picture & update UI
-        //dbUserProfilPicture.addListenerForSingleValueEvent(loadUserProfilPicture());
         //  Load database user post & update UI
         dbUserPost.addListenerForSingleValueEvent(loadUserPost());
     }

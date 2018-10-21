@@ -22,23 +22,45 @@
     <string name="text_time_the">Le </string>
     <string name="text_time_at"> à </string>
 
-    <!-- fragment tags -->
+    <!-- ********************************************** -->
+    <!-- *************  FRAGMENT TAGS   *************** -->
+    <!-- ********************************************** -->
+
+    <!--         Authentification UI Fragment           -->
     <string name="fragment_main_auth">Bienvenue</string>
     <string name="fragment_login_account">Se connecter</string>
     <string name="fragment_create_account">Creer un compte</string>
     <string name="fragment_forgot_account">Mot de passe oublié</string>
 
-    <string name="fragment_city">Ma Ville</string>
-    <string name="fragment_home">Accueil</string>
+    <!--         User UI Fragment                       -->
+    <string name="fragment_newsfeed">Forum</string>
+    <string name="fragment_newsfeed_public_profil">Profil publique</string>
+    <string name="fragment_search">Rechercher</string>
+    <string name="fragment_cityfeed">Ville</string>
+    <string name="fragment_cityfeed_news">Nouvelles</string>
+    <string name="fragment_cityfeed_services">Services aux citoyens</string>
+    <string name="fragment_cityfeed_activity">Activité et loisirs</string>
+    <string name="fragment_cityfeed_city">Ville et vie démocratique</string>
     <string name="fragment_messages">Messages</string>
-    <string name="fragment_profile">Profil</string>
-    <string name="fragment_edit_profile">Modifier profil</string>
+    <string name="fragment_profil">Profil</string>
+    <string name="fragment_profil_repost">Partager</string>
+    <string name="fragment_profil_like">Aimer</string>
 
+    <!--         Edit user information Fragment        -->
+    <string name="fragment_edit_profil">Modifier profil</string>
+    <string name="fragment_edit_profil_email">Changer email</string>
+    <string name="fragment_edit_profil_phone">Changer téléphone</string>
+
+    <!--         User settings Fragment        -->
     <string name="fragment_main_user_settings">Paramètres</string>
-    <string name="fragment_change_email">Changer email</string>
     <string name="fragment_change_password">Changer mot de passe</string>
     <string name="fragment_delete_account">Supprimer votre compte</string>
     <string name="fragment_verify_account">Verifier votre compte</string>
+
+
+    <!-- ********************************************** -->
+    <!-- ***************  TEXT VIEWS   **************** -->
+    <!-- ********************************************** -->
 
 
     <string name="textview_forgot_password">Mot de passe oublié?</string>

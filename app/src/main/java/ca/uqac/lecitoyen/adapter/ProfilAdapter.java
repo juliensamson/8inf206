@@ -79,12 +79,13 @@ public class ProfilAdapter extends RecyclerView.Adapter<ProfilAdapter.ViewHolder
         StorageReference storage = dbManager.getStorageUserProfilPicture(currUser.getUid());
 
         //  Views
-        Glide.with(mContext).load(storage.child(currUser.getPid())).into(holder.profilPicture);
+        if(currUser.getPid() != null)
+            Glide.with(mContext).load(storage.child(currUser.getPid())).into(holder.profilPicture);
         holder.name.setText(currUser.getName());
         holder.userName.setText(currUser.getUsername());
         holder.post.setText(currPost.getPost());
         holder.time.setText(getTimeDifference(currPost));
-        if(currPost.getModifications().size() > 1) { holder.modify.setVisibility(View.VISIBLE);}
+        if(currPost.getModifications().size() > 1) holder.modify.setVisibility(View.VISIBLE);
 
         //  OnClickItem
         onClickItem(holder, currPost);

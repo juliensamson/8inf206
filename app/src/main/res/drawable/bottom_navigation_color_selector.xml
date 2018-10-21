@@ -2,9 +2,9 @@
 <selector xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
     <item
-        android:color="@color/white_50"
+        android:color="@color/i_primary_800"
         android:state_checked="true" />
     <item
-        android:color="@color/primary_200"
+        android:color="@color/white_400"
         android:state_enabled="true"  />
 </selector>

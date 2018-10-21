@@ -1,5 +1,6 @@
 package ca.uqac.lecitoyen.userUI.profile;
 
+import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
@@ -9,15 +10,18 @@ import android.widget.TextView;
 import com.google.firebase.auth.AuthCredential;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 
 import ca.uqac.lecitoyen.BaseActivity;
 import ca.uqac.lecitoyen.Interface.iHandleFragment;
 import ca.uqac.lecitoyen.R;
-import ca.uqac.lecitoyen.userUI.settings.VerifyAccountFragment;
+import ca.uqac.lecitoyen.database.User;
 
 public class EditProfileActivity extends BaseActivity implements iHandleFragment {
 
@@ -30,6 +34,8 @@ public class EditProfileActivity extends BaseActivity implements iHandleFragment
     private int containerId = R.id.edit_profil_container;
     private String currentFragment;
 
+    private User mUserData;
+
     //Firebase
     private DatabaseReference mDatabaseRef;
     private StorageReference mStorageRef;
@@ -41,7 +47,7 @@ public class EditProfileActivity extends BaseActivity implements iHandleFragment
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_edit_profile);
+        setContentView(R.layout.activity_edit_profil);
 
         //  SetToolbar
         mToolbar = findViewById(R.id.edit_profil_toolbar);
@@ -50,7 +56,7 @@ public class EditProfileActivity extends BaseActivity implements iHandleFragment
 
         //  Initiate first fragement
         EditProfileFragment fragment = new EditProfileFragment();
-        doFragmentTransaction(containerId, fragment, getString(R.string.fragment_edit_profile), false, "");
+        doFragmentTransaction(containerId, fragment, getString(R.string.fragment_edit_profil), false, "");
 
         //  Initialize auth
         mAuth = FirebaseAuth.getInstance();
@@ -84,13 +90,13 @@ public class EditProfileActivity extends BaseActivity implements iHandleFragment
 
         switch (fragmentTagId)
         {
-            case R.string.fragment_edit_profile:
+            case R.string.fragment_edit_profil:
                 fragment = new EditProfileFragment();
-                doFragmentTransaction(containerId, fragment, getString(R.string.fragment_edit_profile), false, "");
+                doFragmentTransaction(containerId, fragment, getString(R.string.fragment_edit_profil), false, "");
                 break;
-            case R.string.fragment_change_email:
-                fragment = new ChangeEmailFragment();
-                doFragmentTransaction(containerId, fragment, getString(R.string.fragment_change_email), false, "");
+            case R.string.fragment_edit_profil_email:
+                fragment = new EditEmailFragment();
+                doFragmentTransaction(containerId, fragment, getString(R.string.fragment_edit_profil_email), false, "");
                 break;
             default:
                 break;
@@ -101,13 +107,29 @@ public class EditProfileActivity extends BaseActivity implements iHandleFragment
     public void onBackPressed() {
         super.onBackPressed();
 
-        if(!currentFragment.equals(getString(R.string.fragment_edit_profile))) {
+        if(!currentFragment.equals(getString(R.string.fragment_edit_profil))) {
             Fragment fragment = new EditProfileFragment();
-            doFragmentTransaction(containerId, fragment, getString(R.string.fragment_edit_profile), true, "");
+            doFragmentTransaction(containerId, fragment, getString(R.string.fragment_edit_profil), true, "");
         } else {
             this.finish();
         }
     }
+
+    private ValueEventListener loadUserData() {
+        return new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                mUserData = dataSnapshot.getValue(User.class);
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        };
+    }
+
+    public User getUserData() { return this.mUserData; }
 
     public FirebaseAuth getUserAuth() {
         return this.mAuth;

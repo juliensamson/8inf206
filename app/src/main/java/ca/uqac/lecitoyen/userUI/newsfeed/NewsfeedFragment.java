@@ -2,7 +2,6 @@ package ca.uqac.lecitoyen.userUI.newsfeed;
 
 
 import android.content.Context;
-import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -12,7 +11,10 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.ProgressBar;
+import android.widget.Toast;
 
 
 import com.google.firebase.auth.FirebaseAuth;
@@ -24,19 +26,22 @@ import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import ca.uqac.lecitoyen.BaseFragment;
 import ca.uqac.lecitoyen.Interface.iHandleFragment;
 import ca.uqac.lecitoyen.R;
 import ca.uqac.lecitoyen.adapter.FeedAdapter;
+import ca.uqac.lecitoyen.database.PostModification;
 import ca.uqac.lecitoyen.userUI.UserMainActivity;
 import ca.uqac.lecitoyen.database.DatabaseManager;
 import ca.uqac.lecitoyen.database.Post;
 import ca.uqac.lecitoyen.database.User;
+import me.shaohui.bottomdialog.BottomDialog;
 
-public class HomeFragment extends BaseFragment implements View.OnClickListener {
+public class NewsfeedFragment extends BaseFragment implements View.OnClickListener {
 
-    final private static String TAG = "HomeFragment";
+    final private static String TAG = "NewsfeedFragment";
 
     private ProgressBar mLoadingBar;
 
@@ -59,7 +64,7 @@ public class HomeFragment extends BaseFragment implements View.OnClickListener {
     private ArrayList<User> userList = new ArrayList<>();
 
 
-    public HomeFragment() {
+    public NewsfeedFragment() {
         // Required empty public constructor
     }
 
@@ -73,16 +78,16 @@ public class HomeFragment extends BaseFragment implements View.OnClickListener {
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_home, container, false);
+        View view = inflater.inflate(R.layout.fragment_newsfeed, container, false);
 
         //  Toolbar
         mHandleFragment.setToolbarTitle(getTag());
 
         //  View
-        mRecyclerView = view.findViewById(R.id.home_fragment_recycler_view);
+        mRecyclerView = view.findViewById(R.id.newsfeed_recycler_view);
 
         //  Button
-        view.findViewById(R.id.home_fragment_add_message).setOnClickListener(this);
+        view.findViewById(R.id.newsfeed_add_message).setOnClickListener(this);
 
         //  Set recycler view
         mLayoutManager = new LinearLayoutManager(getActivity());
@@ -127,12 +132,44 @@ public class HomeFragment extends BaseFragment implements View.OnClickListener {
     public void onClick(View view) {
         switch (view.getId())
         {
-            case R.id.home_fragment_add_message:
-                startActivity(new Intent(getContext(), PostActivity.class));
+            case R.id.newsfeed_add_message:
+                showBottomDialog();
+                //startActivity(new Intent(getContext(), PostActivity.class));
                 break;
             default:
                 break;
         }
+    }
+
+    private void showBottomDialog() {
+
+        final BottomDialog bottomDialog = BottomDialog.create(getFragmentManager());
+        bottomDialog.setViewListener(new BottomDialog.ViewListener() {
+                    @Override
+                    public void bindView(View v) {
+                        final EditText postMessage = v.findViewById(R.id.dialog_post_message);
+                        ImageButton sendButton = v.findViewById(R.id.dialog_post_send);
+
+                        sendButton.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View view) {
+                                if(postMessage.getText() != null && !postMessage.getText().toString().equals("")) {
+                                    Post post = new Post();
+                                    post.setPost(postMessage.getText().toString());
+                                    updateDB(post);
+                                    bottomDialog.dismiss();
+                                } else {
+                                    Toast.makeText(activity, "No text", Toast.LENGTH_SHORT).show();
+                                }
+                            }
+                        });
+                    }
+                })
+                .setLayoutRes(R.layout.dialog_layout)
+                .setDimAmount(0.2f)            // Dialog window dim amount(can change window background color）, range：0 to 1，default is : 0.2f
+                .setCancelOutside(true)     // click the external area whether is closed, default is : true
+                .setTag("BottomDialog")     // setting the DialogFragment tag
+                .show();
     }
 
     private void updateUI() {
@@ -141,6 +178,46 @@ public class HomeFragment extends BaseFragment implements View.OnClickListener {
         //  Load posts
         dbPostsOrderByDate.addValueEventListener(loadUserPostData());
 
+    }
+
+    @SuppressWarnings("unchecked")
+    private void updateDB(final Post post) {
+
+        showProgressDialog();
+        dbUsersData.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+
+                if(dataSnapshot.hasChildren())
+                {
+                    long currentTime = System.currentTimeMillis();
+                    User userData = dataSnapshot.child(fbUser.getUid()).getValue(User.class);
+
+                    if(userData != null) {
+                        post.setUid(userData.getUid());
+                        post.setDate(currentTime);
+
+                        List modifications = new ArrayList<PostModification>();
+                        PostModification postModification = new PostModification(
+                                0,
+                                post.getPost(),
+                                currentTime
+                        );
+
+                        modifications.add(postModification);
+                        post.setModifications(modifications);
+
+                        dbManager.writePost(dbManager.getReference(), post);
+                    }
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+                Log.e(TAG, databaseError.getMessage());
+            }
+        });
+        hideProgressDialog();
     }
 
     private ValueEventListener loadUserPostData() {

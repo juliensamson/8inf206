@@ -37,6 +37,15 @@ dependencies {
 
     implementation 'de.hdodenhof:circleimageview:2.2.0'
 
+    //  Search bar
+    implementation 'com.github.mancj:MaterialSearchBar:0.7.6'
+
+    //  Bottom Dialog
+    compile 'me.shaohui:bottomdialog:1.1.9'
+
+    //  Bottom navigation
+    compile 'it.sephiroth.android.library.bottomnavigation:bottom-navigation:2.0.1-rc1'
+
     //  Recycler View
     compile 'com.android.support:recyclerview-v7:27.0.0-alpha1'
 
@@ -47,38 +56,6 @@ dependencies {
     androidTestImplementation 'com.android.support.test:runner:1.0.2'
     androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.2'
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 apply plugin: 'com.google.gms.google-services'

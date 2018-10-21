@@ -105,7 +105,7 @@ public class EditProfileFragment extends BaseFragment implements View.OnClickLis
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_edit_profile, container, false);
+        View view = inflater.inflate(R.layout.fragment_edit_profil, container, false);
 
         //  Toolbar
         mHandleFragment.setToolbarTitle(getTag());
@@ -116,7 +116,7 @@ public class EditProfileFragment extends BaseFragment implements View.OnClickLis
         mNameField = view.findViewById(R.id.edit_profil_name);
         mUsernameField = view.findViewById(R.id.edit_profil_username);
         mBiographyField = view.findViewById(R.id.edit_profil_biography);
-        mEmailField = view.findViewById(R.id.edit_profil_email);
+        mEmailField = view.findViewById(R.id.edit_profil_change_email);
         //mPhoneField = view.findViewById(R.id.edit_profil_phone);
 
         //  Button
@@ -183,6 +183,9 @@ public class EditProfileFragment extends BaseFragment implements View.OnClickLis
         {
             case R.id.edit_profil_change_photo:
                 showDialogProfilPictureChoice(view);
+                break;
+            case R.id.edit_profil_change_email:
+                mHandleFragment.inflateFragment(R.string.fragment_edit_profil_email, "");
                 break;
         }
     }
@@ -282,7 +285,7 @@ public class EditProfileFragment extends BaseFragment implements View.OnClickLis
         mUserData.setName(mNameField.getText().toString());
         mUserData.setUsername(mUsernameField.getText().toString());
         mUserData.setBiography(mBiographyField.getText().toString());
-        mUserData.setPid(pid);
+        if(pid != null) { mUserData.setPid(pid);}
 
         showProgressDialog();
 

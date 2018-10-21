@@ -17,15 +17,15 @@ import ca.uqac.lecitoyen.userUI.UserMainActivity;
 /**
  * A simple {@link Fragment} subclass.
  */
-public class CityFragment extends Fragment {
+public class CityfeedFragment extends Fragment {
 
-    final private static String TAG = "CityFragment";
+    final private static String TAG = "CityfeedFragment";
 
     private iHandleFragment mHandleFragment;
 
     private TextView mDisplayedMessage;
 
-    public CityFragment() {
+    public CityfeedFragment() {
         // Required empty public constructor
     }
 
@@ -39,7 +39,7 @@ public class CityFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_city, container, false);
-        mDisplayedMessage = view.findViewById(R.id.fragment_city_title);
+        mDisplayedMessage = view.findViewById(R.id.fragment_cityfeed_title);
         return view;
     }
 

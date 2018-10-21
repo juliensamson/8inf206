@@ -1,9 +1,9 @@
 package ca.uqac.lecitoyen.userUI;
 
 import android.content.Intent;
+import android.graphics.Typeface;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
-import android.support.design.widget.BottomNavigationView;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.widget.Toolbar;
@@ -18,27 +18,24 @@ import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
-import com.google.firebase.storage.FirebaseStorage;
-import com.google.firebase.storage.StorageReference;
 
 import java.util.ArrayList;
 
 import ca.uqac.lecitoyen.BaseActivity;
 import ca.uqac.lecitoyen.Interface.iHandleFragment;
 import ca.uqac.lecitoyen.R;
-import ca.uqac.lecitoyen.adapter.BottomNavigationViewHelper;
 import ca.uqac.lecitoyen.database.UserStorage;
-import ca.uqac.lecitoyen.userUI.cityfeed.CityFragment;
-import ca.uqac.lecitoyen.userUI.newsfeed.HomeFragment;
+import ca.uqac.lecitoyen.userUI.cityfeed.CityfeedFragment;
+import ca.uqac.lecitoyen.userUI.newsfeed.NewsfeedFragment;
 import ca.uqac.lecitoyen.userUI.messaging.MessageFragment;
-import ca.uqac.lecitoyen.userUI.profile.EditProfileFragment;
-import ca.uqac.lecitoyen.userUI.profile.ProfileFragment;
+import ca.uqac.lecitoyen.userUI.profile.ProfilFragment;
+import ca.uqac.lecitoyen.userUI.search.SearchFragment;
 import ca.uqac.lecitoyen.userUI.settings.UserSettingsActivity;
 import ca.uqac.lecitoyen.database.DatabaseManager;
 import ca.uqac.lecitoyen.database.Post;
 import ca.uqac.lecitoyen.database.User;
+import it.sephiroth.android.library.bottomnavigation.BottomNavigation;
 
 //TODO: Make the RecyclerView load automatically after making a post
 
@@ -65,32 +62,37 @@ public class UserMainActivity extends BaseActivity implements iHandleFragment {
     private FirebaseAuth fbAuth;
     private FirebaseUser fbUser;
 
-    private BottomNavigationView.OnNavigationItemSelectedListener mOnNavigationItemSelectedListener
-            = new BottomNavigationView.OnNavigationItemSelectedListener() {
 
-        @Override
+    private BottomNavigation mBottomNavigation;
+    private BottomNavigation.OnMenuItemSelectionListener mOnNavigationItemSelectedListener;
+
+
+        /*@Override
         public boolean onNavigationItemSelected(@NonNull MenuItem item) {
 
             Log.d(TAG, "OnNavigationItem");
 
             switch (item.getItemId())
             {
-                case R.id.navigation_city:
-                    inflateFragment(R.string.fragment_city, "");
+                case R.id.navigation_newsfeed:
+                    inflateFragment(R.string.fragment_newsfeed, "");
                     return true;
-                case R.id.navigation_home:
-                    inflateFragment(R.string.fragment_home, "");
+                case R.id.navigation_search:
+                    inflateFragment(R.string.fragment_search, "");
+                    return true;
+                case R.id.navigation_cityfeed:
+                    inflateFragment(R.string.fragment_cityfeed, "");
                     return true;
                 case R.id.navigation_messages:
                     inflateFragment(R.string.fragment_messages, "");
                     return true;
-                case R.id.navigation_profile:
-                    inflateFragment(R.string.fragment_profile, "");
+                case R.id.navigation_profil:
+                    inflateFragment(R.string.fragment_profil, "");
                     return true;
             }
             return false;
-        }
-    };
+        }*/
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -108,13 +110,17 @@ public class UserMainActivity extends BaseActivity implements iHandleFragment {
 
         //getThreadsData();
         //  Views
-        mUserToolbar = findViewById(R.id.toolbar_user);
-        mUserToolbarTitle = findViewById(R.id.toolbar_title);
-        setSupportActionBar(mUserToolbar);
+        //mUserToolbar = findViewById(R.id.toolbar_user);
+        //mUserToolbarTitle = findViewById(R.id.toolbar_title);
+        //setSupportActionBar(mUserToolbar);
 
-        BottomNavigationView navigation = findViewById(R.id.navigation);
-        BottomNavigationViewHelper.disableShiftMode(navigation);
-        navigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener);
+        //  Bottom navigation
+        mBottomNavigation = findViewById(R.id.navigation);
+        mBottomNavigation.setDefaultSelectedIndex(0);
+        mBottomNavigation.setDefaultTypeface(Typeface.DEFAULT_BOLD);
+        mBottomNavigation.setOnMenuItemClickListener(loadBottonNavigation());
+        //BottomNavigationViewHelper.disableShiftMode(navigation);
+        //navigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener);
     }
 
     @Override
@@ -185,8 +191,8 @@ public class UserMainActivity extends BaseActivity implements iHandleFragment {
 
     private void init() {
         Log.d(TAG, "init");
-        CityFragment fragment = new CityFragment();
-        doFragmentTransaction(fragment, getString(R.string.fragment_city), false, "");
+        NewsfeedFragment fragment = new NewsfeedFragment();
+        doFragmentTransaction(fragment, getString(R.string.fragment_newsfeed), false, "");
     }
 
     private void doFragmentTransaction(Fragment fragment, String tag, boolean addToBackStack, String message) {
@@ -203,7 +209,7 @@ public class UserMainActivity extends BaseActivity implements iHandleFragment {
 
     @Override
     public void setToolbarTitle(String fragmentTag) {
-        mUserToolbarTitle.setText(fragmentTag);
+        //mUserToolbarTitle.setText(fragmentTag);
     }
 
     @Override
@@ -213,29 +219,62 @@ public class UserMainActivity extends BaseActivity implements iHandleFragment {
 
         switch (fragmentTagId)
         {
-            case R.string.fragment_city:
-                fragment = new CityFragment();
-                doFragmentTransaction(fragment, getString(R.string.fragment_city), false, "");
+            case R.string.fragment_newsfeed:
+                fragment = new NewsfeedFragment();
+                doFragmentTransaction(fragment, getString(R.string.fragment_newsfeed), false, "");
                 break;
-            case R.string.fragment_home:
-                fragment = new HomeFragment();
-                doFragmentTransaction(fragment, getString(R.string.fragment_home), false, "");
+            case R.string.fragment_search:
+                fragment = new SearchFragment();
+                doFragmentTransaction(fragment, getString(R.string.fragment_search), false, "");
+                break;
+            case R.string.fragment_cityfeed:
+                fragment = new CityfeedFragment();
+                doFragmentTransaction(fragment, getString(R.string.fragment_cityfeed), false, "");
                 break;
             case R.string.fragment_messages:
                 fragment = new MessageFragment();
                 doFragmentTransaction(fragment, getString(R.string.fragment_messages), false, "");
                 break;
-            case R.string.fragment_profile:
-                fragment = new ProfileFragment();
-                doFragmentTransaction(fragment, getString(R.string.fragment_profile), false, "");
-                break;
-            case R.string.fragment_edit_profile:
-                fragment = new EditProfileFragment();
-                doFragmentTransaction(fragment, getString(R.string.fragment_edit_profile), false, "");
+            case R.string.fragment_profil:
+                fragment = new ProfilFragment();
+                doFragmentTransaction(fragment, getString(R.string.fragment_profil), false, "");
                 break;
             default:
                 break;
         }
+    }
+
+    private BottomNavigation.OnMenuItemSelectionListener loadBottonNavigation() {
+        return new BottomNavigation.OnMenuItemSelectionListener() {
+
+            @Override
+            public void onMenuItemSelect(int navId, int listId, boolean b) {
+                Log.d(TAG, "OnNavigationItem");
+                switch (navId) {
+                    case R.id.navigation_newsfeed:
+                        inflateFragment(R.string.fragment_newsfeed, "");
+                        break;
+                    case R.id.navigation_search:
+                        inflateFragment(R.string.fragment_search, "");
+                        break;
+                    case R.id.navigation_cityfeed:
+                        inflateFragment(R.string.fragment_cityfeed, "");
+                        break;
+                    case R.id.navigation_messages:
+                        inflateFragment(R.string.fragment_messages, "");
+                        break;
+                    case R.id.navigation_profil:
+                        inflateFragment(R.string.fragment_profil, "");
+                        break;
+                }
+            }
+
+            @Override
+            public void onMenuItemReselect(int navId, int listId, boolean b) {
+                //  Update feed
+            }
+
+        };
     }
 
     /*

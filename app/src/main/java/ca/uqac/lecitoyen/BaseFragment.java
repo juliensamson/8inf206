@@ -73,6 +73,18 @@ public abstract class BaseFragment extends Fragment {
         }
     }
 
+    protected void setSearchToolbar(Activity parentActivity, int returnHomeIcon, boolean isDisplayHomeEnable, boolean hasOptionMenu) {
+        try {
+            Toolbar toolbar = parentActivity.findViewById(R.id.toolbar_user);
+            ((AppCompatActivity) parentActivity).setSupportActionBar(toolbar);
+            ((AppCompatActivity) parentActivity).getSupportActionBar().setDisplayHomeAsUpEnabled(isDisplayHomeEnable);
+            ((AppCompatActivity) parentActivity).getSupportActionBar().setHomeAsUpIndicator(returnHomeIcon);
+            setHasOptionsMenu(hasOptionMenu);
+        } catch (NullPointerException npe) {
+            Log.e(TAG, npe.getMessage());
+        }
+    }
+
     public void showProgressDialog() {
         if (mProgressDialog == null) {
             mProgressDialog = new ProgressDialog(getContext());

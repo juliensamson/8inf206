@@ -20,17 +20,18 @@
         android:layout_marginTop="54dp">
     </FrameLayout>
 
-    <android.support.design.widget.BottomNavigationView
+    <it.sephiroth.android.library.bottomnavigation.BottomNavigation
         android:id="@+id/navigation"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="?android:attr/windowBackground"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
-        app:itemBackground="@color/i_primary_800"
-        app:itemIconTint="@drawable/bottom_navigation_color_selector"
-        app:itemTextColor="@drawable/bottom_navigation_color_selector"
-        app:menu="@menu/navigation" />
+        android:layout_gravity="bottom"
+        app:bbn_entries="@menu/navigation"
+        app:bbn_scrollEnabled="false"
+        app:bbn_badgeProvider="@string/bbn_badgeProvider"
+        app:layout_behavior="it.sephiroth.android.library.bottomnavigation.app.behaviors.BottomNavigationCustomBehavior"
+        />
 
 </android.support.constraint.ConstraintLayout>

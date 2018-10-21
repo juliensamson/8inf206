@@ -21,7 +21,7 @@ import ca.uqac.lecitoyen.MainActivity;
 import ca.uqac.lecitoyen.R;
 import ca.uqac.lecitoyen.database.DatabaseManager;
 import ca.uqac.lecitoyen.database.User;
-import ca.uqac.lecitoyen.userUI.profile.ChangeEmailFragment;
+import ca.uqac.lecitoyen.userUI.profile.EditEmailFragment;
 
 //TODO: Add Verify email button
 //TODO: Make sure FAcebook user is added on the database
@@ -99,10 +99,6 @@ public class UserSettingsActivity extends BaseActivity implements iHandleFragmen
             case R.string.fragment_main_user_settings:
                 fragment = new UserSettingsFragment();
                 doFragmentTransaction(fragment, getString(R.string.fragment_main_user_settings), false, "");
-                break;
-            case R.string.fragment_change_email:
-                fragment = new ChangeEmailFragment();
-                doFragmentTransaction(fragment, getString(R.string.fragment_change_email), false, "");
                 break;
             case R.string.fragment_change_password:
                 fragment = new ChangePasswordFragment();
