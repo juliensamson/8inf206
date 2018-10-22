@@ -20,6 +20,7 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
 
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
@@ -62,21 +63,25 @@ public abstract class BaseFragment extends Fragment {
 
      */
 
-    protected void setFragmentToolbar(Activity parentActivity, int returnHomeIcon, boolean isDisplayHomeEnable, boolean hasOptionMenu) {
+    protected void setFragmentToolbar(View view, Activity parentActivity, int toolbarId, String toolbarTitle, boolean hasOptionMenu) {
         try {
-            Toolbar toolbar = parentActivity.findViewById(R.id.toolbar_default);
-            ((AppCompatActivity) parentActivity).getSupportActionBar().setDisplayHomeAsUpEnabled(isDisplayHomeEnable);
-            ((AppCompatActivity) parentActivity).getSupportActionBar().setHomeAsUpIndicator(returnHomeIcon);
+            //  Views
+            Toolbar toolbar = view.findViewById(toolbarId);
+            TextView title = view.findViewById(R.id.toolbar_title);
+            if(title == null)
+                Log.e(TAG, "WHY");
+            Log.d(TAG, toolbarTitle);
+            title.setText(toolbarTitle);
+            ((AppCompatActivity) parentActivity).setSupportActionBar(toolbar);
             setHasOptionsMenu(hasOptionMenu);
+
         } catch (NullPointerException npe) {
             Log.e(TAG, npe.getMessage());
         }
     }
 
-    protected void setSearchToolbar(Activity parentActivity, int returnHomeIcon, boolean isDisplayHomeEnable, boolean hasOptionMenu) {
+    protected void setFragmentToolbar(Activity parentActivity, int returnHomeIcon, boolean isDisplayHomeEnable, boolean hasOptionMenu) {
         try {
-            Toolbar toolbar = parentActivity.findViewById(R.id.toolbar_user);
-            ((AppCompatActivity) parentActivity).setSupportActionBar(toolbar);
             ((AppCompatActivity) parentActivity).getSupportActionBar().setDisplayHomeAsUpEnabled(isDisplayHomeEnable);
             ((AppCompatActivity) parentActivity).getSupportActionBar().setHomeAsUpIndicator(returnHomeIcon);
             setHasOptionsMenu(hasOptionMenu);

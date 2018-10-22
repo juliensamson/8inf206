@@ -10,6 +10,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import ca.uqac.lecitoyen.BaseFragment;
 import ca.uqac.lecitoyen.Interface.iHandleFragment;
 import ca.uqac.lecitoyen.R;
 import ca.uqac.lecitoyen.userUI.UserMainActivity;
@@ -17,10 +18,11 @@ import ca.uqac.lecitoyen.userUI.UserMainActivity;
 /**
  * A simple {@link Fragment} subclass.
  */
-public class CityfeedFragment extends Fragment {
+public class CityfeedFragment extends BaseFragment {
 
     final private static String TAG = "CityfeedFragment";
 
+    private UserMainActivity userMainActivity;
     private iHandleFragment mHandleFragment;
 
     private TextView mDisplayedMessage;
@@ -32,14 +34,15 @@ public class CityfeedFragment extends Fragment {
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        mHandleFragment.setToolbarTitle(getTag());
+        this.userMainActivity = (UserMainActivity) getActivity();
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        View view = inflater.inflate(R.layout.fragment_city, container, false);
+        View view = inflater.inflate(R.layout.fragment_cityfeed, container, false);
         mDisplayedMessage = view.findViewById(R.id.fragment_cityfeed_title);
+        setFragmentToolbar(view, userMainActivity, R.id.toolbar_newsfeed, getTag(), false);
         return view;
     }
 

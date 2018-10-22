@@ -46,7 +46,7 @@ public class NewsfeedFragment extends BaseFragment implements View.OnClickListen
     private ProgressBar mLoadingBar;
 
     private iHandleFragment mHandleFragment;
-    private UserMainActivity activity;
+    private UserMainActivity userMainActivity;
 
     private Post mPost;
 
@@ -71,7 +71,7 @@ public class NewsfeedFragment extends BaseFragment implements View.OnClickListen
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        this.activity = (UserMainActivity) getActivity();
+        this.userMainActivity = (UserMainActivity) getActivity();
         this.dbManager = DatabaseManager.getInstance();
         this.fbAuth = FirebaseAuth.getInstance();
     }
@@ -81,10 +81,12 @@ public class NewsfeedFragment extends BaseFragment implements View.OnClickListen
         View view = inflater.inflate(R.layout.fragment_newsfeed, container, false);
 
         //  Toolbar
-        mHandleFragment.setToolbarTitle(getTag());
+        //mHandleFragment.setToolbarTitle(getTag());
+        setFragmentToolbar(view, userMainActivity, R.id.toolbar_newsfeed, getTag(), false);
 
         //  View
         mRecyclerView = view.findViewById(R.id.newsfeed_recycler_view);
+        mRecyclerView.setNestedScrollingEnabled(false);
 
         //  Button
         view.findViewById(R.id.newsfeed_add_message).setOnClickListener(this);
@@ -159,7 +161,7 @@ public class NewsfeedFragment extends BaseFragment implements View.OnClickListen
                                     updateDB(post);
                                     bottomDialog.dismiss();
                                 } else {
-                                    Toast.makeText(activity, "No text", Toast.LENGTH_SHORT).show();
+                                    Toast.makeText(userMainActivity, "No text", Toast.LENGTH_SHORT).show();
                                 }
                             }
                         });
@@ -235,7 +237,7 @@ public class NewsfeedFragment extends BaseFragment implements View.OnClickListen
 
 
                     if (pendingLoadCount[0] == 0) {
-                        mAdapter = new FeedAdapter(getContext(), fbUser, postList, activity.getUserList());
+                        mAdapter = new FeedAdapter(getContext(), fbUser, postList, userMainActivity.getUserList());
                         mRecyclerView.setAdapter(mAdapter);
                     }
 

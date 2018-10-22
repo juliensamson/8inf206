@@ -1,37 +1,32 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.constraint.ConstraintLayout
+<RelativeLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/container"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="ca.uqac.lecitoyen.userUI.UserMainActivity">
-
-    <include
-        android:id="@+id/toolbar_user"
-        layout="@layout/toolbar_default" />
+    tools:context="ca.uqac.lecitoyen.userUI.UserMainActivity"
+    android:fitsSystemWindows="false">
 
     <FrameLayout
         android:id="@+id/user_container"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_marginBottom="54dp"
-        android:layout_marginTop="54dp">
-    </FrameLayout>
+        android:layout_above="@+id/navigation"
+        android:layout_alignParentStart="true" />
 
     <it.sephiroth.android.library.bottomnavigation.BottomNavigation
         android:id="@+id/navigation"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toRightOf="parent"
-        android:layout_gravity="bottom"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentBottom="true"
+        app:bbn_badgeProvider="@string/bbn_badgeProvider"
         app:bbn_entries="@menu/navigation"
         app:bbn_scrollEnabled="false"
-        app:bbn_badgeProvider="@string/bbn_badgeProvider"
-        app:layout_behavior="it.sephiroth.android.library.bottomnavigation.app.behaviors.BottomNavigationCustomBehavior"
-        />
+        app:layout_behavior="it.sephiroth.android.library.bottomnavigation.app.behaviors.BottomNavigationCustomBehavior" />
 
-</android.support.constraint.ConstraintLayout>
+
+</RelativeLayout>

@@ -1,21 +1,25 @@
-<FrameLayout
+<android.support.design.widget.CoordinatorLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical"
     tools:context="ca.uqac.lecitoyen.userUI.profile.ProfilFragment">
 
-    <!-- TODO: Update blank fragment layout -->
-
     <android.support.v4.widget.NestedScrollView
+        android:id="@+id/profil_nested_scroll_view"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="match_parent">
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical">
+
+            <include
+                android:id="@+id/toolbar_profil"
+                layout="@layout/toolbar_default"/>
 
             <include
                 android:id="@+id/layout_profil_user_information"
@@ -24,12 +28,11 @@
             <android.support.v7.widget.RecyclerView
                 android:id="@+id/profil_publication_recycler_view"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent">
-
-            </android.support.v7.widget.RecyclerView>
+                android:layout_height="match_parent"
+                android:focusableInTouchMode="true"/>
 
         </LinearLayout>
 
     </android.support.v4.widget.NestedScrollView>
 
-</FrameLayout>
+</android.support.design.widget.CoordinatorLayout>

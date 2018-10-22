@@ -5,10 +5,16 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.design.widget.AppBarLayout;
+import android.support.design.widget.CoordinatorLayout;
+import android.support.v4.widget.NestedScrollView;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
@@ -27,22 +33,23 @@ import java.util.ArrayList;
 import ca.uqac.lecitoyen.BaseFragment;
 import ca.uqac.lecitoyen.Interface.iHandleFragment;
 import ca.uqac.lecitoyen.R;
-import ca.uqac.lecitoyen.adapter.FeedAdapter;
 import ca.uqac.lecitoyen.adapter.ProfilAdapter;
 import ca.uqac.lecitoyen.database.DatabaseManager;
 import ca.uqac.lecitoyen.database.Post;
 import ca.uqac.lecitoyen.database.User;
 import ca.uqac.lecitoyen.database.UserStorage;
 import ca.uqac.lecitoyen.userUI.UserMainActivity;
+import ca.uqac.lecitoyen.userUI.settings.UserSettingsActivity;
 import de.hdodenhof.circleimageview.CircleImageView;
 
 public class ProfilFragment extends BaseFragment implements View.OnClickListener {
 
     private static final String TAG = "ProfilFragment";
-    private UserMainActivity activity;
+    private UserMainActivity userMainActivity;
     private iHandleFragment mHandleFragment;
 
     //  Views
+    private NestedScrollView mNestedScrollView;
     private CircleImageView vProfilPicture;
     private TextView vProfilName;
     private TextView vProfilUsername;
@@ -83,19 +90,23 @@ public class ProfilFragment extends BaseFragment implements View.OnClickListener
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        this.activity = (UserMainActivity) getActivity();
+        this.userMainActivity = (UserMainActivity) getActivity();
         this.dbManager = DatabaseManager.getInstance();
-        this.fbAuth = activity.getUserAuth();
+        this.fbAuth = userMainActivity.getUserAuth();
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_profile, container, false);
+        View view = inflater.inflate(R.layout.fragment_profil, container, false);
 
         //  Toolbar
-        mHandleFragment.setToolbarTitle(getTag());
+        setFragmentToolbar(view, userMainActivity, R.id.toolbar_profil, getTag(), true);
 
         //  View
+        mNestedScrollView = view.findViewById(R.id.profil_nested_scroll_view);
+        //  Put the view to the top
+        mNestedScrollView.getParent().requestChildFocus(mNestedScrollView, mNestedScrollView);
+
         vProfilPicture = view.findViewById(R.id.profil_picture);
         vProfilName = view.findViewById(R.id.profil_name);
         vProfilUsername = view.findViewById(R.id.profil_username);
@@ -103,13 +114,17 @@ public class ProfilFragment extends BaseFragment implements View.OnClickListener
         vProfilPublicationCount = view.findViewById(R.id.profil_publication_count);
         vProfilFollowingCount = view.findViewById(R.id.profil_following_count);
         vProfilFollowersCount = view.findViewById(R.id.profil_followers_count);
-        vProfilRecyclerView = view.findViewById(R.id.profil_publication_recycler_view);;
+        vProfilRecyclerView = view.findViewById(R.id.profil_publication_recycler_view);
+        //  Make the scroll smooth
+        vProfilRecyclerView.setNestedScrollingEnabled(false);
+
+
 
         //  Button
         view.findViewById(R.id.button_edit_profile).setOnClickListener(this);
 
         //  Set recycler view
-        vLayoutManager = new LinearLayoutManager(activity);
+        vLayoutManager = new LinearLayoutManager(userMainActivity);
         vProfilRecyclerView.setLayoutManager(vLayoutManager);
 
         return view;
@@ -147,13 +162,32 @@ public class ProfilFragment extends BaseFragment implements View.OnClickListener
     }
 
     @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        super.onCreateOptionsMenu(menu, inflater);
+        inflater.inflate(R.menu.user_menu, menu);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        Log.w(TAG, "item selected");
+        switch (item.getItemId())
+        {
+            case R.id.menu_setting:
+                Log.w(TAG, "menu_setting clicked");
+                userMainActivity.startActivityWithBundle(UserSettingsActivity.class, "userid", fbUser.getUid());
+                return true;
+        }
+        return super.onOptionsItemSelected(item);
+    }
+
+    @Override
     public void onClick(View view) {
         switch (view.getId())
         {
             case R.id.button_edit_profile:
                 Log.d(TAG, "edit_post clicked");
-                startActivity(new Intent(activity.getApplicationContext(), EditProfileActivity.class ));
-                activity.overridePendingTransition(R.anim.fadein, R.anim.fadeout);
+                startActivity(new Intent(userMainActivity.getApplicationContext(), EditProfileActivity.class ));
+                userMainActivity.overridePendingTransition(R.anim.fadein, R.anim.fadeout);
                 //mHandleFragment.inflateFragment(R.string.fragment_edit_profil, "");
                 break;
         }
@@ -188,7 +222,7 @@ public class ProfilFragment extends BaseFragment implements View.OnClickListener
                     if (mUserData.getBiography() != null && !mUserData.getBiography().isEmpty())
                         vProfilBiography.setText(mUserData.getBiography());
                     if(mUserData.getPid() != null)
-                        Glide.with(activity).load(stUserProfilPicture.child(mUserData.getPid())).into(vProfilPicture);
+                        Glide.with(userMainActivity).load(stUserProfilPicture.child(mUserData.getPid())).into(vProfilPicture);
                 }
             }
             @Override
@@ -211,7 +245,7 @@ public class ProfilFragment extends BaseFragment implements View.OnClickListener
 
                 if(listUserPost != null) {
                     vProfilPublicationCount.setText((Integer.toString(listUserPost.size())));
-                    vAdapter = new ProfilAdapter(activity, mUserData, listUserPost);
+                    vAdapter = new ProfilAdapter(userMainActivity, mUserData, listUserPost);
                     vProfilRecyclerView.setAdapter(vAdapter);
                 }
             }

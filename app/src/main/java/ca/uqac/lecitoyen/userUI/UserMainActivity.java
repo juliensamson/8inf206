@@ -66,34 +66,6 @@ public class UserMainActivity extends BaseActivity implements iHandleFragment {
     private BottomNavigation mBottomNavigation;
     private BottomNavigation.OnMenuItemSelectionListener mOnNavigationItemSelectedListener;
 
-
-        /*@Override
-        public boolean onNavigationItemSelected(@NonNull MenuItem item) {
-
-            Log.d(TAG, "OnNavigationItem");
-
-            switch (item.getItemId())
-            {
-                case R.id.navigation_newsfeed:
-                    inflateFragment(R.string.fragment_newsfeed, "");
-                    return true;
-                case R.id.navigation_search:
-                    inflateFragment(R.string.fragment_search, "");
-                    return true;
-                case R.id.navigation_cityfeed:
-                    inflateFragment(R.string.fragment_cityfeed, "");
-                    return true;
-                case R.id.navigation_messages:
-                    inflateFragment(R.string.fragment_messages, "");
-                    return true;
-                case R.id.navigation_profil:
-                    inflateFragment(R.string.fragment_profil, "");
-                    return true;
-            }
-            return false;
-        }*/
-
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -108,7 +80,6 @@ public class UserMainActivity extends BaseActivity implements iHandleFragment {
 
         init();
 
-        //getThreadsData();
         //  Views
         //mUserToolbar = findViewById(R.id.toolbar_user);
         //mUserToolbarTitle = findViewById(R.id.toolbar_title);
@@ -119,8 +90,6 @@ public class UserMainActivity extends BaseActivity implements iHandleFragment {
         mBottomNavigation.setDefaultSelectedIndex(0);
         mBottomNavigation.setDefaultTypeface(Typeface.DEFAULT_BOLD);
         mBottomNavigation.setOnMenuItemClickListener(loadBottonNavigation());
-        //BottomNavigationViewHelper.disableShiftMode(navigation);
-        //navigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener);
     }
 
     @Override
@@ -149,27 +118,6 @@ public class UserMainActivity extends BaseActivity implements iHandleFragment {
         } else {
             Log.e(TAG, "auth is null");
         }
-    }
-
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        Log.w(TAG, "menu created");
-        MenuInflater inflater = getMenuInflater();
-        inflater.inflate(R.menu.user_menu, menu);;
-        return super.onCreateOptionsMenu(menu);
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        Log.w(TAG, "item selected");
-        switch (item.getItemId())
-        {
-            case R.id.menu_setting:
-                Log.w(TAG, "menu_setting clicked");
-                startActivityWithBundle(UserSettingsActivity.class, "userid", fbUser.getUid());
-                return true;
-        }
-        return super.onOptionsItemSelected(item);
     }
 
     @Override
@@ -209,7 +157,7 @@ public class UserMainActivity extends BaseActivity implements iHandleFragment {
 
     @Override
     public void setToolbarTitle(String fragmentTag) {
-        //mUserToolbarTitle.setText(fragmentTag);
+        mUserToolbarTitle.setText(fragmentTag);
     }
 
     @Override
@@ -342,7 +290,7 @@ public class UserMainActivity extends BaseActivity implements iHandleFragment {
 
     //  TODO: - Make Key,Value a list, map, etc. in order to add more "extras" to the Bundle
     //        - Allow to sent the class User to get the info directly. and not call mAuth on setting. (make it faster)
-    void startActivityWithBundle(Class activity, String key, String value) {
+    public void startActivityWithBundle(Class activity, String key, String value) {
 
         //  Create Bundle sent to the next activity
         Bundle extras = new Bundle();

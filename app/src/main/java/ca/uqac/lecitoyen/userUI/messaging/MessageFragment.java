@@ -10,6 +10,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import ca.uqac.lecitoyen.BaseFragment;
 import ca.uqac.lecitoyen.Interface.iHandleFragment;
 import ca.uqac.lecitoyen.R;
 import ca.uqac.lecitoyen.userUI.UserMainActivity;
@@ -17,10 +18,11 @@ import ca.uqac.lecitoyen.userUI.UserMainActivity;
 /**
  * A simple {@link Fragment} subclass.
  */
-public class MessageFragment extends Fragment {
+public class MessageFragment extends BaseFragment {
 
     final private static String TAG = "MessageFragment";
 
+    private UserMainActivity userMainActivity;
     private iHandleFragment mHandleFragment;
 
     private TextView mDisplayedMessage;
@@ -32,13 +34,14 @@ public class MessageFragment extends Fragment {
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        mHandleFragment.setToolbarTitle(getTag());
+        this.userMainActivity = (UserMainActivity) getActivity();
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_message, container, false);
+        setFragmentToolbar(view, userMainActivity, R.id.toolbar_message, getTag(), false);
         mDisplayedMessage = view.findViewById(R.id.fragment_message_title);
         return view;
     }
