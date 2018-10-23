@@ -8,7 +8,10 @@ import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
+
+import com.bumptech.glide.Glide;
 
 import ca.uqac.lecitoyen.BaseFragment;
 import ca.uqac.lecitoyen.Interface.iHandleFragment;
@@ -24,6 +27,7 @@ public class MessageFragment extends BaseFragment {
 
     private UserMainActivity userMainActivity;
     private iHandleFragment mHandleFragment;
+
 
     private TextView mDisplayedMessage;
 
@@ -42,7 +46,7 @@ public class MessageFragment extends BaseFragment {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_message, container, false);
         setFragmentToolbar(view, userMainActivity, R.id.toolbar_message, getTag(), false);
-        mDisplayedMessage = view.findViewById(R.id.fragment_message_title);
+
         return view;
     }
 

@@ -34,6 +34,7 @@ import ca.uqac.lecitoyen.BaseFragment;
 import ca.uqac.lecitoyen.Interface.iHandleFragment;
 import ca.uqac.lecitoyen.R;
 import ca.uqac.lecitoyen.adapter.ProfilAdapter;
+import ca.uqac.lecitoyen.adapter.PublicationAdapter;
 import ca.uqac.lecitoyen.database.DatabaseManager;
 import ca.uqac.lecitoyen.database.Post;
 import ca.uqac.lecitoyen.database.User;
@@ -245,7 +246,7 @@ public class ProfilFragment extends BaseFragment implements View.OnClickListener
 
                 if(listUserPost != null) {
                     vProfilPublicationCount.setText((Integer.toString(listUserPost.size())));
-                    vAdapter = new ProfilAdapter(userMainActivity, mUserData, listUserPost);
+                    vAdapter = new PublicationAdapter(userMainActivity, listUserPost);
                     vProfilRecyclerView.setAdapter(vAdapter);
                 }
             }

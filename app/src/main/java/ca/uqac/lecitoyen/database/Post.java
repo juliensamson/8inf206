@@ -8,16 +8,25 @@ import java.util.Map;
 
 public class Post {
 
-    //  Data
+    //  post data
     private String postid;
-
-    private String uid;
 
     private long date;
 
     private long inverseDate;
 
     private String post;
+
+    private String pictureId;
+
+    //  User information
+    private String uid;
+
+    private String pid;
+
+    private String name;
+
+    private String username;
 
     //  metadata
     private List<PostModification> modifications;
@@ -28,11 +37,15 @@ public class Post {
         //  Default Constructor
     }
 
-    public Post(String uid, String post, long date) {
-        this.uid = uid;
+    public Post(User user, String post, long date) {
+        this.uid = user.getUid();
+        this.pid = user.getPid();
+        this.name = user.getName();
+        this.username = user.getUsername();
         this.post = post;
         this.date = date;
         this.inverseDate = 0 - date;
+        this.pictureId = "";
     }
 
     //  Getter & Setter
@@ -62,14 +75,6 @@ public class Post {
         this.date = date;
     }
 
-    public long getInverseDate() {
-        return inverseDate;
-    }
-
-    public void setInverseDate(long inverseDate) {
-        this.inverseDate = inverseDate;
-    }
-
     public String getPost() {
         return post;
     }
@@ -86,15 +91,59 @@ public class Post {
         this.modifications = modifications;
     }
 
+    public String getPid() {
+        return pid;
+    }
+
+    public void setPid(String pid) {
+        this.pid = pid;
+    }
+
+    public long getInverseDate() {
+        return inverseDate;
+    }
+
+    public void setInverseDate(long inverseDate) {
+        this.inverseDate = inverseDate;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public String getUsername() {
+        return username;
+    }
+
+    public void setUsername(String username) {
+        this.username = username;
+    }
+
+    public String getPictureId() {
+        return pictureId;
+    }
+
+    public void setPictureId(String pictureId) {
+        this.pictureId = pictureId;
+    }
+
     @Exclude
     public Map<String, Object> toMap() {
         HashMap<String, Object> result = new HashMap<>();
         result.put("postid", postid);
         result.put("uid", uid);
+        result.put("pid", pid);
+        result.put("name", name);
+        result.put("username", username);
         result.put("post", post);
         result.put("date", date);
         result.put("inverseDate", inverseDate);
         result.put("modifications", modifications);
+        result.put("pictureId", pictureId);
         return result;
     }
 

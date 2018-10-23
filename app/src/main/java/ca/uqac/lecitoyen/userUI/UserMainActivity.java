@@ -1,5 +1,6 @@
 package ca.uqac.lecitoyen.userUI;
 
+import android.app.FragmentManager;
 import android.content.Intent;
 import android.graphics.Typeface;
 import android.os.Bundle;
@@ -44,14 +45,19 @@ public class UserMainActivity extends BaseActivity implements iHandleFragment {
     final private static String TAG = "UserMainActivity";
 
     private iHandleFragment mHandleFragment;
+    private NewsfeedFragment newsfeedFragment = new NewsfeedFragment();
+    private SearchFragment searchFragment;
+    private CityfeedFragment cityfeedFragment;
+    private MessageFragment messageFragment;
+    private ProfilFragment profilFragment;
 
     private DatabaseManager dbManager;
     private DatabaseReference dbUsersData;
     private DatabaseReference dbUserProfilPicture;
-    private DatabaseReference dbUsersProfilPicture;
+    private DatabaseReference dbPosts;
 
     public UserStorage mUserStorage;
-    public ArrayList<Post> mPostList = new ArrayList<>();
+    private ArrayList<Post> mPublicationList = new ArrayList<>();
     public ArrayList<User> mUserList = new ArrayList<>();
     private ArrayList<UserStorage> listUserProfilPicture = new ArrayList<>();
 
@@ -75,15 +81,13 @@ public class UserMainActivity extends BaseActivity implements iHandleFragment {
         //  Database
         dbManager = DatabaseManager.getInstance();
 
+        //  Create fragment
+
         //  Initialize auth
         fbAuth = FirebaseAuth.getInstance();
 
-        init();
-
-        //  Views
-        //mUserToolbar = findViewById(R.id.toolbar_user);
-        //mUserToolbarTitle = findViewById(R.id.toolbar_title);
-        //setSupportActionBar(mUserToolbar);
+        //  Initialize first fragment
+        doFragmentTransaction(newsfeedFragment, getString(R.string.fragment_newsfeed), true, "");
 
         //  Bottom navigation
         mBottomNavigation = findViewById(R.id.navigation);
@@ -103,15 +107,12 @@ public class UserMainActivity extends BaseActivity implements iHandleFragment {
             if(fbUser != null)
             {
                 String uid = fbUser.getUid();
-
-                //  Get main user profil picture
+                //  Reference to the user profil picture
                 dbUserProfilPicture = dbManager.getDatabaseUserProfilPicture(uid);
-
-                //  Get the list of all users
-                dbUsersData = dbManager.getDatabaseUser("");
-
-                //  Get the list of all picture id
-                dbUsersProfilPicture = dbManager.getReference().child("user-picture");
+                //  Reference to the list of users
+                dbUsersData = dbManager.getDatabaseUsers();
+                //  Reference to the list of publications
+                dbPosts = dbManager.getDatabasePosts();
 
                 updateUI();
             }
@@ -127,20 +128,14 @@ public class UserMainActivity extends BaseActivity implements iHandleFragment {
     }
 
     private void updateUI() {
-        //  Main user profil picture
+        //Get list of publication
         //dbUserProfilPicture.addListenerForSingleValueEvent(loadUserProfilPicture());
 
         //  List of user list data
         dbUsersData.addListenerForSingleValueEvent(loadUserList());
 
-        //  List of user profil picture
-        //dbUsersProfilPicture.addListenerForSingleValueEvent(loadListUserProfilPicture());
-    }
-
-    private void init() {
-        Log.d(TAG, "init");
-        NewsfeedFragment fragment = new NewsfeedFragment();
-        doFragmentTransaction(fragment, getString(R.string.fragment_newsfeed), false, "");
+        //  Get the list of publications
+        dbPosts.orderByChild("inverseDate").limitToFirst(5).addListenerForSingleValueEvent(readPublicationListOnce());
     }
 
     private void doFragmentTransaction(Fragment fragment, String tag, boolean addToBackStack, String message) {
@@ -163,29 +158,26 @@ public class UserMainActivity extends BaseActivity implements iHandleFragment {
     @Override
     public void inflateFragment(int fragmentTagId, String message) {
 
-        Fragment fragment;
-
         switch (fragmentTagId)
         {
             case R.string.fragment_newsfeed:
-                fragment = new NewsfeedFragment();
-                doFragmentTransaction(fragment, getString(R.string.fragment_newsfeed), false, "");
+                doFragmentTransaction(newsfeedFragment, getString(R.string.fragment_newsfeed), true, "");
                 break;
             case R.string.fragment_search:
-                fragment = new SearchFragment();
-                doFragmentTransaction(fragment, getString(R.string.fragment_search), false, "");
+                searchFragment = new SearchFragment();
+                doFragmentTransaction(searchFragment, getString(R.string.fragment_search), false, "");
                 break;
             case R.string.fragment_cityfeed:
-                fragment = new CityfeedFragment();
-                doFragmentTransaction(fragment, getString(R.string.fragment_cityfeed), false, "");
+                cityfeedFragment = new CityfeedFragment();
+                doFragmentTransaction(cityfeedFragment, getString(R.string.fragment_cityfeed), false, "");
                 break;
             case R.string.fragment_messages:
-                fragment = new MessageFragment();
-                doFragmentTransaction(fragment, getString(R.string.fragment_messages), false, "");
+                messageFragment = new MessageFragment();
+                doFragmentTransaction(messageFragment, getString(R.string.fragment_messages), false, "");
                 break;
             case R.string.fragment_profil:
-                fragment = new ProfilFragment();
-                doFragmentTransaction(fragment, getString(R.string.fragment_profil), false, "");
+                profilFragment = new ProfilFragment();
+                doFragmentTransaction(profilFragment, getString(R.string.fragment_profil), false, "");
                 break;
             default:
                 break;
@@ -246,47 +238,25 @@ public class UserMainActivity extends BaseActivity implements iHandleFragment {
         };
     }
 
-    /*private ValueEventListener loadListUserProfilPicture() {
+    private ValueEventListener readPublicationListOnce() {
+        showProgressDialog();
         return new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-
-                DataSnapshot userPicture = dataSnapshot.child("profil-picture");
-
-                Log.e(TAG, "User: " + userPicture.getValue());
-                for(DataSnapshot picture: userPicture.getChildren()) {
-                    Log.e(TAG, "User: " + picture.getValue());
-                    if(picture.getValue(UserStorage.class).isProfilPicture())
-                        listUserProfilPicture.add(picture.getValue(UserStorage.class));
-                    //for(DataSnapshot userPicture: user.getChildren()) {
-                    //    if(userPicture.getValue(UserStorage.class).isProfilPicture())
-                    //        listUserProfilPicture.add(userPicture.getValue(UserStorage.class));
-                    //}
+                for(DataSnapshot post : dataSnapshot.getChildren()) {
+                    mPublicationList.add(post.getValue(Post.class));
                 }
-                Log.e(TAG, "loadUserSProfilPicture succeed");
+                hideProgressDialog();
             }
 
             @Override
             public void onCancelled(@NonNull DatabaseError databaseError) {
-                Log.e(TAG, "loadUserProfilPicture failed " + databaseError.getMessage());
+                Log.e(TAG, databaseError.getMessage());
+                hideProgressDialog();
             }
         };
-    }*/
+    }
 
-    /*private ValueEventListener loadUserProfilPicture() {
-        return new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                mUserStorage = dataSnapshot.getValue(UserStorage.class);
-                Log.e(TAG, "loadUserProfilPicture succeed");
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
-                Log.e(TAG, "loadUserProfilPicture failed " + databaseError.getMessage());
-            }
-        };
-    }*/
 
     //  TODO: - Make Key,Value a list, map, etc. in order to add more "extras" to the Bundle
     //        - Allow to sent the class User to get the info directly. and not call mAuth on setting. (make it faster)
@@ -305,6 +275,8 @@ public class UserMainActivity extends BaseActivity implements iHandleFragment {
     public ArrayList<User> getUserList() {
         return this.mUserList;
     }
+
+    public ArrayList<Post> getPublicationList() { return this.mPublicationList;}
 
     public ArrayList<UserStorage> getListUserProfilPicture() {
         return this.listUserProfilPicture;
