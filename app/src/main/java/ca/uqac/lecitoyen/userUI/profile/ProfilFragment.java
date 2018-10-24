@@ -146,7 +146,7 @@ public class ProfilFragment extends BaseFragment implements View.OnClickListener
                 //  Get database & storage reference
                 dbUserData = dbManager.getDatabaseUser(uid);
                 dbUserProfilPicture = dbManager.getDatabaseUserProfilPicture(uid);
-                dbUserPost = dbManager.getDatabaseUserPost(uid);
+                dbUserPost = dbManager.getDatabaseUserPosts(uid);
                 stUserProfilPicture = dbManager.getStorageUserProfilPicture(uid);
 
                 updateUI();
@@ -246,7 +246,7 @@ public class ProfilFragment extends BaseFragment implements View.OnClickListener
 
                 if(listUserPost != null) {
                     vProfilPublicationCount.setText((Integer.toString(listUserPost.size())));
-                    vAdapter = new PublicationAdapter(userMainActivity, listUserPost);
+                    vAdapter = new PublicationAdapter(userMainActivity, fbUser, listUserPost);
                     vProfilRecyclerView.setAdapter(vAdapter);
                 }
             }

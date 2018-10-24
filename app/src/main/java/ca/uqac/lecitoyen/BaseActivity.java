@@ -54,6 +54,26 @@ public class BaseActivity extends AppCompatActivity {
         }
     }
 
+    protected void setToolbar(int toolbarId, String title, int returnHomeIcon, boolean isDisplayHomeEnable) {
+        Toolbar toolbar = findViewById(toolbarId);
+        TextView toolbarTitle = findViewById(R.id.toolbar_title);
+
+        setSupportActionBar(mToolbarByDefault);
+        toolbarTitle.setText(title);
+
+        try {
+
+            getSupportActionBar().setDisplayHomeAsUpEnabled(isDisplayHomeEnable);
+            getSupportActionBar().setHomeAsUpIndicator(returnHomeIcon);
+            getSupportActionBar().setElevation(5);
+
+        } catch (NullPointerException npe) {
+
+            Log.e(TAG, npe.getMessage());
+
+        }
+    }
+
     public void createToolbar(String title, boolean displayReturnHome) {
         mToolbarByDefault = findViewById(R.id.toolbar_default);
         TextView toolbarTitle = findViewById(R.id.toolbar_title);

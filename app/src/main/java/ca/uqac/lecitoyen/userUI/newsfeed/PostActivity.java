@@ -16,6 +16,7 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.EditText;
+import android.widget.FrameLayout;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -62,6 +63,7 @@ public class PostActivity extends BaseActivity implements View.OnClickListener {
     private Context mContext;
 
     private Toolbar mToolbar;
+    private FrameLayout mPictureLayout;
     private TextView mToolbarTitle;
     private TextView mToolbarButton;
     private EditText mPublicationView;
@@ -71,6 +73,7 @@ public class PostActivity extends BaseActivity implements View.OnClickListener {
     private ImageButton mGalleryButton;
     private ImageButton mAttachmentutton;
 
+    private Uri mImageUri;
     private User mUserdata;
 
     //  Firebase Authentification
@@ -103,10 +106,16 @@ public class PostActivity extends BaseActivity implements View.OnClickListener {
         setToolbar();
         mPublicationView = findViewById(R.id.post_message);
         mCircleImageView = findViewById(R.id.post_profil_picture);
-        mPicture = findViewById(R.id.post_picture);
+        mPicture = findViewById(R.id.publication_picture);
+        mPictureLayout = findViewById(R.id.publication_picture_layout);
+
+        //  Button
+        findViewById(R.id.toolbar_post_publish).setOnClickListener(this);
         findViewById(R.id.post_picture_gallery).setOnClickListener(this);
         findViewById(R.id.post_picture_camera).setOnClickListener(this);
         findViewById(R.id.post_attachment).setOnClickListener(this);
+        findViewById(R.id.publication_picture_remove).setVisibility(View.VISIBLE);
+        findViewById(R.id.publication_picture_remove).setOnClickListener(this);
 
     }
 
@@ -165,13 +174,16 @@ public class PostActivity extends BaseActivity implements View.OnClickListener {
                 break;
             case R.id.post_attachment:
                 break;
+            case R.id.publication_picture_remove:
+                mPictureLayout.setVisibility(View.GONE);
+                mPicture.setImageDrawable(null);
+                break;
         }
     }
 
     private void setToolbar() {
         mToolbar = findViewById(R.id.toolbar_post);
         mToolbarTitle = findViewById(R.id.toolbar_post_title);
-        findViewById(R.id.toolbar_post_publish).setOnClickListener(this);
 
         setSupportActionBar(mToolbar);
         mToolbarTitle.setText("");
@@ -190,16 +202,15 @@ public class PostActivity extends BaseActivity implements View.OnClickListener {
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
-        Uri imageUri = data.getData();
+        mImageUri = data.getData();
 
         if(resultCode == RESULT_OK)
         {
             switch (requestCode)
             {
                 case GALLERY_REQUEST_CODE:
-                    //mPicture.setImageURI(imageUri);
-                    Glide.with(this).load(imageUri).into(mPicture);
-                    Log.d(TAG, "Glide what?");
+                    mPictureLayout.setVisibility(View.VISIBLE);
+                    Glide.with(this).load(mImageUri).into(mPicture);
                     break;
                 case CAMERA_REQUEST_CODE:    //TODO: Make this work somehow
                     //checkInternalStorage();
@@ -247,7 +258,12 @@ public class PostActivity extends BaseActivity implements View.OnClickListener {
             post.setPostid(getPostKey());
 
             //  Create storage reference if there is an image added to the post
-            //post.setPictureId("picture" + post.getPostid());
+            if(mPictureLayout.getVisibility() != View.GONE && mImageUri != null) {
+                stPosts = dbManager.getStoragePost(post.getPostid());
+                post.setPictureId("picture" + post.getPostid());
+                Log.e(TAG, post.getPictureId());
+                updateStorage(post);
+            }
 
             //  Create post-history object
             List postHistoryList = new ArrayList<PostModification>();
@@ -271,12 +287,13 @@ public class PostActivity extends BaseActivity implements View.OnClickListener {
         }
     }
 
-    private void updateStorage(Post post, Uri imageUri) {
-/*
-        showProgressDialog();
-        stPosts
-                .child("picture" + )
-                .putFile(imageUri)
+    private void updateStorage(Post post) {
+
+        if(post.getPictureId() == null)
+            Log.e(TAG, "picture id is null");
+
+        stPosts.child(post.getPictureId())
+                .putFile(mImageUri)
                 .addOnProgressListener(new OnProgressListener<UploadTask.TaskSnapshot>() {
                     @Override
                     public void onProgress(UploadTask.TaskSnapshot taskSnapshot) {
@@ -287,19 +304,14 @@ public class PostActivity extends BaseActivity implements View.OnClickListener {
                 .addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
                     @Override
                     public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
-                        dbUserProfilPicture.child(userStorage.getPid()).setValue(userStorage);
-                        updateDB();
-                        updateUI();
-                        hideProgressDialog();
-                        Toast.makeText(activity, "Image telecharger", Toast.LENGTH_SHORT).show();
+                        Log.d(TAG, "image uploaded");
                     }
                 }).addOnFailureListener(new OnFailureListener() {
-            @Override
-            public void onFailure(@NonNull Exception e) {
-                Toast.makeText(activity, e.getMessage(), Toast.LENGTH_SHORT).show();
-                hideProgressDialog();
-            }
-        });*/
+                @Override
+                    public void onFailure(@NonNull Exception e) {
+                        Log.e(TAG, e.getMessage());
+                    }
+        });
     }
 
 

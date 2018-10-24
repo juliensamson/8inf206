@@ -17,12 +17,19 @@ public class DatabaseManager  {
 
     private static String TAG = "DatabaseManager";
 
-    public static String CHILD_USERS = "users";
-    public static String CHILD_USER_PROFIL_PICTURE = "user-profil-picture";
-    public static String CHILD_POSTS = "posts";
-    public static String CHILD_USER_POST = "user-post";
-    public static String CHILD_POST_STORAGE = "post-storage";
-    public static String ORDER_BY_DATE = "inverseDate";
+    private final static String CHILD_USERS = "users";
+    private final static String CHILD_USER_SOCIAL = "user-social";
+    private final static String CHILD_USER_PROFIL_PICTURE = "user-profil-picture";
+
+    private final static String CHILD_USER_POSTS = "user-posts";
+    private final static String CHILD_POSTS = "posts";
+    private final static String CHILD_POST_SOCIAL = "post-social";
+
+    public final static String CHILD_UPVOTES = "upvotes";
+    public final static String CHILD_REPOSTS = "reposts";
+    public final static String CHILD_COMMENTS = "comments";
+
+    private final static String CHILD_POST_STORAGE = "post-storage";
 
     private static DatabaseManager mInstance = null;
     private String mUserId;
@@ -66,16 +73,57 @@ public class DatabaseManager  {
                 .child(uid);
     }
 
-    public Query getDatabasePostsOrderByDate() {
+    public DatabaseReference getDatabaseUserUpvotes(String uid) {
         return FirebaseDatabase.getInstance().getReference()
-                .child(CHILD_POSTS)
-                .orderByChild(ORDER_BY_DATE);
+                .child(CHILD_USER_SOCIAL)
+                .child(uid)
+                .child(CHILD_UPVOTES);
     }
 
-    public DatabaseReference getDatabaseUserPost(String uid) {
+    public DatabaseReference getDatabaseUserReposts(String uid) {
         return FirebaseDatabase.getInstance().getReference()
-                .child(CHILD_USER_POST)
+                .child(CHILD_USER_SOCIAL)
+                .child(uid)
+                .child(CHILD_REPOSTS);
+    }
+
+    public DatabaseReference getDatabaseUserComments(String uid) {
+        return FirebaseDatabase.getInstance().getReference()
+                .child(CHILD_USER_SOCIAL)
+                .child(uid)
+                .child(CHILD_COMMENTS);
+    }
+
+    public DatabaseReference getDatabasePosts() {
+        return FirebaseDatabase.getInstance().getReference()
+                .child(CHILD_POSTS);
+    }
+
+    public DatabaseReference getDatabaseUserPosts(String uid) {
+        return FirebaseDatabase.getInstance().getReference()
+                .child(CHILD_USER_POSTS)
                 .child(uid);
+    }
+
+    public DatabaseReference getDatabasePostUpvotes(String postid) {
+        return FirebaseDatabase.getInstance().getReference()
+                .child(CHILD_POST_SOCIAL)
+                .child(postid)
+                .child(CHILD_UPVOTES);
+    }
+
+    public DatabaseReference getDatabasePostReposts(String postid) {
+        return FirebaseDatabase.getInstance().getReference()
+                .child(CHILD_POST_SOCIAL)
+                .child(postid)
+                .child(CHILD_REPOSTS);
+    }
+
+    public DatabaseReference getDatabasePostComments(String postid) {
+        return FirebaseDatabase.getInstance().getReference()
+                .child(CHILD_POST_SOCIAL)
+                .child(postid)
+                .child(CHILD_COMMENTS);
     }
 
     /*
@@ -110,21 +158,5 @@ public class DatabaseManager  {
             String key = db.child("users").push().getKey();
             db.child("users").child(key).setValue(userdata);
         }
-    }
-
-    @Exclude
-    public void writePost(DatabaseReference db, Post post) {
-        Log.d(TAG, "writePost");
-
-        String key = db.child("posts").push().getKey();
-        post.setPostid(key);
-        Map<String, Object> postValues = post.toMap();
-
-        //  write on firebase
-        Map<String, Object> childUpdates = new HashMap<>();
-        childUpdates.put("/posts/" + key, postValues);
-        childUpdates.put("/user-post/" + post.getUid() + "/" + key, postValues);
-
-        db.updateChildren(childUpdates);
     }
 }

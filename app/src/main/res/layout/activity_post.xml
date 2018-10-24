@@ -1,50 +1,32 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.constraint.ConstraintLayout
+<android.support.design.widget.CoordinatorLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@color/white_50"
     tools:context="ca.uqac.lecitoyen.userUI.newsfeed.PostActivity">
 
-    <include
-        layout="@layout/toolbar_default"
-        android:id="@+id/toolbar_default" />
-
-    <FrameLayout
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_marginBottom="54dp"
-        android:layout_marginTop="54dp"
-        android:orientation="vertical"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent">
+        android:orientation="vertical">
 
-        <LinearLayout
-            android:id="@+id/post_layout"
+        <include
+            android:id="@+id/toolbar_post"
+            layout="@layout/toolbar_button" />
+
+        <android.support.v4.widget.NestedScrollView
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:layout_marginTop="@dimen/activity_vertical_margin"
-            android:layout_marginBottom="@dimen/activity_vertical_margin"
-            android:layout_marginStart="@dimen/activity_horizontal_margin"
-            android:layout_marginEnd="@dimen/activity_horizontal_margin">
+            android:layout_height="match_parent">
 
-            <EditText
-                android:id="@+id/post_message"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="@dimen/activity_vertical_margin"
-                android:hint="Entrer un message public"
-                android:inputType="textLongMessage"
-                android:lines="6"
-                android:maxLines="6"/>
+            <include layout="@layout/layout_publication" />
 
-        </LinearLayout>
+        </android.support.v4.widget.NestedScrollView>
 
-    </FrameLayout>
+    </LinearLayout>
 
+    <include layout="@layout/layout_publication_buttom_item" />
 
-</android.support.constraint.ConstraintLayout>
+</android.support.design.widget.CoordinatorLayout>

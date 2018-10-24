@@ -8,7 +8,7 @@ import java.util.Map;
 
 public class Post {
 
-    //  post data
+    //  Post information
     private String postid;
 
     private long date;
@@ -18,6 +18,14 @@ public class Post {
     private String post;
 
     private String pictureId;
+
+    //  Social information
+
+    private int upvote;
+
+    private int repost;
+
+    private int comment;
 
     //  User information
     private String uid;
@@ -45,10 +53,17 @@ public class Post {
         this.post = post;
         this.date = date;
         this.inverseDate = 0 - date;
-        this.pictureId = "";
+        this.pictureId = null;
+        this.upvote = 0;
+        this.repost = 0;
+        this.comment = 0;
     }
 
-    //  Getter & Setter
+    /*
+
+             Getter & Setter
+
+     */
 
 
     public String getPostid() {
@@ -129,6 +144,30 @@ public class Post {
 
     public void setPictureId(String pictureId) {
         this.pictureId = pictureId;
+    }
+
+    public int getUpvote() {
+        return upvote;
+    }
+
+    public void setUpvote(int upvote) {
+        this.upvote = upvote;
+    }
+
+    public int getRepost() {
+        return repost;
+    }
+
+    public void setRepost(int repost) {
+        this.repost = repost;
+    }
+
+    public int getComment() {
+        return comment;
+    }
+
+    public void setComment(int comment) {
+        this.comment = comment;
     }
 
     @Exclude

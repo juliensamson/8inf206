@@ -1,4 +1,4 @@
-<LinearLayout
+<android.support.design.widget.CoordinatorLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
@@ -6,14 +6,20 @@
     android:orientation="vertical"
     tools:context=".userUI.messaging.MessageFragment">
 
-    <include
-        android:id="@+id/toolbar_message"
-        layout="@layout/toolbar_default" />
-
-    <TextView
-        android:id="@+id/fragment_message_title"
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:text="@string/fragment_messages" />
+        android:orientation="vertical">
 
-</LinearLayout>
+        <include
+            android:id="@+id/toolbar_message"
+            layout="@layout/toolbar_default" />
+
+        <com.stfalcon.chatkit.dialogs.DialogsList
+            android:id="@+id/dialogsList"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"/>
+
+    </LinearLayout>
+
+</android.support.design.widget.CoordinatorLayout>

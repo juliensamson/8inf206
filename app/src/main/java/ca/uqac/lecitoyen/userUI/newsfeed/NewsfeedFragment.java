@@ -59,6 +59,7 @@ public class NewsfeedFragment extends BaseFragment implements View.OnClickListen
     private FirebaseUser fbUser;
     private DatabaseReference dbUsersData;
     private DatabaseReference dbPosts;
+    private DatabaseReference dbPostsSocial;
     private Query mPostsQuery;
 
     private RecyclerView mNewsfeedRecyclerView;
@@ -66,7 +67,11 @@ public class NewsfeedFragment extends BaseFragment implements View.OnClickListen
     private RecyclerView.LayoutManager mLayoutManager;
 
     private ArrayList<Post> mPublicationList = new ArrayList<>();
+    private ArrayList<String> mPostUpvote = new ArrayList<>();
+    private ArrayList<String> mPostRepost = new ArrayList<>();
     private ArrayList<User> userList = new ArrayList<>();
+
+    //  TODO: CREATE SINGLETRON
 
 
     public NewsfeedFragment() {
@@ -80,9 +85,6 @@ public class NewsfeedFragment extends BaseFragment implements View.OnClickListen
         this.userMainActivity = (UserMainActivity) getActivity();
         this.dbManager = DatabaseManager.getInstance();
         this.fbAuth = FirebaseAuth.getInstance();
-
-        //  Get data
-        //mPublicationList = userMainActivity.getPublicationList();
     }
 
     @Override
@@ -91,7 +93,6 @@ public class NewsfeedFragment extends BaseFragment implements View.OnClickListen
         Log.d(TAG, "onCreateView");
 
         //  Toolbar
-        //mHandleFragment.setToolbarTitle(getTag());
         setFragmentToolbar(view, userMainActivity, R.id.toolbar_newsfeed, getTag(), false);
 
         //  View
@@ -104,14 +105,6 @@ public class NewsfeedFragment extends BaseFragment implements View.OnClickListen
         //  Set recycler view
         mLayoutManager = new LinearLayoutManager(getActivity());
         mNewsfeedRecyclerView.setLayoutManager(mLayoutManager);
-
-        //mNewsfeedAdapter = new PublicationAdapter(getContext(), mPublicationList);
-        //mNewsfeedRecyclerView.setAdapter(mNewsfeedAdapter);
-
-        Log.d(TAG, "onCreateView" + mPublicationList.size());
-
-        //else
-        //    Log.e(TAG, "publication list is empty");
 
         return view;
     }
@@ -133,8 +126,7 @@ public class NewsfeedFragment extends BaseFragment implements View.OnClickListen
                 dbUsersData = dbManager.getDatabaseUsers();
                 mPostsQuery = dbPosts.orderByChild("inverseDate").limitToLast(1);
 
-                dbPosts.orderByChild("inverseDate").limitToFirst(5).addListenerForSingleValueEvent(readPublicationListOnce());
-                //updateUI();
+                dbPosts.orderByChild("inverseDate").limitToFirst(10).addListenerForSingleValueEvent(readPublicationListOnce());
             }
         } else {
             Log.e(TAG, "auth is null");
@@ -152,7 +144,6 @@ public class NewsfeedFragment extends BaseFragment implements View.OnClickListen
         switch (view.getId())
         {
             case R.id.newsfeed_add_message:
-                //showBottomDialog();
                 startActivity(new Intent(getContext(), PostActivity.class));
                 break;
             default:
@@ -160,50 +151,9 @@ public class NewsfeedFragment extends BaseFragment implements View.OnClickListen
         }
     }
 
-    private void updateUI() {
-        //dbPosts.addValueEventListener(loadUserPostData());
-        ///dbPosts.addChildEventListener(readPostsUpdate());
-        //dbPosts.
-        //mPostsQuery.addChildEventListener(readPostsUpdate());
-    }
-
     @SuppressWarnings("unchecked")
     private void updateDB(final Post post) {
 
-        dbUsersData.addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-
-                if(dataSnapshot.hasChildren())
-                {
-                    long currentTime = System.currentTimeMillis();
-                    User userData = dataSnapshot.child(fbUser.getUid()).getValue(User.class);
-
-                    if(userData != null) {
-                        post.setUid(userData.getUid());
-                        post.setDate(currentTime);
-
-                        List modifications = new ArrayList<PostModification>();
-                        PostModification postModification = new PostModification(
-                                0,
-                                post.getPost(),
-                                currentTime
-                        );
-
-                        modifications.add(postModification);
-                        post.setModifications(modifications);
-
-                        //dbManager.writePost(dbManager.getReference(), post);
-                    }
-                }
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
-                Log.e(TAG, databaseError.getMessage());
-            }
-        });
-        hideProgressDialog();
     }
 
     private ValueEventListener readPublicationListOnce() {
@@ -213,10 +163,15 @@ public class NewsfeedFragment extends BaseFragment implements View.OnClickListen
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 mPublicationList.clear();
-                for(DataSnapshot post : dataSnapshot.getChildren()) {
-                    mPublicationList.add(post.getValue(Post.class));
+                for(DataSnapshot postSnapshot : dataSnapshot.getChildren()) {
+                    //Post post = postSnapshot.getValue(Post.class);
+                    //if(post != null) {
+                    //    DatabaseReference dbUpvote = dbManager.getDatabasePostsUpvote(post.getPostid());
+                    //    dbUpvote.addChildEventListener(checkPostUpvote());
+                        mPublicationList.add(postSnapshot.getValue(Post.class));
+                    //}
                 }
-                mNewsfeedAdapter = new PublicationAdapter(getContext(), mPublicationList);
+                mNewsfeedAdapter = new PublicationAdapter(getContext(), fbUser, mPublicationList);
                 mNewsfeedRecyclerView.setAdapter(mNewsfeedAdapter);
                 hideProgressDialog();
             }
@@ -229,21 +184,42 @@ public class NewsfeedFragment extends BaseFragment implements View.OnClickListen
         };
     }
 
-    private ChildEventListener readPostsUpdate() {
+    private  ChildEventListener checkPostUpvote() {
+        return new ChildEventListener() {
+            @Override
+            public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+                //if(dataSnapshot.getValue().toString() != null)
+                //    mPostUpvote.add(dataSnapshot.getValue().toString());
+            }
+
+            @Override
+            public void onChildChanged(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+
+            }
+
+            @Override
+            public void onChildRemoved(@NonNull DataSnapshot dataSnapshot) {
+
+            }
+
+            @Override
+            public void onChildMoved(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        };
+    }
+
+    private ChildEventListener readPostsSocialData() {
         Log.d(TAG, "readPostsUpdate");
         return new ChildEventListener() {
             @Override
             public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
-                //mPublicationsList.clear();
-                //mNewsfeedAdapter.notifyItemInserted(0);
-                Post newPost = dataSnapshot.getValue(Post.class);
 
-                if (newPost != null) {
-                    Log.d(TAG, newPost.getUid() + " " +newPost.getPost() );
-                    //mPublicationsList.add(newPost);
-                } else {
-                    Log.e(TAG, "post is empty");
-                }
             }
 
             @Override
