@@ -2,13 +2,11 @@ package ca.uqac.lecitoyen.userUI.newsfeed;
 
 import android.content.Intent;
 import android.support.annotation.NonNull;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
-import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
@@ -25,8 +23,7 @@ import ca.uqac.lecitoyen.BaseActivity;
 import ca.uqac.lecitoyen.R;
 import ca.uqac.lecitoyen.database.DatabaseManager;
 import ca.uqac.lecitoyen.database.Post;
-import ca.uqac.lecitoyen.database.PostModification;
-import ca.uqac.lecitoyen.database.User;
+import ca.uqac.lecitoyen.database.PostHistory;
 
 public class EditPostActivity extends BaseActivity {
 
@@ -96,7 +93,7 @@ public class EditPostActivity extends BaseActivity {
                     String currentPostId = postSnapshot.getValue(Post.class).getPostid();
                     if(currentPostId.equals(mPostid)) {
                         Log.w(TAG, "Post id: " + currentPostId + " " + mPostid);
-                        mMessage.setText(mCurrentPost.getPost());
+                        mMessage.setText(mCurrentPost.getMessage());
                         break;
                     }
                 }
@@ -124,17 +121,17 @@ public class EditPostActivity extends BaseActivity {
 
                 if(dataSnapshot.hasChildren())
                 {
-                    mCurrentPost.setPost(mMessage.getText().toString());
+                    mCurrentPost.setMessage(mMessage.getText().toString());
 
-                    List modifications = mCurrentPost.getModifications();
+                    ArrayList<PostHistory> history = mCurrentPost.getHistories();
 
-                    PostModification postModification = new PostModification(
-                            modifications.size(),
+                    PostHistory postHistory = new PostHistory(
+                            history.size(),
                             mMessage.getText().toString(),
                             System.currentTimeMillis()
                     );
-                    modifications.add(postModification);
-                    mCurrentPost.setModifications(modifications);
+                    history.add(postHistory);
+                    mCurrentPost.setHistories(history);
 
                     DatabaseManager.getInstance().getReference()
                             .child("posts")
@@ -142,7 +139,7 @@ public class EditPostActivity extends BaseActivity {
                             .setValue(mCurrentPost);
                     DatabaseManager.getInstance().getReference()
                             .child("user-post")
-                            .child(mCurrentPost.getUid())
+                            .child(mCurrentPost.getUser().getUid())
                             .child(mCurrentPost.getPostid())
                             .setValue(mCurrentPost);
                     Toast.makeText(getApplicationContext(), "Data modified", Toast.LENGTH_SHORT).show();

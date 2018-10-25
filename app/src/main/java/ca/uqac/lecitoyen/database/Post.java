@@ -2,6 +2,7 @@ package ca.uqac.lecitoyen.database;
 
 import com.google.firebase.database.Exclude;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -11,33 +12,30 @@ public class Post {
     //  Post information
     private String postid;
 
+    private String message;
+
+    private ArrayList<PostHistory> histories;
+
+    private ArrayList<Image> images;
+
     private long date;
 
-    private long inverseDate;
+    private long dateInverse;
 
-    private String post;
-
-    private String pictureId;
+    //  User information
+    private User user;
 
     //  Social information
 
-    private int upvote;
+    private ArrayList<User> upvoteUsers;
+    private long upvoteCount;
 
-    private int repost;
+    private ArrayList<User> repostUsers;
+    private long repostCount;
 
-    private int comment;
-
-    //  User information
-    private String uid;
-
-    private String pid;
-
-    private String name;
-
-    private String username;
-
-    //  metadata
-    private List<PostModification> modifications;
+    //MAP of (User, Comment)
+    //private ArrayList<User> commentUserList;
+    //private long commentCount;
 
     //  Constructor
 
@@ -45,18 +43,39 @@ public class Post {
         //  Default Constructor
     }
 
-    public Post(User user, String post, long date) {
-        this.uid = user.getUid();
-        this.pid = user.getPid();
-        this.name = user.getName();
-        this.username = user.getUsername();
-        this.post = post;
+    public Post(User user, String message, long date) {
+        this.user = user;
+        this.message = message;
+        this.images = new ArrayList<>();
         this.date = date;
-        this.inverseDate = 0 - date;
-        this.pictureId = null;
-        this.upvote = 0;
-        this.repost = 0;
-        this.comment = 0;
+        this.dateInverse = 0 - date;
+        this.upvoteCount = 0;
+        this.repostCount = 0;
+    }
+
+    public Post(String postid, User user, String message, long date) {
+        this.postid = postid;
+        this.user = user;
+        this.message = message;
+        this.images = new ArrayList<>();
+        this.date = date;
+        this.dateInverse = 0 - date;
+        this.upvoteUsers = new ArrayList<>();
+        this.upvoteCount = 0;
+        this.repostUsers = new ArrayList<>();
+        this.repostCount = 0;
+    }
+
+    public Post(String postid, User user, String message, long date, ArrayList<Image> imageList, ArrayList<PostHistory> histories) {
+        this.postid = postid;
+        this.user = user;
+        this.message = message;
+        this.images = imageList;
+        this.histories = histories;
+        this.date = date;
+        this.dateInverse = 0 - date;
+        this.upvoteCount = 0;
+        this.repostCount = 0;
     }
 
     /*
@@ -74,12 +93,28 @@ public class Post {
         this.postid = postid;
     }
 
-    public String getUid() {
-        return uid;
+    public User getUser() {
+        return user;
     }
 
-    public void setUid(String uid) {
-        this.uid = uid;
+    public void setUser(User user) {
+        this.user = user;
+    }
+
+    public String getMessage() {
+        return message;
+    }
+
+    public void setMessage(String message) {
+        this.message = message;
+    }
+
+    public ArrayList<PostHistory> getHistories() {
+        return histories;
+    }
+
+    public void setHistories(ArrayList<PostHistory> histories) {
+        this.histories = histories;
     }
 
     public long getDate() {
@@ -90,99 +125,75 @@ public class Post {
         this.date = date;
     }
 
-    public String getPost() {
-        return post;
+    public long getDateInverse() {
+        return dateInverse;
     }
 
-    public void setPost(String post) {
-        this.post = post;
+    public void setDateInverse(long dateInverse) {
+        this.dateInverse = dateInverse;
     }
 
-    public List<PostModification> getModifications() {
-        return modifications;
+    public ArrayList<Image> getImages() {
+        return images;
     }
 
-    public void setModifications(List<PostModification> modifications) {
-        this.modifications = modifications;
+    public void setImages(ArrayList<Image> images) {
+        this.images = images;
     }
 
-    public String getPid() {
-        return pid;
+    //  Upvote
+
+    public ArrayList<User> getUpvoteUsers() {
+        return upvoteUsers;
     }
 
-    public void setPid(String pid) {
-        this.pid = pid;
+    public void setUpvoteUsers(ArrayList<User> upvoteUsers) {
+        this.upvoteUsers = upvoteUsers;
     }
 
-    public long getInverseDate() {
-        return inverseDate;
+    public long getUpvoteCount() {
+        return upvoteCount;
     }
 
-    public void setInverseDate(long inverseDate) {
-        this.inverseDate = inverseDate;
+    public void setUpvoteCount(long upvoteCount) {
+        this.upvoteCount = upvoteCount;
     }
 
-    public String getName() {
-        return name;
+    //  Repost
+
+    public ArrayList<User> getRepostUsers() {
+        return repostUsers;
     }
 
-    public void setName(String name) {
-        this.name = name;
+    public void setRepostUsers(ArrayList<User> repostUsers) {
+        this.repostUsers = repostUsers;
     }
 
-    public String getUsername() {
-        return username;
+    public long getRepostCount() {
+        return repostCount;
     }
 
-    public void setUsername(String username) {
-        this.username = username;
-    }
-
-    public String getPictureId() {
-        return pictureId;
-    }
-
-    public void setPictureId(String pictureId) {
-        this.pictureId = pictureId;
-    }
-
-    public int getUpvote() {
-        return upvote;
-    }
-
-    public void setUpvote(int upvote) {
-        this.upvote = upvote;
-    }
-
-    public int getRepost() {
-        return repost;
-    }
-
-    public void setRepost(int repost) {
-        this.repost = repost;
-    }
-
-    public int getComment() {
-        return comment;
-    }
-
-    public void setComment(int comment) {
-        this.comment = comment;
+    public void setRepostCount(long repostCount) {
+        this.repostCount = repostCount;
     }
 
     @Exclude
     public Map<String, Object> toMap() {
         HashMap<String, Object> result = new HashMap<>();
+        result.put("user", user);
+
         result.put("postid", postid);
-        result.put("uid", uid);
-        result.put("pid", pid);
-        result.put("name", name);
-        result.put("username", username);
-        result.put("post", post);
+        result.put("message", message);
+        result.put("images", images);
+        result.put("histories", histories);
         result.put("date", date);
-        result.put("inverseDate", inverseDate);
-        result.put("modifications", modifications);
-        result.put("pictureId", pictureId);
+        result.put("dateInverse", dateInverse);
+
+        result.put("upvoteUsers", upvoteUsers);
+        result.put("upvoteCount", upvoteCount);
+        result.put("repostUsers", repostUsers);
+        result.put("repostCount", repostCount);
+
         return result;
     }
 

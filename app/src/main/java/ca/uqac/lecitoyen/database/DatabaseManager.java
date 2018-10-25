@@ -94,6 +94,12 @@ public class DatabaseManager  {
                 .child(CHILD_COMMENTS);
     }
 
+    public DatabaseReference getDatabasePost(String postid) {
+        return FirebaseDatabase.getInstance().getReference()
+                .child(CHILD_POSTS)
+                .child(postid);
+    }
+
     public DatabaseReference getDatabasePosts() {
         return FirebaseDatabase.getInstance().getReference()
                 .child(CHILD_POSTS);

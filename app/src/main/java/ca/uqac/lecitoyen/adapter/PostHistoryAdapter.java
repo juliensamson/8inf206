@@ -7,7 +7,6 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ArrayAdapter;
 import android.widget.TextView;
 
 import java.text.SimpleDateFormat;
@@ -16,7 +15,7 @@ import java.util.Date;
 import java.util.Locale;
 
 import ca.uqac.lecitoyen.R;
-import ca.uqac.lecitoyen.database.PostModification;
+import ca.uqac.lecitoyen.database.PostHistory;
 
 public class PostHistoryAdapter extends RecyclerView.Adapter<PostHistoryAdapter.ViewHolder> {
 
@@ -29,9 +28,9 @@ public class PostHistoryAdapter extends RecyclerView.Adapter<PostHistoryAdapter.
 
     private Context mContext;
 
-    private ArrayList<PostModification> mPostHistory;
+    private ArrayList<PostHistory> mPostHistory;
 
-    public PostHistoryAdapter(Context context, ArrayList<PostModification> postHistory) {
+    public PostHistoryAdapter(Context context, ArrayList<PostHistory> postHistory) {
         this.mContext = context;
         this.mPostHistory = postHistory;
     }
@@ -46,7 +45,7 @@ public class PostHistoryAdapter extends RecyclerView.Adapter<PostHistoryAdapter.
 
     @Override
     public void onBindViewHolder(@NonNull PostHistoryAdapter.ViewHolder holder, int position) {
-        final PostModification currentPostHistory = mPostHistory.get(holder.getAdapterPosition());
+        final PostHistory currentPostHistory = mPostHistory.get(holder.getAdapterPosition());
         holder.number.setText(getHistoryNumber(currentPostHistory));
         holder.date.setText(getTimeElapseSincePost(currentPostHistory));
         holder.post.setText(currentPostHistory.getPost());
@@ -70,7 +69,7 @@ public class PostHistoryAdapter extends RecyclerView.Adapter<PostHistoryAdapter.
         }
     }
 
-    private String getHistoryNumber(final PostModification postHistory) {
+    private String getHistoryNumber(final PostHistory postHistory) {
         String textOriginal = mContext.getResources().getString(R.string.post_history_original);
         String textModif    = mContext.getResources().getString(R.string.post_history_number_modify);
         int num = postHistory.getModifcationNumber();
@@ -82,7 +81,7 @@ public class PostHistoryAdapter extends RecyclerView.Adapter<PostHistoryAdapter.
     }
 
     @NonNull
-    private String getTimeElapseSincePost(final PostModification postHistory) {
+    private String getTimeElapseSincePost(final PostHistory postHistory) {
 
         String textBeforeAgo = mContext.getResources().getString(R.string.text_time_ago) + " ";
         String textBeforeThe  = mContext.getResources().getString(R.string.text_time_the) + " ";

@@ -12,16 +12,11 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.EditText;
-import android.widget.ImageButton;
 import android.widget.ProgressBar;
-import android.widget.Toast;
 
 
-import com.firebase.ui.database.FirebaseRecyclerAdapter;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -29,19 +24,15 @@ import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
-import java.util.List;
 
 import ca.uqac.lecitoyen.BaseFragment;
 import ca.uqac.lecitoyen.Interface.iHandleFragment;
 import ca.uqac.lecitoyen.R;
-import ca.uqac.lecitoyen.adapter.FeedAdapter;
 import ca.uqac.lecitoyen.adapter.PublicationAdapter;
-import ca.uqac.lecitoyen.database.PostModification;
 import ca.uqac.lecitoyen.userUI.UserMainActivity;
 import ca.uqac.lecitoyen.database.DatabaseManager;
 import ca.uqac.lecitoyen.database.Post;
 import ca.uqac.lecitoyen.database.User;
-import me.shaohui.bottomdialog.BottomDialog;
 
 public class NewsfeedFragment extends BaseFragment implements View.OnClickListener {
 
@@ -67,7 +58,7 @@ public class NewsfeedFragment extends BaseFragment implements View.OnClickListen
     private RecyclerView.LayoutManager mLayoutManager;
 
     private ArrayList<Post> mPublicationList = new ArrayList<>();
-    private ArrayList<String> mPostUpvote = new ArrayList<>();
+    private ArrayList<String> mPostUpvotes = new ArrayList<>();
     private ArrayList<String> mPostRepost = new ArrayList<>();
     private ArrayList<User> userList = new ArrayList<>();
 
@@ -124,9 +115,9 @@ public class NewsfeedFragment extends BaseFragment implements View.OnClickListen
                 //  Get database & storage reference
                 dbPosts = dbManager.getDatabasePosts();
                 dbUsersData = dbManager.getDatabaseUsers();
-                mPostsQuery = dbPosts.orderByChild("inverseDate").limitToLast(1);
+                mPostsQuery = dbPosts.orderByChild("date-inverse").limitToLast(1);
 
-                dbPosts.orderByChild("inverseDate").limitToFirst(10).addListenerForSingleValueEvent(readPublicationListOnce());
+                dbPosts.orderByChild("date-inverse").limitToFirst(10).addListenerForSingleValueEvent(readPublicationListOnce());
             }
         } else {
             Log.e(TAG, "auth is null");
@@ -144,7 +135,7 @@ public class NewsfeedFragment extends BaseFragment implements View.OnClickListen
         switch (view.getId())
         {
             case R.id.newsfeed_add_message:
-                startActivity(new Intent(getContext(), PostActivity.class));
+                startActivity(new Intent(getContext(), CreatePostActivity.class));
                 break;
             default:
                 break;
@@ -164,13 +155,16 @@ public class NewsfeedFragment extends BaseFragment implements View.OnClickListen
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 mPublicationList.clear();
                 for(DataSnapshot postSnapshot : dataSnapshot.getChildren()) {
-                    //Post post = postSnapshot.getValue(Post.class);
-                    //if(post != null) {
-                    //    DatabaseReference dbUpvote = dbManager.getDatabasePostsUpvote(post.getPostid());
-                    //    dbUpvote.addChildEventListener(checkPostUpvote());
+                    Post post = postSnapshot.getValue(Post.class);
+                    if(post != null) {
+                        DatabaseReference dbUserUpvotes = dbManager.getDatabaseUserUpvotes(fbUser.getUid());
+                        dbUserUpvotes.addValueEventListener(readUserUpvotes());
                         mPublicationList.add(postSnapshot.getValue(Post.class));
-                    //}
+                    }
                 }
+                DatabaseReference dbUserUpvotes = dbManager.getDatabaseUserUpvotes(fbUser.getUid());
+                dbUserUpvotes.addValueEventListener(readUserUpvotes());
+
                 mNewsfeedAdapter = new PublicationAdapter(getContext(), fbUser, mPublicationList);
                 mNewsfeedRecyclerView.setAdapter(mNewsfeedAdapter);
                 hideProgressDialog();
@@ -184,65 +178,51 @@ public class NewsfeedFragment extends BaseFragment implements View.OnClickListen
         };
     }
 
-    private  ChildEventListener checkPostUpvote() {
-        return new ChildEventListener() {
+    private ValueEventListener readUserUpvotes() {
+        return new ValueEventListener() {
             @Override
-            public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
-                //if(dataSnapshot.getValue().toString() != null)
-                //    mPostUpvote.add(dataSnapshot.getValue().toString());
-            }
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
 
-            @Override
-            public void onChildChanged(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+                Log.e(TAG, String.valueOf(dataSnapshot.getChildrenCount()));
 
-            }
+                for (DataSnapshot postUpvotedByUser : dataSnapshot.getChildren()) {
+                    Post postUpvoted = postUpvotedByUser.getValue(Post.class);
+                    if(postUpvoted != null) {
+                        Log.e(TAG, postUpvoted.getPostid());
 
-            @Override
-            public void onChildRemoved(@NonNull DataSnapshot dataSnapshot) {
-
-            }
-
-            @Override
-            public void onChildMoved(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
-
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
-
-            }
-        };
-    }
-
-    private ChildEventListener readPostsSocialData() {
-        Log.d(TAG, "readPostsUpdate");
-        return new ChildEventListener() {
-            @Override
-            public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
-
-            }
-
-            @Override
-            public void onChildChanged(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
-
-            }
-
-            @Override
-            public void onChildRemoved(@NonNull DataSnapshot dataSnapshot) {
-
-            }
-
-            @Override
-            public void onChildMoved(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+                    }
+                }
+                /*ArrayList<Post> listUpvoted = new ArrayList<>();
+                for (DataSnapshot postUpvotedByUser : dataSnapshot.getChildren()) {
+                    listUpvoted.add(postUpvotedByUser.getValue(Post.class));
+                }
+                Log.i(TAG, String.valueOf(mPostList.size()));
+                for (int i = 0; i < mPostList.size(); i++)
+                {
+                    for(int j = 0; j < listUpvoted.size(); j++)
+                    {
+                        if (mPostList.get(i).getPostid().equals(listUpvoted.get(j).getPostid())) {
+                            Log.e(TAG, String.valueOf(isUpvoteByUser));
+                            Log.e(TAG, mPostList.get(i).getPostid());
+                            Log.e(TAG, listUpvoted.get(j).getPostid());
+                            setUpvoteButtonOn(holder);
+                            break;
+                        } else {
+                            Log.e(TAG, String.valueOf(isUpvoteByUser));
+                            setUpvoteButtonOff(holder);
+                        }
+                    }
+                }*/
 
             }
 
             @Override
             public void onCancelled(@NonNull DatabaseError databaseError) {
-
+                Log.e(TAG, databaseError.getMessage());
             }
         };
     }
+
 
     private ValueEventListener loadUserPostData() {
         return new ValueEventListener() {

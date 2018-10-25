@@ -4,7 +4,7 @@ package ca.uqac.lecitoyen.database;
  * Created by jul_samson on 18-10-04.
  */
 
-public class PostModification {
+public class PostHistory {
 
     private int modifcationNumber;
 
@@ -12,10 +12,10 @@ public class PostModification {
 
     private long modificationTimestamp;
 
-    public PostModification() {
+    public PostHistory() {
     }
 
-    public PostModification(int modifcationNumber, String post, long modificationTimestamp) {
+    public PostHistory(int modifcationNumber, String post, long modificationTimestamp) {
         this.modifcationNumber = modifcationNumber;
         this.post = post;
         this.modificationTimestamp = modificationTimestamp;

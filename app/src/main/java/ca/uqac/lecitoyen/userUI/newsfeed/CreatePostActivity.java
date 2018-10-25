@@ -1,18 +1,14 @@
 package ca.uqac.lecitoyen.userUI.newsfeed;
 
-import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
-import android.icu.text.SymbolTable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
-import android.support.v4.app.FragmentManager;
 import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.Menu;
-import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.EditText;
@@ -30,12 +26,10 @@ import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.Exclude;
 import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.OnProgressListener;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
-import com.nostra13.universalimageloader.core.ImageLoader;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -45,16 +39,15 @@ import java.util.Map;
 import ca.uqac.lecitoyen.BaseActivity;
 import ca.uqac.lecitoyen.R;
 import ca.uqac.lecitoyen.database.DatabaseManager;
+import ca.uqac.lecitoyen.database.Image;
 import ca.uqac.lecitoyen.database.Post;
-import ca.uqac.lecitoyen.database.PostModification;
+import ca.uqac.lecitoyen.database.PostHistory;
 import ca.uqac.lecitoyen.database.User;
-import ca.uqac.lecitoyen.database.UserStorage;
 import de.hdodenhof.circleimageview.CircleImageView;
-import me.shaohui.bottomdialog.BottomDialog;
 
-public class PostActivity extends BaseActivity implements View.OnClickListener {
+public class CreatePostActivity extends BaseActivity implements View.OnClickListener {
 
-    private static String TAG = "PostActivity";
+    private static String TAG = "CreatePostActivity";
 
     private static final int CAMERA_REQUEST_CODE= 1;
     private static final int GALLERY_REQUEST_CODE = 2;
@@ -89,7 +82,7 @@ public class PostActivity extends BaseActivity implements View.OnClickListener {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_post);
+        setContentView(R.layout.activity_create_post);
         Log.d(TAG, "Created");
 
         //  Initialize auth
@@ -251,31 +244,32 @@ public class PostActivity extends BaseActivity implements View.OnClickListener {
 
             //  Create post object
             Post post = new Post(
+                    getPostKey(),
                     mUserdata,
                     publication,
                     currentTime
             );
-            post.setPostid(getPostKey());
 
             //  Create storage reference if there is an image added to the post
             if(mPictureLayout.getVisibility() != View.GONE && mImageUri != null) {
-                stPosts = dbManager.getStoragePost(post.getPostid());
-                post.setPictureId("picture" + post.getPostid());
-                Log.e(TAG, post.getPictureId());
+                ArrayList<Image> postImageList = new ArrayList<>();
+                postImageList.add(new Image("image" + post.getPostid() + "1000"));
+                post.setImages(postImageList);
                 updateStorage(post);
             }
 
             //  Create post-history object
-            List postHistoryList = new ArrayList<PostModification>();
-            PostModification postHistory = new PostModification(
+            ArrayList postHistoryList = new ArrayList<PostHistory>();
+            PostHistory postHistory = new PostHistory(
                     0,
                     publication,
                     currentTime
             );
-
             //  Add publications history to post
             postHistoryList.add(postHistory);
-            post.setModifications(postHistoryList);
+            post.setHistories(postHistoryList);
+
+            post.setUpvoteCount(post.getUpvoteUsers().size());
 
             //  Add data to fire base
             writePublicationToFirebase(post);
@@ -283,35 +277,37 @@ public class PostActivity extends BaseActivity implements View.OnClickListener {
             Toast.makeText(getApplicationContext(), "Data inserted", Toast.LENGTH_SHORT).show();
             this.finish();
         } else {
-            Log.e(TAG, "mUserdata emty");
+            Log.e(TAG, "mUserdata empty");
         }
     }
 
     private void updateStorage(Post post) {
 
-        if(post.getPictureId() == null)
-            Log.e(TAG, "picture id is null");
+        stPosts = dbManager.getStoragePost(post.getPostid());
 
-        stPosts.child(post.getPictureId())
-                .putFile(mImageUri)
-                .addOnProgressListener(new OnProgressListener<UploadTask.TaskSnapshot>() {
-                    @Override
-                    public void onProgress(UploadTask.TaskSnapshot taskSnapshot) {
-                        Log.d(TAG, "Byte transferred: " + taskSnapshot.getBytesTransferred());
-                        //TODO: add byte transfer to ProgressDialog
-                    }
-                })
-                .addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
-                    @Override
-                    public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
-                        Log.d(TAG, "image uploaded");
-                    }
-                }).addOnFailureListener(new OnFailureListener() {
+        if(post.getImages() != null && !post.getImages().isEmpty()) {
+            stPosts.child(post.getImages().get(0).getImageId())
+                    .putFile(mImageUri)
+                    .addOnProgressListener(new OnProgressListener<UploadTask.TaskSnapshot>() {
+                        @Override
+                        public void onProgress(UploadTask.TaskSnapshot taskSnapshot) {
+                            Log.d(TAG, "Byte transferred: " + taskSnapshot.getBytesTransferred());
+                            //TODO: add byte transfer to ProgressDialog
+                        }
+                    })
+                    .addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+                        @Override
+                        public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                            Log.d(TAG, "image uploaded");
+                        }
+                    }).addOnFailureListener(new OnFailureListener() {
                 @Override
-                    public void onFailure(@NonNull Exception e) {
-                        Log.e(TAG, e.getMessage());
-                    }
-        });
+                public void onFailure(@NonNull Exception e) {
+                    Log.e(TAG, e.getMessage());
+                }
+            });
+        } else
+            Log.e(TAG, "picture id is null");
     }
 
 
@@ -348,12 +344,10 @@ public class PostActivity extends BaseActivity implements View.OnClickListener {
             Log.d(TAG, "writePost");
             Map<String, Object> postValues = post.toMap();
 
-
-
             //  write on firebase
             Map<String, Object> childUpdates = new HashMap<>();
             childUpdates.put("/posts/" + post.getPostid(), postValues);
-            childUpdates.put("/user-post/" + post.getUid() + "/" + post.getPostid(), postValues);
+            childUpdates.put("/user-post/" + post.getUser().getUid() + "/" + post.getPostid(), postValues);
 
             dbReference.updateChildren(childUpdates);
     }
