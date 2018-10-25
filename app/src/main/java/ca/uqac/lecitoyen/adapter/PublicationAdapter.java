@@ -36,6 +36,7 @@ import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
 
+import ca.uqac.lecitoyen.BaseFragment;
 import ca.uqac.lecitoyen.R;
 import ca.uqac.lecitoyen.database.DatabaseManager;
 import ca.uqac.lecitoyen.database.Post;
@@ -44,6 +45,7 @@ import ca.uqac.lecitoyen.database.User;
 import ca.uqac.lecitoyen.database.UserStorage;
 import ca.uqac.lecitoyen.userUI.newsfeed.EditPostActivity;
 import ca.uqac.lecitoyen.utility.CustumButton;
+import ca.uqac.lecitoyen.utility.TimeUtility;
 import de.hdodenhof.circleimageview.CircleImageView;
 
 public class PublicationAdapter extends RecyclerView.Adapter<PublicationAdapter.ViewHolder> {
@@ -62,17 +64,11 @@ public class PublicationAdapter extends RecyclerView.Adapter<PublicationAdapter.
 
     private FirebaseUser fbUser;
     private DatabaseManager dbManager = DatabaseManager.getInstance();
-    //private DatabaseReference db
-    //private DatabaseReference dbPost;
+    private TimeUtility timeUtility;
 
-    private DatabaseReference dbPostUpvotes;
-    private DatabaseReference dbUserUpvotes;
-
-    private DatabaseReference dbUserReposts;
-    private DatabaseReference dbPostReposts;
-
+    private User mCurrentUser;
     private String mCurrentUserId;
-    private Post holderPost;
+
     private ArrayList<Post> mPostList = new ArrayList<>();
     private ArrayList<String> mPostUpvotes = new ArrayList<>();
     private ArrayList<User> mUpvoteUsers = new ArrayList<>();
@@ -95,7 +91,12 @@ public class PublicationAdapter extends RecyclerView.Adapter<PublicationAdapter.
         this.mContext = context;
         this.fbUser = user;
         this.mPostList = postList;
-        if(fbUser != null) this.mCurrentUserId = fbUser.getUid();
+        if(fbUser != null) {
+            this.mCurrentUserId = fbUser.getUid();
+            this.mCurrentUser = new User(mCurrentUserId);
+        }
+
+        this.timeUtility = new TimeUtility(mContext);
     }
 
     public PublicationAdapter(Context context, ArrayList<Post> postList, ArrayList<String> upvotes) {
@@ -181,16 +182,15 @@ public class PublicationAdapter extends RecyclerView.Adapter<PublicationAdapter.
 
         /*
 
-               Get the information
+               Get the information about the post
 
          */
+        final Post holderPost = mPostList.get(holder.getAdapterPosition());
+        DatabaseReference dbPost = dbManager.getDatabasePost(holderPost.getPostid());
 
-        holderPost = mPostList.get(holder.getAdapterPosition());
-        if(mPostList.get(holder.getAdapterPosition()).getUpvoteUsers() != null)
-            mUpvoteUsers = mPostList.get(holder.getAdapterPosition()).getUpvoteUsers();
         /*
 
-               Views
+               Initialize views
 
          */
         setAdapterViews(holder, holderPost);
@@ -207,7 +207,7 @@ public class PublicationAdapter extends RecyclerView.Adapter<PublicationAdapter.
         //setSocialOnClickListener(holder, currPost);
 
         //test
-        updateSocialInteraction(holder, holderPost);
+        dbPost.addValueEventListener(readPostUpdate(holder, holderPost));
     }
 
     /*
@@ -221,40 +221,40 @@ public class PublicationAdapter extends RecyclerView.Adapter<PublicationAdapter.
         return mPostList.size();
     }
 
-    private void setAdapterViews(@NonNull final PublicationAdapter.ViewHolder holder, final Post post) {
+    private void setAdapterViews(@NonNull final PublicationAdapter.ViewHolder holder, final Post holderPost) {
 
         Log.d(TAG, "setAdapterViews");
 
-        if(post != null)
+        if(holderPost != null)
         {
-            User user = post.getUser();
+            User user = holderPost.getUser();
 
             StorageReference storage = dbManager.getStorageUserProfilPicture(user.getUid());
-            StorageReference stPosts = dbManager.getStoragePost(post.getPostid());
+            StorageReference stPosts = dbManager.getStoragePost(holderPost.getPostid());
 
             if(user.getPid() != null && !user.getPid().isEmpty())                                   //User's profil picture
                 Glide.with(mContext).load(storage.child(user.getPid())).into(holder.profilPicture);
             if(user.getName() != null && !user.getName().isEmpty())                                 //User's name
-                holder.name.setText(post.getUser().getName());
+                holder.name.setText(holderPost.getUser().getName());
             if(user.getUsername() != null && !user.getUsername().isEmpty())                         //User's username
                 holder.userName.setText(user.getUsername());
-            if(post.getMessage() != null && !post.getMessage().isEmpty())                                 //Post message
-                holder.message.setText(post.getMessage());
-            if(post.getDate() != 0)                                                                 //Time of publication
-                holder.time.setText(getTimeDifference(post));
-            if(post.getHistories().size() > 1)                                                  //Show if post modified
+            if(holderPost.getMessage() != null && !holderPost.getMessage().isEmpty())                                 //Post message
+                holder.message.setText(holderPost.getMessage());
+            if(holderPost.getDate() != 0)                                                                 //Time of publication
+                holder.time.setText(timeUtility.getTimeDifference(holderPost));
+            if(holderPost.getHistories().size() > 1)                                                  //Show if post modified
                 holder.modify.setVisibility(View.VISIBLE);
-            if(post.getImages() != null) {
-                if (!post.getImages().get(0).getImageId().isEmpty()){
+            if(holderPost.getImages() != null) {
+                if (!holderPost.getImages().get(0).getImageId().isEmpty()){
                     holder.pictureLayout.setVisibility(View.VISIBLE);
-                    Glide.with(mContext).load(stPosts.child(post.getImages().get(0).getImageId())).into(holder.picture); //Fill ImageView
+                    Glide.with(mContext).load(stPosts.child(holderPost.getImages().get(0).getImageId())).into(holder.picture); //Fill ImageView
                 }
             }
-            holder.upvoteCount.setText(String.valueOf(post.getUpvoteCount()));
+            holder.upvoteCount.setText(String.valueOf(holderPost.getUpvoteCount()));
             //holder.repostCount.setText(String.valueOf(post.getRepostCount()));
 
-            DatabaseReference dbPost = dbManager.getDatabasePost(post.getPostid());
-            dbPost.addListenerForSingleValueEvent(readPostOnce(holder, post));
+            DatabaseReference dbPost = dbManager.getDatabasePost(holderPost.getPostid());
+            dbPost.addListenerForSingleValueEvent(initPost(holder, holderPost));
 
         } else {
             //TODO: Create blank canvas
@@ -302,62 +302,60 @@ public class PublicationAdapter extends RecyclerView.Adapter<PublicationAdapter.
         });
     }
 
-    private void updateSocialInteraction(@NonNull final PublicationAdapter.ViewHolder holder, final Post holderPost) {
-        //Access reference to databse for Upvotes
-        dbUserUpvotes = dbManager.getDatabaseUserUpvotes(fbUser.getUid());
-        Log.d(TAG, "Postid is " + holderPost.getPostid());
+    /*
 
-        DatabaseReference dbPost = dbManager.getDatabasePost(holderPost.getPostid());
-        dbPost.addValueEventListener(readPostUpdate(holder, holderPost));
 
-        Log.e(TAG, holderPost.getPostid());
-        //dbManager.getReference().addValueEventListener(read(holder, holderPost));
-        //dbUserUpvotes.addValueEventListener(readUserUpvotes(holder, holderPost));
-        //dbPostUpvotes.addValueEventListener(readPostUpvotes(holder, holderPost));
-        //dbManager.getReference().addValueEventListener(updateUpvoteOnClick(holder, holderPost));
+            Value Event Listener
 
-        //Access reference to databse for Reposts
-        //dbUserReposts = dbManager.getDatabaseUserReposts(holderPost.getUser().getUid());
-        //dbPostReposts = dbManager.getDatabasePostReposts(holderPost.getPostid());
-    }
 
-    private ValueEventListener readPostOnce(@NonNull final PublicationAdapter.ViewHolder holder, final Post holderPost) {
+     */
+
+    private ValueEventListener initPost(@NonNull final PublicationAdapter.ViewHolder holder, final Post holderPost) {
         return new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+
                 final DataSnapshot upvoteUsersSnapshot = dataSnapshot.child("upvoteUsers");
 
-                Log.e(TAG, upvoteUsersSnapshot.toString());
-                /*
-
-                    Initialize
-
-                 */
-
                 //  Get upvote users
-                final ArrayList<User> users = new ArrayList<>();
+                /*final ArrayList<User> users = new ArrayList<>();
                 for(DataSnapshot userSnapshot: upvoteUsersSnapshot.getChildren()) {
                     users.add(userSnapshot.getValue(User.class));
+                }*/
+                final Map<String, User> users = new HashMap<>();
+                for(DataSnapshot userSnapshot: upvoteUsersSnapshot.getChildren()) {
+                    User user = userSnapshot.getValue(User.class);
+                    if(user != null)
+                        users.put(user.getUid(), user);
                 }
+
                 //  Get users count
                 holderPost.setUpvoteCount(users.size());
 
                 //  Find if users upvote the post and initialize
-                if(!users.isEmpty()) {
+                if(!users.isEmpty())
+                {
+                    if(users.containsKey(mCurrentUserId))
+                        setUpvoteButtonOn(holder);
+                    else
+                        setUpvoteButtonOff(holder);
+                } else {
+                    Log.e(TAG, "No user upvoted this post");
+                }
+
+                /*if(!users.isEmpty())
+                {
                     for(int i = 0; i < users.size(); i++) {
-                        Log.d(TAG, users.get(i).getUid());
                         if(users.get(i).getUid().equals(mCurrentUserId)) {
-                            Log.d(TAG, mCurrentUserId + " liked this post " + holderPost.getMessage());
                             setUpvoteButtonOn(holder);
                             break;
                         } else {
-                            Log.d(TAG, mCurrentUserId + " did not like this post " + holderPost.getMessage());
                             setUpvoteButtonOff(holder);
                         }
                     }
                 } else {
                     Log.e(TAG, "No user upvoted this post");
-                }
+                }*/
             }
 
             @Override
@@ -372,236 +370,107 @@ public class PublicationAdapter extends RecyclerView.Adapter<PublicationAdapter.
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
 
-                 /*
-
-                    Handle OnClick
-
-                 */
+                //TODO: Transformer en MAP pour éviter de répéter les données
+                //TODO: Ajouter à utilisatueur et faire Repost
 
                 //  Get upvote users
                 final DataSnapshot upvoteUsersSnapshot = dataSnapshot.child("upvoteUsers");
 
-                final ArrayList<User> users = new ArrayList<>();
+                Log.e(TAG, "onDataChange" + upvoteUsersSnapshot.toString());
+
+                /*final ArrayList<User> users = new ArrayList<>();
                 for(DataSnapshot userSnapshot: upvoteUsersSnapshot.getChildren()) {
                     users.add(userSnapshot.getValue(User.class));
-                }
-
-                //  Set the user id
-                final User user = new User();
-                user.setUid(mCurrentUserId);
-
-                holder.upvoteLayout.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View view) {
-                        DatabaseReference postRef = dbManager.getDatabasePost(holderPost.getPostid());
-                        DatabaseReference dbPostUpvoteCount = postRef.child("upvoteCount");
-                        DatabaseReference dbPostUpvoteUsers = postRef.child("upvoteUsers");
-
-                        Log.e(TAG, "POSTID ?:  " + holderPost.getPostid());
-                        Log.e(TAG, mCurrentUserId + " " + String.valueOf(isUpvoteByUser));
-                        if(!isUpvoteByUser) {
-                            Log.e(TAG, "isUpvoteByUser " + String.valueOf(isUpvoteByUser));
-                            setUpvoteButtonOn(holder);
-                            //Add user to list
-                            users.add(user);
-                            holderPost.setUpvoteUsers(users);
-                            holderPost.setUpvoteCount(users.size());
-
-                            //Update database (Add user to post, and add post to user
-                            dbPostUpvoteCount.setValue(holderPost.getUpvoteCount());
-                            dbPostUpvoteUsers.setValue(holderPost.getUpvoteUsers());
-                            //update user too
-
-                            //Update UI
-                        } else {
-                            Log.e(TAG, "isUpvoteByUser " + String.valueOf(isUpvoteByUser));
-                            //Remove user from list
-                            setUpvoteButtonOff(holder);
-                            Log.i(TAG, "Users Count Before" + users.size());
-                            for(int i = 0; i < users.size(); i++) {
-                                if (users.get(i).getUid().equals(mCurrentUserId)) {
-                                    Log.d(TAG, mCurrentUserId + " liked this post " + holderPost.getMessage());
-                                    users.remove(i);
-                                    holderPost.setUpvoteCount(users.size());
-                                    holderPost.setUpvoteUsers(users);
-                                    Log.i(TAG, "Users Count After" + users.size());
-
-                                    dbPostUpvoteCount.setValue(holderPost.getUpvoteCount());
-                                    dbPostUpvoteUsers.child(String.valueOf(i)).removeValue();
-
-                                    break;
-                                }
-                            }
-                        }
-                        holder.upvoteCount.setText(String.valueOf(holderPost.getUpvoteCount()));
-                    }
-                });
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
-
-            }
-        };
-    }
-
-    private ValueEventListener updateUpvoteOnClick(@NonNull final PublicationAdapter.ViewHolder holder, final Post holderPost) {
-        return new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull final DataSnapshot dataSnapshot)
-            {
-                //  Check list completed list of publication & check if it correspond to the upvoted one by the use
-                Log.e(TAG, String.valueOf(dataSnapshot.getChildrenCount()));
-                holder.upvoteLayout.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View view) {
-                        Log.d(TAG, "Upvote layout clicked");
-
-                        String currentUserId = fbUser.getUid();
-                        String currentPostId = holderPost.getPostid();
-
-                        DatabaseReference dbUserUpvotesClicked = dbManager.getDatabaseUserUpvotes(currentUserId);
-                        DatabaseReference dbPostUpvotesClicked = dbManager.getDatabasePostUpvotes(currentPostId);
-
-                        Log.e(TAG, String.valueOf(dataSnapshot.getChildrenCount()));
-
-                        User user1 = new User();
-                        user1.setUid(currentUserId);
-
-                        if (!isUpvoteByUser)
-                        {
-                            /*
-
-                                    Update upvotes made by the user
-
-                             */
-                            mUpvoteUsers.add(user1);
-                            holderPost.setUpvoteUsers(mUpvoteUsers);
-                            dbManager.getReference()
-                                    .child("posts")
-                                    .child(currentPostId)
-                                    .child("upvoteUsers")
-                                    .setValue(holderPost.getUpvoteUsers());
-
-                            Post post = new Post();
-                            post.setPostid(currentPostId);
-                            Map<String, Object> userUpvotes = new HashMap<>();
-                            userUpvotes.put(post.getPostid(), post);
-                            //  Put current post as upvoted in the user
-                            dbUserUpvotesClicked.updateChildren(userUpvotes);
-                            //holderPost.setUpvote(dataSnapshot.getChildrenCount());
-
-                            /*
-
-                                    Update the post social interaction
-
-                             */
-                            User user = new User();
-                            user.setUid(fbUser.getUid());
-                            Map<String, Object> postUpvotes = new HashMap<>();
-                            postUpvotes.put(user.getUid(), user);
-                            //  Put current user as someone who upvotes the post
-                            dbPostUpvotesClicked.updateChildren(postUpvotes);
-
-                            Log.d(TAG, "Current postid: " + post.getPostid());
-                            Log.d(TAG, "Current userid: " + user.getUid());
-
-                            setUpvoteButtonOn(holder);
-                        } else {
-                            //  Remove the user from the upvoted posted
-                            dbUserUpvotesClicked.child(currentPostId).removeValue();
-                            //  Remove the post from what the user upvoted
-                            dbPostUpvotesClicked.child(currentUserId).removeValue();
-                            dbManager.getReference()
-                                    .child("posts")
-                                    .child(currentPostId)
-                                    .child(currentUserId).removeValue();
-                            mUpvoteUsers.remove(user1);
-
-                            setUpvoteButtonOff(holder);
-                        }
-                    }
-                });
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
-
-            }
-        };
-    }
-
-    private ValueEventListener readUserUpvotes(@NonNull final PublicationAdapter.ViewHolder holder, final Post holderPost) {
-        return new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-
-                Log.e(TAG, String.valueOf(dataSnapshot.getChildrenCount()));
-
-                for (DataSnapshot postUpvotedByUser : dataSnapshot.getChildren()) {
-                    Post postUpvoted = postUpvotedByUser.getValue(Post.class);
-                    if(postUpvoted != null) {
-                        Log.e(TAG, postUpvoted.getPostid());
-
-                    }
-                }
-                /*ArrayList<Post> listUpvoted = new ArrayList<>();
-                for (DataSnapshot postUpvotedByUser : dataSnapshot.getChildren()) {
-                    listUpvoted.add(postUpvotedByUser.getValue(Post.class));
-                }
-                Log.i(TAG, String.valueOf(mPostList.size()));
-                for (int i = 0; i < mPostList.size(); i++)
-                {
-                    for(int j = 0; j < listUpvoted.size(); j++)
-                    {
-                        if (mPostList.get(i).getPostid().equals(listUpvoted.get(j).getPostid())) {
-                            Log.e(TAG, String.valueOf(isUpvoteByUser));
-                            Log.e(TAG, mPostList.get(i).getPostid());
-                            Log.e(TAG, listUpvoted.get(j).getPostid());
-                            setUpvoteButtonOn(holder);
-                            break;
-                        } else {
-                            Log.e(TAG, String.valueOf(isUpvoteByUser));
-                            setUpvoteButtonOff(holder);
-                        }
-                    }
                 }*/
 
+                //Map<String, Object> userUpvotes = new HashMap<>();
+                //post.setPostid(postid);
+                //userUpvotes.put(postid, post);
+
+                final Map<String, User> users = new HashMap<>();
+                for(DataSnapshot userSnapshot: upvoteUsersSnapshot.getChildren()) {
+                    User user = userSnapshot.getValue(User.class);
+                    if(user != null)
+                        users.put(user.getUid(), user);
+                }
+
+                holder.upvoteLayout.setOnClickListener(setUpvoteOnClickListener(holder, holderPost, users));
             }
 
             @Override
             public void onCancelled(@NonNull DatabaseError databaseError) {
-                Log.e(TAG, databaseError.getMessage());
-            }
-        };
-    }
-
-    private ValueEventListener readPostUpvotes(@NonNull final PublicationAdapter.ViewHolder holder, Post holderPost) {
-        return new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
 
             }
         };
     }
 
-    private void initUpvoteInteraction(@NonNull final PublicationAdapter.ViewHolder holder, Post holderPost, Post userPost) {
-        //Log.e(TAG, post.getPostid() + " " + post.getPostid());
-        if (holderPost.getPostid().equals(userPost.getPostid())) {
-            setUpvoteButtonOn(holder);
-        } else {
-            setUpvoteButtonOff(holder);
-        }
+    private View.OnClickListener setUpvoteOnClickListener(@NonNull final PublicationAdapter.ViewHolder holder, final Post holderPost, final Map<String, User> users) {
+
+        final String currentPostId = holderPost.getPostid();
+        final DatabaseReference dbPostUpvoteCount = dbManager.getDatabasePostUpvoteCount(currentPostId);
+        final DatabaseReference dbPostUpvoteUsers = dbManager.getDatabasePostUpvoteUsers(currentPostId);
+
+        //  Create User instance with current user
+        return new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+                if(!isUpvoteByUser) {
+                    setUpvoteButtonOn(holder);
+                    //Add user to list
+                    //users.add(user);
+                    users.put(mCurrentUserId, mCurrentUser);
+                    holderPost.setUpvoteUsers(users);
+                    holderPost.setUpvoteCount(users.size());
+
+                    //Update database (Add user to post, and add post to user
+                    dbManager.writeUpvoteToPost(
+                            holderPost,
+                            dbPostUpvoteCount,
+                            dbPostUpvoteUsers
+                    );
+                    //dbPostUpvoteCount.setValue(holderPost.getUpvoteCount());
+                    //dbPostUpvoteUsers.setValue(holderPost.getUpvoteUsers());
+                    //update user too
+
+                    //Update UI
+                } else {
+                    //Remove user from list
+                    setUpvoteButtonOff(holder);
+
+                    if(users.containsKey(mCurrentUserId)) {
+                        /*
+                            Update data structure
+                            - Remove current user from the list
+                            - Update Upvote count with the new size of Users
+                            - Update Upvote users with the new users
+                         */
+                        users.remove(mCurrentUserId);
+                        holderPost.setUpvoteCount(users.size());
+                        holderPost.setUpvoteUsers(users);
+
+                        /*
+
+                            Update fireabse with the updated structure
+
+                         */
+                        dbManager.removeUpvoteFromPost(
+                                mCurrentUser,
+                                holderPost,
+                                dbPostUpvoteCount,
+                                dbPostUpvoteUsers
+                        );
+                    } else
+                        Log.e(TAG, mCurrentUserId + " didn't like this post");
+                }
+                holder.upvoteCount.setText(String.valueOf(holderPost.getUpvoteCount()));
+            }
+        };
     }
 
     private void setUpvoteOnClick(@NonNull final PublicationAdapter.ViewHolder holder, final Post post) {
 
-        holder.upvoteLayout.setOnClickListener(new View.OnClickListener() {
+        /*holder.upvoteLayout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view)
             {
@@ -638,8 +507,14 @@ public class PublicationAdapter extends RecyclerView.Adapter<PublicationAdapter.
                     }
                 }
             }
-        });
+        });*/
     }
+
+    /*
+
+            Handle button color & effect
+
+     */
 
     private void setUpvoteButtonOn(@NonNull final PublicationAdapter.ViewHolder holder) {
         isUpvoteByUser = true;
@@ -661,101 +536,7 @@ public class PublicationAdapter extends RecyclerView.Adapter<PublicationAdapter.
         holder.upvoteCount.setAlpha(UNSELECT_TRANSPARENCE);
     }
 
-    private String getTimeDifference(final Post currentPost) {
 
-        String textBeforeAgo = mContext.getResources().getString(R.string.text_time_ago) + " ";
-        String textBeforeThe  = mContext.getResources().getString(R.string.text_time_the) + " ";
-        String textSecond = mContext.getResources().getString(R.string.time_short_second);
-        String textMinute = mContext.getResources().getString(R.string.time_short_minute);
-        String textHour   = mContext.getResources().getString(R.string.time_short_hour);
-
-        long postTime = currentPost.getDate();
-        long timeElapse = System.currentTimeMillis() - postTime;
-
-        Date postDate = new Date(postTime) ;
-
-        String timeDisplayed;
-        if(timeElapse < minute)
-        {
-            timeDisplayed = String.valueOf(timeElapse / second);
-            return textBeforeAgo + timeDisplayed + textSecond;
-        }
-        else if(timeElapse >= minute && timeElapse < hour)
-        {
-            timeDisplayed = String.valueOf(timeElapse / minute);
-            return textBeforeAgo = timeDisplayed + textMinute;
-        }
-        else if(timeElapse >= hour && timeElapse < day)
-        {
-            timeDisplayed = String.valueOf(timeElapse / hour);
-            return textBeforeAgo + timeDisplayed + textHour;
-        }
-        else
-        {
-            timeDisplayed = new SimpleDateFormat(
-                    mContext.getResources().getString(R.string.short_date_format),
-                    Locale.CANADA_FRENCH)
-                    .format(postDate);
-            return textBeforeThe + timeDisplayed;
-        }
-    }
-
-    private ValueEventListener checkValuePostUpvotes(@NonNull final PublicationAdapter.ViewHolder holder, final Post post) {
-        return new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                Log.e(TAG, "# of children: " + String.valueOf(dataSnapshot.getChildrenCount()));
-
-                holder.upvoteCount.setText(String.valueOf(dataSnapshot.getChildrenCount()));
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
-
-            }
-        };
-    }
-
-    private  ChildEventListener checkPostUpvotes(@NonNull final PublicationAdapter.ViewHolder holder, final Post post) {
-        return new ChildEventListener() {
-            @Override
-            public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
-
-                Log.e(TAG, "# of children: " + String.valueOf(dataSnapshot.getChildrenCount()));
-                mPostUpvotes.clear();
-                if(dataSnapshot.exists()) {
-                    mPostUpvotes.add(dataSnapshot.getValue().toString());
-                    Log.e(TAG, "Child added " + String.valueOf(mPostUpvotes.size()));
-                    holder.upvoteCount.setText(String.valueOf(mPostUpvotes.size()));
-                }
-            }
-
-            @Override
-            public void onChildChanged(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
-                Log.e(TAG, "Child changed");
-            }
-
-            @Override
-            public void onChildRemoved(@NonNull DataSnapshot dataSnapshot) {
-                if(dataSnapshot.exists()) {
-                    Log.e(TAG, "# of children: " + String.valueOf(dataSnapshot.getChildrenCount()));
-                    mPostUpvotes.remove(dataSnapshot.getValue().toString());
-                    Log.e(TAG, "Removed " + String.valueOf(mPostUpvotes.size()));
-                    holder.upvoteCount.setText(String.valueOf(mPostUpvotes.size()));
-                }
-            }
-
-            @Override
-            public void onChildMoved(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
-
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
-
-            }
-        };
-    }
     /*
     private void setMoreChoiceDialog(final Post currentPost) {
         AlertDialog.Builder builder = new AlertDialog.Builder(mContext);

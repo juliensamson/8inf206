@@ -39,6 +39,10 @@ public class User {
     //  Constructor
     public User() { }
 
+    public User(String uid) {
+        this.uid = uid;
+    }
+
     public User(String uid, String name, String username, String email, String phone, long creationTimestamp, String provider) {
         this.uid = uid;
         this.pid = "";

@@ -1,5 +1,6 @@
 package ca.uqac.lecitoyen.database;
 
+import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.Exclude;
 
 import java.util.ArrayList;
@@ -27,7 +28,7 @@ public class Post {
 
     //  Social information
 
-    private ArrayList<User> upvoteUsers;
+    private Map<String, User> upvoteUsers;
     private long upvoteCount;
 
     private ArrayList<User> repostUsers;
@@ -60,9 +61,7 @@ public class Post {
         this.images = new ArrayList<>();
         this.date = date;
         this.dateInverse = 0 - date;
-        this.upvoteUsers = new ArrayList<>();
         this.upvoteCount = 0;
-        this.repostUsers = new ArrayList<>();
         this.repostCount = 0;
     }
 
@@ -143,11 +142,11 @@ public class Post {
 
     //  Upvote
 
-    public ArrayList<User> getUpvoteUsers() {
+    public Map<String, User> getUpvoteUsers() {
         return upvoteUsers;
     }
 
-    public void setUpvoteUsers(ArrayList<User> upvoteUsers) {
+    public void setUpvoteUsers(Map<String, User> upvoteUsers) {
         this.upvoteUsers = upvoteUsers;
     }
 

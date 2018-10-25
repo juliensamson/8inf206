@@ -24,6 +24,10 @@ public class DatabaseManager  {
     private final static String CHILD_USER_POSTS = "user-posts";
     private final static String CHILD_POSTS = "posts";
     private final static String CHILD_POST_SOCIAL = "post-social";
+    private final static String CHILD_UPVOTE_USERS = "upvoteUsers";
+    private final static String CHILD_UPVOTE_COUNT = "upvoteCount";
+    private final static String CHILD_REPOST_USERS = "repostUsers";
+    private final static String CHILD_REPOST_COUNT = "repostCount";
 
     public final static String CHILD_UPVOTES = "upvotes";
     public final static String CHILD_REPOSTS = "reposts";
@@ -94,15 +98,49 @@ public class DatabaseManager  {
                 .child(CHILD_COMMENTS);
     }
 
+    /*
+
+            Handle on Post Reference
+
+     */
+
+    public DatabaseReference getDatabasePosts() {
+        return FirebaseDatabase.getInstance().getReference()
+                .child(CHILD_POSTS);
+    }
+
     public DatabaseReference getDatabasePost(String postid) {
         return FirebaseDatabase.getInstance().getReference()
                 .child(CHILD_POSTS)
                 .child(postid);
     }
 
-    public DatabaseReference getDatabasePosts() {
+    public DatabaseReference getDatabasePostUpvoteCount(String postid) {
         return FirebaseDatabase.getInstance().getReference()
-                .child(CHILD_POSTS);
+                .child(CHILD_POSTS)
+                .child(postid)
+                .child(CHILD_UPVOTE_COUNT);
+    }
+
+    public DatabaseReference getDatabasePostUpvoteUsers(String postid) {
+        return FirebaseDatabase.getInstance().getReference()
+                .child(CHILD_POSTS)
+                .child(postid)
+                .child(CHILD_UPVOTE_USERS);
+    }
+
+    public DatabaseReference getDatabasePostRepostCount(String postid) {
+        return FirebaseDatabase.getInstance().getReference()
+                .child(CHILD_POSTS)
+                .child(postid)
+                .child(CHILD_REPOST_COUNT);
+    }
+
+    public DatabaseReference getDatabasePostRepostUsers(String postid) {
+        return FirebaseDatabase.getInstance().getReference()
+                .child(CHILD_POSTS)
+                .child(postid)
+                .child(CHILD_REPOST_USERS);
     }
 
     public DatabaseReference getDatabaseUserPosts(String uid) {
@@ -155,6 +193,16 @@ public class DatabaseManager  {
             Write data into firebase
 
      */
+    public void writeUpvoteToPost(Post post, DatabaseReference countRef, DatabaseReference usersRef) {
+        countRef.setValue(post.getUpvoteCount());
+        usersRef.setValue(post.getUpvoteUsers());
+    }
+
+    public void removeUpvoteFromPost(User user, Post post, DatabaseReference countRef, DatabaseReference usersRef) {
+        countRef.setValue(post.getUpvoteCount());
+        usersRef.child(user.getUid()).removeValue();
+    }
+
 
     @Exclude
     public void writeUserInformation(DatabaseReference db, User userdata) {
