@@ -3,6 +3,7 @@ package ca.uqac.lecitoyen.database;
 //TODO: Store user data locally
 
 import java.util.List;
+import java.util.Map;
 
 public class User {
 
@@ -34,6 +35,13 @@ public class User {
     private String provider;
 
     private String location;
+
+    //  Social interaction
+    private Map<String, Post> upvotePosts;
+    private long upvoteCount;
+
+    private Map<String, Post> repostPosts;
+    private long repostCount;
 
 
     //  Constructor
@@ -167,5 +175,37 @@ public class User {
 
     public void setLocation(String location) {
         this.location = location;
+    }
+
+    public Map<String, Post> getUpvotePosts() {
+        return upvotePosts;
+    }
+
+    public void setUpvotePosts(Map<String, Post> upvotePosts) {
+        this.upvotePosts = upvotePosts;
+    }
+
+    public Map<String, Post> getRepostPosts() {
+        return repostPosts;
+    }
+
+    public void setRepostPosts(Map<String, Post> repostPosts) {
+        this.repostPosts = repostPosts;
+    }
+
+    public long getUpvoteCount() {
+        return upvoteCount;
+    }
+
+    public void setUpvoteCount(long upvoteCount) {
+        this.upvoteCount = upvoteCount;
+    }
+
+    public long getRepostCount() {
+        return repostCount;
+    }
+
+    public void setRepostCount(long repostCount) {
+        this.repostCount = repostCount;
     }
 }

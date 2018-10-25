@@ -31,7 +31,7 @@ public class Post {
     private Map<String, User> upvoteUsers;
     private long upvoteCount;
 
-    private ArrayList<User> repostUsers;
+    private Map<String, User> repostUsers;
     private long repostCount;
 
     //MAP of (User, Comment)
@@ -42,6 +42,10 @@ public class Post {
 
     public Post() {
         //  Default Constructor
+    }
+
+    public Post(String postid) {
+        this.postid = postid;
     }
 
     public Post(User user, String message, long date) {
@@ -160,11 +164,11 @@ public class Post {
 
     //  Repost
 
-    public ArrayList<User> getRepostUsers() {
+    public Map<String, User> getRepostUsers() {
         return repostUsers;
     }
 
-    public void setRepostUsers(ArrayList<User> repostUsers) {
+    public void setRepostUsers(Map<String, User> repostUsers) {
         this.repostUsers = repostUsers;
     }
 

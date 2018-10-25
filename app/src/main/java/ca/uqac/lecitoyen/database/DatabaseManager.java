@@ -1,7 +1,10 @@
 package ca.uqac.lecitoyen.database;
 
+import android.support.annotation.NonNull;
 import android.util.Log;
 
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.Exclude;
 import com.google.firebase.database.FirebaseDatabase;
@@ -18,8 +21,11 @@ public class DatabaseManager  {
     private static String TAG = "DatabaseManager";
 
     private final static String CHILD_USERS = "users";
+    private final static String CHILD_UPVOTE_POSTS = "upvotePosts";
+    private final static String CHILD_REPOST_POSTS = "repostPosts";
     private final static String CHILD_USER_SOCIAL = "user-social";
     private final static String CHILD_USER_PROFIL_PICTURE = "user-profil-picture";
+
 
     private final static String CHILD_USER_POSTS = "user-posts";
     private final static String CHILD_POSTS = "posts";
@@ -100,7 +106,7 @@ public class DatabaseManager  {
 
     /*
 
-            Handle on Post Reference
+            Handle a post reference
 
      */
 
@@ -141,6 +147,19 @@ public class DatabaseManager  {
                 .child(CHILD_POSTS)
                 .child(postid)
                 .child(CHILD_REPOST_USERS);
+    }
+
+    /*
+
+            Handle a user reference
+
+     */
+
+    public DatabaseReference getDatabaseUserPost(String uid, String postid) {
+        return FirebaseDatabase.getInstance().getReference()
+                .child(CHILD_USER_POSTS)
+                .child(uid)
+                .child(postid);
     }
 
     public DatabaseReference getDatabaseUserPosts(String uid) {
@@ -193,14 +212,60 @@ public class DatabaseManager  {
             Write data into firebase
 
      */
-    public void writeUpvoteToPost(Post post, DatabaseReference countRef, DatabaseReference usersRef) {
+    public void writeUpvoteToPost(User user, Post post, DatabaseReference countRef, DatabaseReference usersRef) {
+        //  Update "posts/post-id/" reference
         countRef.setValue(post.getUpvoteCount());
         usersRef.setValue(post.getUpvoteUsers());
+
+        //  Update "user-posts/user-id/post-id/ reference
+        DatabaseReference userPostRef = getDatabaseUserPost(user.getUid(), post.getPostid());
+        userPostRef.child(CHILD_UPVOTE_COUNT).setValue(post.getUpvoteCount());
+        userPostRef.child(CHILD_UPVOTE_USERS).setValue(post.getUpvoteUsers());
+
+        //  Update "users/user-id/" reference
+        DatabaseReference userRef = getDatabaseUser(user.getUid());
+        Post postTemp = new Post(post.getPostid());
+
+        Map<String, Post> posts = new HashMap<>();
+
+        if(user.getUpvotePosts() != null) {
+            if (!user.getUpvotePosts().isEmpty())
+                posts = user.getRepostPosts();
+            else
+                posts = new HashMap<>();
+        }
+        posts.put(postTemp.getPostid(), postTemp);
+        user.setUpvoteCount(posts.size());
+        user.setUpvotePosts(posts);
+        userRef.child(CHILD_UPVOTE_COUNT).setValue(user.getUpvoteCount());
+        userRef.child(CHILD_UPVOTE_POSTS).setValue(user.getUpvotePosts());
     }
 
     public void removeUpvoteFromPost(User user, Post post, DatabaseReference countRef, DatabaseReference usersRef) {
+        //  Update "posts/post-id/" reference
         countRef.setValue(post.getUpvoteCount());
         usersRef.child(user.getUid()).removeValue();
+
+        //  Update "user-post/" reference
+        DatabaseReference userPostRef = getDatabaseUserPost(user.getUid(), post.getPostid());
+        userPostRef.child(CHILD_UPVOTE_COUNT).setValue(post.getUpvoteCount());
+        userPostRef.child(CHILD_UPVOTE_USERS).child(user.getUid()).removeValue();
+
+        //  Update "users/user-id/" reference
+        DatabaseReference userRef = getDatabaseUser(user.getUid());
+        Map<String, Post> posts;
+        if(user.getUpvotePosts() != null)
+            posts = user.getUpvotePosts();
+        else
+            posts = new HashMap<>();
+
+        if(posts.containsKey(post.getPostid())) {
+            posts.remove(post.getPostid());
+            user.setUpvoteCount(posts.size());
+            user.setUpvotePosts(posts);
+            userRef.child(CHILD_UPVOTE_COUNT).setValue(user.getUpvoteCount());
+            userRef.child(CHILD_UPVOTE_POSTS).child(post.getPostid()).removeValue();
+        }
     }
 
 

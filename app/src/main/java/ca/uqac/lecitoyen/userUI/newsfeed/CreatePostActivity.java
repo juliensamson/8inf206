@@ -269,8 +269,6 @@ public class CreatePostActivity extends BaseActivity implements View.OnClickList
             postHistoryList.add(postHistory);
             post.setHistories(postHistoryList);
 
-            post.setUpvoteCount(post.getUpvoteUsers().size());
-
             //  Add data to fire base
             writePublicationToFirebase(post);
 
@@ -347,7 +345,7 @@ public class CreatePostActivity extends BaseActivity implements View.OnClickList
             //  write on firebase
             Map<String, Object> childUpdates = new HashMap<>();
             childUpdates.put("/posts/" + post.getPostid(), postValues);
-            childUpdates.put("/user-post/" + post.getUser().getUid() + "/" + post.getPostid(), postValues);
+            childUpdates.put("/user-posts/" + post.getUser().getUid() + "/" + post.getPostid(), postValues);
 
             dbReference.updateChildren(childUpdates);
     }

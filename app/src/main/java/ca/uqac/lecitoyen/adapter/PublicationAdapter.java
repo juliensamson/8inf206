@@ -318,10 +318,6 @@ public class PublicationAdapter extends RecyclerView.Adapter<PublicationAdapter.
                 final DataSnapshot upvoteUsersSnapshot = dataSnapshot.child("upvoteUsers");
 
                 //  Get upvote users
-                /*final ArrayList<User> users = new ArrayList<>();
-                for(DataSnapshot userSnapshot: upvoteUsersSnapshot.getChildren()) {
-                    users.add(userSnapshot.getValue(User.class));
-                }*/
                 final Map<String, User> users = new HashMap<>();
                 for(DataSnapshot userSnapshot: upvoteUsersSnapshot.getChildren()) {
                     User user = userSnapshot.getValue(User.class);
@@ -342,20 +338,6 @@ public class PublicationAdapter extends RecyclerView.Adapter<PublicationAdapter.
                 } else {
                     Log.e(TAG, "No user upvoted this post");
                 }
-
-                /*if(!users.isEmpty())
-                {
-                    for(int i = 0; i < users.size(); i++) {
-                        if(users.get(i).getUid().equals(mCurrentUserId)) {
-                            setUpvoteButtonOn(holder);
-                            break;
-                        } else {
-                            setUpvoteButtonOff(holder);
-                        }
-                    }
-                } else {
-                    Log.e(TAG, "No user upvoted this post");
-                }*/
             }
 
             @Override
@@ -370,22 +352,10 @@ public class PublicationAdapter extends RecyclerView.Adapter<PublicationAdapter.
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
 
-                //TODO: Transformer en MAP pour éviter de répéter les données
                 //TODO: Ajouter à utilisatueur et faire Repost
 
                 //  Get upvote users
                 final DataSnapshot upvoteUsersSnapshot = dataSnapshot.child("upvoteUsers");
-
-                Log.e(TAG, "onDataChange" + upvoteUsersSnapshot.toString());
-
-                /*final ArrayList<User> users = new ArrayList<>();
-                for(DataSnapshot userSnapshot: upvoteUsersSnapshot.getChildren()) {
-                    users.add(userSnapshot.getValue(User.class));
-                }*/
-
-                //Map<String, Object> userUpvotes = new HashMap<>();
-                //post.setPostid(postid);
-                //userUpvotes.put(postid, post);
 
                 final Map<String, User> users = new HashMap<>();
                 for(DataSnapshot userSnapshot: upvoteUsersSnapshot.getChildren()) {
@@ -416,44 +386,41 @@ public class PublicationAdapter extends RecyclerView.Adapter<PublicationAdapter.
             public void onClick(View view) {
 
                 if(!isUpvoteByUser) {
-                    setUpvoteButtonOn(holder);
-                    //Add user to list
-                    //users.add(user);
+                    /*
+                      Update data structure
+                      - Add current user to the list
+                      - Update Upvote count with the new size of Users
+                      - Update Upvote users with the new users
+                    */
+
                     users.put(mCurrentUserId, mCurrentUser);
                     holderPost.setUpvoteUsers(users);
                     holderPost.setUpvoteCount(users.size());
 
-                    //Update database (Add user to post, and add post to user
+                    //  Update firebase
                     dbManager.writeUpvoteToPost(
+                            mCurrentUser,
                             holderPost,
                             dbPostUpvoteCount,
                             dbPostUpvoteUsers
                     );
-                    //dbPostUpvoteCount.setValue(holderPost.getUpvoteCount());
-                    //dbPostUpvoteUsers.setValue(holderPost.getUpvoteUsers());
-                    //update user too
 
-                    //Update UI
+                    //  Update UI
+                    setUpvoteButtonOn(holder);
                 } else {
-                    //Remove user from list
-                    setUpvoteButtonOff(holder);
+                    /*
+                      Update data structure
+                      - Remove current user from the list
+                      - Update Upvote count with the new size of Users
+                      - Update Upvote users with the new users
+                    */
 
                     if(users.containsKey(mCurrentUserId)) {
-                        /*
-                            Update data structure
-                            - Remove current user from the list
-                            - Update Upvote count with the new size of Users
-                            - Update Upvote users with the new users
-                         */
                         users.remove(mCurrentUserId);
                         holderPost.setUpvoteCount(users.size());
                         holderPost.setUpvoteUsers(users);
 
-                        /*
-
-                            Update fireabse with the updated structure
-
-                         */
+                        //  Update firebase
                         dbManager.removeUpvoteFromPost(
                                 mCurrentUser,
                                 holderPost,
@@ -462,7 +429,11 @@ public class PublicationAdapter extends RecyclerView.Adapter<PublicationAdapter.
                         );
                     } else
                         Log.e(TAG, mCurrentUserId + " didn't like this post");
+
+                    //Upddate UI of button
+                    setUpvoteButtonOff(holder);
                 }
+                //  Update UI Count
                 holder.upvoteCount.setText(String.valueOf(holderPost.getUpvoteCount()));
             }
         };
