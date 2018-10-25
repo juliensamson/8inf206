@@ -95,7 +95,6 @@ public class PublicationAdapter extends RecyclerView.Adapter<PublicationAdapter.
             this.mCurrentUserId = fbUser.getUid();
             this.mCurrentUser = new User(mCurrentUserId);
         }
-
         this.timeUtility = new TimeUtility(mContext);
     }
 
@@ -251,7 +250,7 @@ public class PublicationAdapter extends RecyclerView.Adapter<PublicationAdapter.
                 }
             }
             holder.upvoteCount.setText(String.valueOf(holderPost.getUpvoteCount()));
-            //holder.repostCount.setText(String.valueOf(post.getRepostCount()));
+            holder.repostCount.setText(String.valueOf(holderPost.getRepostCount()));
 
             DatabaseReference dbPost = dbManager.getDatabasePost(holderPost.getPostid());
             dbPost.addListenerForSingleValueEvent(initPost(holder, holderPost));
@@ -318,25 +317,39 @@ public class PublicationAdapter extends RecyclerView.Adapter<PublicationAdapter.
                 final DataSnapshot upvoteUsersSnapshot = dataSnapshot.child("upvoteUsers");
 
                 //  Get upvote users
-                final Map<String, User> users = new HashMap<>();
+                final Map<String, User> upvoteUsers = new HashMap<>();
+                final Map<String, User> repostUsers = new HashMap<>();
                 for(DataSnapshot userSnapshot: upvoteUsersSnapshot.getChildren()) {
                     User user = userSnapshot.getValue(User.class);
-                    if(user != null)
-                        users.put(user.getUid(), user);
+                    if(user != null) {
+                        upvoteUsers.put(user.getUid(), user);
+                        repostUsers.put(user.getUid(), user);
+                    }
                 }
 
                 //  Get users count
-                holderPost.setUpvoteCount(users.size());
+                holderPost.setUpvoteCount(upvoteUsers.size());
+                holderPost.setRepostCount(repostUsers.size());
 
                 //  Find if users upvote the post and initialize
-                if(!users.isEmpty())
+                if(!upvoteUsers.isEmpty())
                 {
-                    if(users.containsKey(mCurrentUserId))
+                    if(upvoteUsers.containsKey(mCurrentUserId))
                         setUpvoteButtonOn(holder);
                     else
                         setUpvoteButtonOff(holder);
                 } else {
                     Log.e(TAG, "No user upvoted this post");
+                }
+
+                if(!repostUsers.isEmpty())
+                {
+                    if(repostUsers.containsKey(mCurrentUserId))
+                        setRepostButtonOn(holder);
+                    else
+                        setRepostButtonOff(holder);
+                } else {
+                    Log.e(TAG, "No user repost this post");
                 }
             }
 
@@ -357,14 +370,18 @@ public class PublicationAdapter extends RecyclerView.Adapter<PublicationAdapter.
                 //  Get upvote users
                 final DataSnapshot upvoteUsersSnapshot = dataSnapshot.child("upvoteUsers");
 
-                final Map<String, User> users = new HashMap<>();
+                final Map<String, User> upvoteUsers = new HashMap<>();
+                final Map<String, User> repostUsers = new HashMap<>();
                 for(DataSnapshot userSnapshot: upvoteUsersSnapshot.getChildren()) {
                     User user = userSnapshot.getValue(User.class);
-                    if(user != null)
-                        users.put(user.getUid(), user);
+                    if(user != null) {
+                        upvoteUsers.put(user.getUid(), user);
+                        repostUsers.put(user.getUid(), user);
+                    }
                 }
 
-                holder.upvoteLayout.setOnClickListener(setUpvoteOnClickListener(holder, holderPost, users));
+                holder.upvoteLayout.setOnClickListener(setUpvoteOnClickListener(holder, holderPost, upvoteUsers));
+                holder.repostLayout.setOnClickListener(setRepostOnClickListener(holder, holderPost, repostUsers));
             }
 
             @Override
@@ -374,13 +391,8 @@ public class PublicationAdapter extends RecyclerView.Adapter<PublicationAdapter.
         };
     }
 
-    private View.OnClickListener setUpvoteOnClickListener(@NonNull final PublicationAdapter.ViewHolder holder, final Post holderPost, final Map<String, User> users) {
-
-        final String currentPostId = holderPost.getPostid();
-        final DatabaseReference dbPostUpvoteCount = dbManager.getDatabasePostUpvoteCount(currentPostId);
-        final DatabaseReference dbPostUpvoteUsers = dbManager.getDatabasePostUpvoteUsers(currentPostId);
-
-        //  Create User instance with current user
+    private View.OnClickListener setUpvoteOnClickListener(@NonNull final PublicationAdapter.ViewHolder holder,
+                                                          final Post holderPost, final Map<String, User> users) {
         return new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -400,9 +412,7 @@ public class PublicationAdapter extends RecyclerView.Adapter<PublicationAdapter.
                     //  Update firebase
                     dbManager.writeUpvoteToPost(
                             mCurrentUser,
-                            holderPost,
-                            dbPostUpvoteCount,
-                            dbPostUpvoteUsers
+                            holderPost
                     );
 
                     //  Update UI
@@ -423,9 +433,7 @@ public class PublicationAdapter extends RecyclerView.Adapter<PublicationAdapter.
                         //  Update firebase
                         dbManager.removeUpvoteFromPost(
                                 mCurrentUser,
-                                holderPost,
-                                dbPostUpvoteCount,
-                                dbPostUpvoteUsers
+                                holderPost
                         );
                     } else
                         Log.e(TAG, mCurrentUserId + " didn't like this post");
@@ -439,46 +447,59 @@ public class PublicationAdapter extends RecyclerView.Adapter<PublicationAdapter.
         };
     }
 
-    private void setUpvoteOnClick(@NonNull final PublicationAdapter.ViewHolder holder, final Post post) {
-
-        /*holder.upvoteLayout.setOnClickListener(new View.OnClickListener() {
+    private View.OnClickListener setRepostOnClickListener(@NonNull final PublicationAdapter.ViewHolder holder,
+                                                          final Post holderPost, final Map<String, User> users) {
+        return new View.OnClickListener() {
             @Override
-            public void onClick(View view)
-            {
-                if(android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.LOLLIPOP)
-                {
-                    final String postid = post.getPostid();
-                    final String uid = post.getUser().getUid();
+            public void onClick(View view) {
+                if(!isRepostByUser) {
+                    /*
+                      Update data structure
+                      - Add current user to the list
+                      - Update Repost count with the new size of Users
+                      - Update Repost users with the new users
+                    */
 
-                    if (!isUpvoteByUser)
-                    {
-                        //  Update by post-social interaction
-                        User user = new User();
-                        user.setUid(uid);
+                    users.put(mCurrentUserId, mCurrentUser);
+                    holderPost.setRepostUsers(users);
+                    holderPost.setRepostCount(users.size());
 
-                        Map<String, Object> postUpvotes = new HashMap<>();
-                        postUpvotes.put(uid, user);
+                    //  Update firebase
+                    dbManager.writeRepostToPost(
+                            mCurrentUser,
+                            holderPost
+                    );
 
+                    //  Update UI
+                    setRepostButtonOn(holder);
+                } else {
+                    /*
+                      Update data structure
+                      - Remove current user from the list
+                      - Update Repost count with the new size of Users
+                      - Update Repost users with the new users
+                    */
 
-                        dbPostUpvotes.updateChildren(postUpvotes);
+                    if(users.containsKey(mCurrentUserId)) {
+                        users.remove(mCurrentUserId);
+                        holderPost.setRepostCount(users.size());
+                        holderPost.setRepostUsers(users);
 
-                        //  Update by user-social interaction
-                        Post post = new Post();
-                        Map<String, Object> userUpvotes = new HashMap<>();
-                        post.setPostid(postid);
-                        userUpvotes.put(postid, post);
-                        dbUserUpvotes.updateChildren(userUpvotes);
+                        //  Update firebase
+                        dbManager.removeRepostFromPost(
+                                mCurrentUser,
+                                holderPost
+                        );
+                    } else
+                        Log.e(TAG, mCurrentUserId + " didn't like this post");
 
-                        setUpvoteButtonOn(holder);
-                    } else {
-                        dbUserUpvotes.child(postid).removeValue();
-                        dbPostUpvotes.child(uid).removeValue();
-
-                        setUpvoteButtonOff(holder);
-                    }
+                    //Upddate UI of button
+                    setRepostButtonOff(holder);
                 }
+                //  Update UI Count
+                holder.repostCount.setText(String.valueOf(holderPost.getRepostCount()));
             }
-        });*/
+        };
     }
 
     /*
@@ -505,6 +526,26 @@ public class PublicationAdapter extends RecyclerView.Adapter<PublicationAdapter.
         }
         holder.upvote.setAlpha(UNSELECT_TRANSPARENCE);
         holder.upvoteCount.setAlpha(UNSELECT_TRANSPARENCE);
+    }
+
+    private void setRepostButtonOn(@NonNull final PublicationAdapter.ViewHolder holder) {
+        isRepostByUser = true;
+        if(android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.LOLLIPOP) {
+            holder.repost.setBackground(mContext.getDrawable(R.drawable.ic_repost_secondary_24dp));
+            holder.repostCount.setTextColor(mContext.getResources().getColor(R.color.i_secondary_700));
+        }
+        holder.repost.setAlpha(SELECT_TRANSPARENCE);
+        holder.repostCount.setAlpha(SELECT_TRANSPARENCE);
+    }
+
+    private void setRepostButtonOff(@NonNull final PublicationAdapter.ViewHolder holder) {
+        isRepostByUser = false;
+        if(android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.LOLLIPOP) {
+            holder.repost.setBackground(mContext.getDrawable(R.drawable.ic_repost_black_24dp));
+            holder.repostCount.setTextColor(mContext.getResources().getColor(R.color.black_900));
+        }
+        holder.repost.setAlpha(UNSELECT_TRANSPARENCE);
+        holder.repostCount.setAlpha(UNSELECT_TRANSPARENCE);
     }
 
 

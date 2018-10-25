@@ -212,62 +212,177 @@ public class DatabaseManager  {
             Write data into firebase
 
      */
-    public void writeUpvoteToPost(User user, Post post, DatabaseReference countRef, DatabaseReference usersRef) {
-        //  Update "posts/post-id/" reference
-        countRef.setValue(post.getUpvoteCount());
-        usersRef.setValue(post.getUpvoteUsers());
+    public void writeUpvoteToPost(User user, Post post) {
+        /*
 
-        //  Update "user-posts/user-id/post-id/ reference
+            Update "posts/post-id/" reference
+
+         */
+        DatabaseReference postRef = getDatabasePost(post.getPostid());
+        postRef.child(CHILD_UPVOTE_COUNT).setValue(post.getUpvoteCount());
+        postRef.child(CHILD_UPVOTE_USERS).setValue(post.getUpvoteUsers());
+
+        /*
+
+            Update "user-posts/user-id/post-id/ reference
+
+         */
         DatabaseReference userPostRef = getDatabaseUserPost(user.getUid(), post.getPostid());
         userPostRef.child(CHILD_UPVOTE_COUNT).setValue(post.getUpvoteCount());
         userPostRef.child(CHILD_UPVOTE_USERS).setValue(post.getUpvoteUsers());
 
-        //  Update "users/user-id/" reference
+        /*
+
+        Update "users/user-id/" reference
+
+         */
         DatabaseReference userRef = getDatabaseUser(user.getUid());
+
+        //  Create the list of upvote posts by user if doesn't exist
         Post postTemp = new Post(post.getPostid());
-
         Map<String, Post> posts = new HashMap<>();
-
         if(user.getUpvotePosts() != null) {
             if (!user.getUpvotePosts().isEmpty())
-                posts = user.getRepostPosts();
+                posts = user.getUpvotePosts();
             else
                 posts = new HashMap<>();
         }
         posts.put(postTemp.getPostid(), postTemp);
         user.setUpvoteCount(posts.size());
         user.setUpvotePosts(posts);
+
         userRef.child(CHILD_UPVOTE_COUNT).setValue(user.getUpvoteCount());
         userRef.child(CHILD_UPVOTE_POSTS).setValue(user.getUpvotePosts());
     }
 
-    public void removeUpvoteFromPost(User user, Post post, DatabaseReference countRef, DatabaseReference usersRef) {
-        //  Update "posts/post-id/" reference
-        countRef.setValue(post.getUpvoteCount());
-        usersRef.child(user.getUid()).removeValue();
+    public void removeUpvoteFromPost(User user, Post post) {
+        /*
 
-        //  Update "user-post/" reference
+            Update "posts/post-id/" reference
+
+         */
+        DatabaseReference postRef = getDatabasePost(post.getPostid());
+        postRef.child(CHILD_UPVOTE_COUNT).setValue(post.getUpvoteCount());
+        postRef.child(CHILD_UPVOTE_USERS).child(user.getUid()).removeValue();
+
+        /*
+
+            Update "user-posts/user-id/post-id/ reference
+
+         */
         DatabaseReference userPostRef = getDatabaseUserPost(user.getUid(), post.getPostid());
         userPostRef.child(CHILD_UPVOTE_COUNT).setValue(post.getUpvoteCount());
         userPostRef.child(CHILD_UPVOTE_USERS).child(user.getUid()).removeValue();
 
-        //  Update "users/user-id/" reference
+         /*
+
+            Update "users/user-id/" reference
+
+         */
         DatabaseReference userRef = getDatabaseUser(user.getUid());
+
         Map<String, Post> posts;
         if(user.getUpvotePosts() != null)
             posts = user.getUpvotePosts();
         else
             posts = new HashMap<>();
 
-        if(posts.containsKey(post.getPostid())) {
+        if(posts.containsKey(post.getPostid()))
+        {
             posts.remove(post.getPostid());
             user.setUpvoteCount(posts.size());
             user.setUpvotePosts(posts);
+
             userRef.child(CHILD_UPVOTE_COUNT).setValue(user.getUpvoteCount());
             userRef.child(CHILD_UPVOTE_POSTS).child(post.getPostid()).removeValue();
         }
     }
 
+    public void writeRepostToPost(User user, Post post) {
+/*
+
+            Update "posts/post-id/" reference
+
+         */
+        DatabaseReference postRef = getDatabasePost(post.getPostid());
+        postRef.child(CHILD_REPOST_COUNT).setValue(post.getRepostCount());
+        postRef.child(CHILD_REPOST_USERS).setValue(post.getRepostUsers());
+
+        /*
+
+            Update "user-posts/user-id/post-id/ reference
+
+         */
+        DatabaseReference userPostRef = getDatabaseUserPost(user.getUid(), post.getPostid());
+        userPostRef.child(CHILD_REPOST_COUNT).setValue(post.getRepostCount());
+        userPostRef.child(CHILD_REPOST_USERS).setValue(post.getRepostUsers());
+
+        /*
+
+        Update "users/user-id/" reference
+
+         */
+        DatabaseReference userRef = getDatabaseUser(user.getUid());
+
+        //  Create the list of Repost posts by user if doesn't exist
+        Post postTemp = new Post(post.getPostid());
+        Map<String, Post> posts = new HashMap<>();
+        if(user.getRepostPosts() != null) {
+            if (!user.getRepostPosts().isEmpty())
+                posts = user.getRepostPosts();
+            else
+                posts = new HashMap<>();
+        }
+        posts.put(postTemp.getPostid(), postTemp);
+        user.setRepostCount(posts.size());
+        user.setRepostPosts(posts);
+
+        userRef.child(CHILD_REPOST_COUNT).setValue(user.getRepostCount());
+        userRef.child(CHILD_REPOST_POSTS).setValue(user.getRepostPosts());
+    }
+
+    public void removeRepostFromPost(User user, Post post) {
+/*
+
+            Update "posts/post-id/" reference
+
+         */
+        DatabaseReference postRef = getDatabasePost(post.getPostid());
+        postRef.child(CHILD_REPOST_COUNT).setValue(post.getRepostCount());
+        postRef.child(CHILD_REPOST_USERS).child(user.getUid()).removeValue();
+
+        /*
+
+            Update "user-posts/user-id/post-id/ reference
+
+         */
+        DatabaseReference userPostRef = getDatabaseUserPost(user.getUid(), post.getPostid());
+        userPostRef.child(CHILD_REPOST_COUNT).setValue(post.getRepostCount());
+        userPostRef.child(CHILD_REPOST_USERS).child(user.getUid()).removeValue();
+
+         /*
+
+            Update "users/user-id/" reference
+
+         */
+        DatabaseReference userRef = getDatabaseUser(user.getUid());
+
+        Map<String, Post> posts;
+        if(user.getRepostPosts() != null)
+            posts = user.getRepostPosts();
+        else
+            posts = new HashMap<>();
+
+        if(posts.containsKey(post.getPostid()))
+        {
+            posts.remove(post.getPostid());
+            user.setRepostCount(posts.size());
+            user.setRepostPosts(posts);
+
+            userRef.child(CHILD_REPOST_COUNT).setValue(user.getRepostCount());
+            userRef.child(CHILD_REPOST_POSTS).child(post.getPostid()).removeValue();
+        }
+    }
 
     @Exclude
     public void writeUserInformation(DatabaseReference db, User userdata) {
