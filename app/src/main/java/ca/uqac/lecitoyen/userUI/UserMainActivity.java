@@ -47,7 +47,7 @@ public class UserMainActivity extends BaseActivity implements iHandleFragment {
     final private static String TAG = "UserMainActivity";
 
     private iHandleFragment mHandleFragment;
-    private NewsfeedFragment newsfeedFragment = new NewsfeedFragment();
+    private NewsfeedFragment newsfeedFragment;
     private SearchFragment searchFragment;
     private CityfeedFragment cityfeedFragment;
     private MessageFragment messageFragment;
@@ -88,7 +88,12 @@ public class UserMainActivity extends BaseActivity implements iHandleFragment {
         //  Initialize auth
         fbAuth = FirebaseAuth.getInstance();
 
-        //  Initialize first fragment
+        //  Initialize fragment
+        newsfeedFragment = new NewsfeedFragment();
+        searchFragment   = new SearchFragment();
+        cityfeedFragment = new CityfeedFragment();
+        messageFragment  = new MessageFragment();
+        profilFragment   = new ProfilTestFragment();
         doFragmentTransaction(newsfeedFragment, getString(R.string.fragment_newsfeed), true, "");
 
         //  Bottom navigation
@@ -136,14 +141,7 @@ public class UserMainActivity extends BaseActivity implements iHandleFragment {
     }
 
     private void updateUI() {
-        //Get list of publication
-        //dbUserProfilPicture.addListenerForSingleValueEvent(loadUserProfilPicture());
 
-        //  List of user list data
-        dbUsersData.addListenerForSingleValueEvent(loadUserList());
-
-        //  Get the list of publications
-        dbPosts.orderByChild("inverseDate").limitToFirst(5).addListenerForSingleValueEvent(readPublicationListOnce());
     }
 
     private void doFragmentTransaction(Fragment fragment, String tag, boolean addToBackStack, String message) {
@@ -172,19 +170,15 @@ public class UserMainActivity extends BaseActivity implements iHandleFragment {
                 doFragmentTransaction(newsfeedFragment, getString(R.string.fragment_newsfeed), true, "");
                 break;
             case R.string.fragment_search:
-                searchFragment = new SearchFragment();
                 doFragmentTransaction(searchFragment, getString(R.string.fragment_search), false, "");
                 break;
             case R.string.fragment_cityfeed:
-                cityfeedFragment = new CityfeedFragment();
                 doFragmentTransaction(cityfeedFragment, getString(R.string.fragment_cityfeed), false, "");
                 break;
             case R.string.fragment_messages:
-                messageFragment = new MessageFragment();
                 doFragmentTransaction(messageFragment, getString(R.string.fragment_messages), false, "");
                 break;
             case R.string.fragment_profil:
-                profilFragment = new ProfilTestFragment();
                 doFragmentTransaction(profilFragment, getString(R.string.fragment_profil), false, "");
                 break;
             default:
@@ -225,47 +219,6 @@ public class UserMainActivity extends BaseActivity implements iHandleFragment {
 
         };
     }
-
-    /*
-
-            Firebase data
-
-     */
-
-    private ValueEventListener loadUserList() {
-        return new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                for(DataSnapshot userSnapshot: dataSnapshot.getChildren()) {
-                    mUserList.add(userSnapshot.getValue(User.class));
-                }
-            }
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
-                Log.e(TAG, "loadUserData failed " + databaseError.getMessage());
-            }
-        };
-    }
-
-    private ValueEventListener readPublicationListOnce() {
-        showProgressDialog();
-        return new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                for(DataSnapshot post : dataSnapshot.getChildren()) {
-                    mPublicationList.add(post.getValue(Post.class));
-                }
-                hideProgressDialog();
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
-                Log.e(TAG, databaseError.getMessage());
-                hideProgressDialog();
-            }
-        };
-    }
-
 
     //  TODO: - Make Key,Value a list, map, etc. in order to add more "extras" to the Bundle
     //        - Allow to sent the class User to get the info directly. and not call mAuth on setting. (make it faster)

@@ -286,7 +286,7 @@ public class EditProfileFragment extends BaseFragment implements View.OnClickLis
         mUserData.setUsername(mUsernameField.getText().toString());
         mUserData.setBiography(mBiographyField.getText().toString());
         if(pid != null) { mUserData.setPid(pid);}
-        
+
         dbManager.updateUserdata(mUserData);
 
         //

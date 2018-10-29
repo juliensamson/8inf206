@@ -91,8 +91,6 @@ public class ProfilTestFragment extends BaseFragment implements View.OnClickList
 
     private Menu collapsedMenu;
 
-    private float scale = 1.000f;
-
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
