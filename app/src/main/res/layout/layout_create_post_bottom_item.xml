@@ -25,7 +25,7 @@
             android:background="@color/white_50">
 
             <ImageButton
-                android:id="@+id/post_picture_camera"
+                android:id="@+id/create_post_picture_camera"
                 android:layout_width="48dp"
                 android:layout_height="wrap_content"
                 android:alpha="0.54"
@@ -34,7 +34,7 @@
                 app:srcCompat="@drawable/ic_camera_alt_black_24dp" />
 
             <ImageButton
-                android:id="@+id/post_picture_gallery"
+                android:id="@+id/create_post_picture_gallery"
                 android:layout_width="48dp"
                 android:layout_height="wrap_content"
                 android:alpha="0.54"
@@ -43,13 +43,23 @@
                 app:srcCompat="@drawable/ic_image_black_24dp"/>
 
             <ImageButton
-                android:id="@+id/post_attachment"
+                android:id="@+id/create_post_music"
+                android:layout_width="48dp"
+                android:layout_height="wrap_content"
+                android:alpha="0.54"
+                android:background="@drawable/button_effect"
+                style="?android:attr/borderlessButtonStyle"
+                app:srcCompat="@drawable/ic_music_note_black_24dp"/>
+
+            <ImageButton
+                android:id="@+id/create_post_link"
                 android:layout_width="48dp"
                 android:layout_height="wrap_content"
                 android:alpha="0.54"
                 android:background="@drawable/button_effect"
                 style="?android:attr/borderlessButtonStyle"
                 app:srcCompat="@drawable/ic_attachment_black_24dp"/>
+
 
         </LinearLayout>
 

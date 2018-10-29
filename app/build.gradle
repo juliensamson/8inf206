@@ -44,6 +44,9 @@ dependencies {
     //  Floating Action Button
     implementation 'com.github.clans:fab:1.6.4'
 
+    //  Implement
+    implementation 'net.the4thdimension:audio-wife:1.0.3'
+
     //  Bottom Dialog
     implementation 'me.shaohui:bottomdialog:1.1.9'
 

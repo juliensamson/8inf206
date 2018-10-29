@@ -27,6 +27,6 @@
 
     </LinearLayout>
 
-    <include layout="@layout/layout_publication_buttom_item" />
+    <include layout="@layout/layout_create_post_bottom_item" />
 
 </android.support.design.widget.CoordinatorLayout>

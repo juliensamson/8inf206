@@ -19,6 +19,8 @@ public class Post {
 
     private ArrayList<Image> images;
 
+    private String audio;
+
     private long date;
 
     private long dateInverse;
@@ -144,6 +146,14 @@ public class Post {
         this.images = images;
     }
 
+    public String getAudio() {
+        return audio;
+    }
+
+    public void setAudio(String audio) {
+        this.audio = audio;
+    }
+
     //  Upvote
 
     public Map<String, User> getUpvoteUsers() {
@@ -188,6 +198,7 @@ public class Post {
         result.put("postid", postid);
         result.put("message", message);
         result.put("images", images);
+        result.put("audio", audio);
         result.put("histories", histories);
         result.put("date", date);
         result.put("dateInverse", dateInverse);

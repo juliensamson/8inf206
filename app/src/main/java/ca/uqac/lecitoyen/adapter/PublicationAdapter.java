@@ -1,8 +1,10 @@
 package ca.uqac.lecitoyen.adapter;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.net.Uri;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AlertDialog;
@@ -19,8 +21,10 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
+import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
@@ -47,6 +51,7 @@ import ca.uqac.lecitoyen.userUI.newsfeed.EditPostActivity;
 import ca.uqac.lecitoyen.utility.CustumButton;
 import ca.uqac.lecitoyen.utility.TimeUtility;
 import de.hdodenhof.circleimageview.CircleImageView;
+import nl.changer.audiowife.AudioWife;
 
 public class PublicationAdapter extends RecyclerView.Adapter<PublicationAdapter.ViewHolder> {
 
@@ -132,7 +137,7 @@ public class PublicationAdapter extends RecyclerView.Adapter<PublicationAdapter.
     public class ViewHolder extends RecyclerView.ViewHolder {
 
         LinearLayout profilLayout;
-        FrameLayout messageLayout;
+        FrameLayout messageLayout, playerLayout;
         CardView pictureLayout;
         CircleImageView profilPicture;
         TextView name, userName, time, modify, message;
@@ -155,6 +160,7 @@ public class PublicationAdapter extends RecyclerView.Adapter<PublicationAdapter.
             time  = itemView.findViewById(R.id.publication_publish_time);
             modify = itemView.findViewById(R.id.publication_is_modify);
             picture = itemView.findViewById(R.id.publication_picture);
+            playerLayout = itemView.findViewById(R.id.publication_audio_layout);
 
             dropdown = itemView.findViewById(R.id.publication_dropdown_menu);
 
@@ -218,6 +224,22 @@ public class PublicationAdapter extends RecyclerView.Adapter<PublicationAdapter.
                 if (!holderPost.getImages().get(0).getImageId().isEmpty()){
                     holder.pictureLayout.setVisibility(View.VISIBLE);
                     Glide.with(mContext).load(stPosts.child(holderPost.getImages().get(0).getImageId())).into(holder.picture); //Fill ImageView
+                }
+            }
+            if(holderPost.getAudio() != null) {
+                if (!holderPost.getAudio().isEmpty()) {
+                    holder.playerLayout.setVisibility(View.VISIBLE);
+                    stPosts.child(holderPost.getAudio()).getDownloadUrl().addOnCompleteListener(new OnCompleteListener<Uri>() {
+                        @Override
+                        public void onComplete(@NonNull Task<Uri> task) {
+                            Uri audio = task.getResult();
+                            if(audio != null) {
+                                AudioWife.getInstance().init(mContext, audio)
+                                        .useDefaultUi(holder.playerLayout, LayoutInflater.from(mContext));
+                            } else
+                                Log.e(TAG, "Audio file is null");
+                        }
+                    });
                 }
             }
             holder.upvoteCount.setText(String.valueOf(holderPost.getUpvoteCount()));
