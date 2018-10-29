@@ -6,14 +6,19 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.design.widget.AppBarLayout;
+import android.support.v4.widget.NestedScrollView;
+import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ProgressBar;
-
+import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -53,6 +58,7 @@ public class NewsfeedFragment extends BaseFragment implements View.OnClickListen
     private DatabaseReference dbPostsSocial;
     private Query mPostsQuery;
 
+    private NestedScrollView mNestedScrollView;
     private RecyclerView mNewsfeedRecyclerView;
     private RecyclerView.Adapter mNewsfeedAdapter;
     private RecyclerView.LayoutManager mLayoutManager;
@@ -83,12 +89,40 @@ public class NewsfeedFragment extends BaseFragment implements View.OnClickListen
         View view = inflater.inflate(R.layout.fragment_newsfeed, container, false);
         Log.d(TAG, "onCreateView");
 
+        /*PullRefreshLayout layout = view.findViewById(R.id.newsfeed_refresh_layout);
+        layout.setRefreshStyle(PullRefreshLayout.STYLE_MATERIAL);
+
+        // listen refresh event
+        layout.setOnRefreshListener(new PullRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                Toast.makeText(userMainActivity, "Refreshing", Toast.LENGTH_SHORT).show();
+                // refresh complete
+            }
+        });*/
+        // refresh complete
+        //layout.setRefreshing(false);
         //  Toolbar
-        setFragmentToolbar(view, userMainActivity, R.id.toolbar_newsfeed, getTag(), false);
+        //Toolbar toolbar = view.findViewById(R.id.toolbar_newsfeed);
+        //setFragmentToolbar(view, userMainActivity, R.id.toolbar_newsfeed, getTag(), false);
+
+        //AppBarLayout appBarLayout = view.findViewById(R.id.toolbar_newsfeed_layout);
+        //android.widget.Toolbar toolbar = view.findViewById(R.id.toolbar_newsfeed_1);
+        //TextView title = view.findViewById(R.id.toolbar_newsfeed_title);
+        //title.setText(getTag());
+
+        //userMainActivity.setActionBar(toolbar);
+        //userMainActivity.setSupportActionBar(toolbar);
+
 
         //  View
+        //mNestedScrollView = view.findViewById(R.id.profil_nested_scroll_view);
+        //  Put the view to the top
+        //mNestedScrollView.getParent().requestChildFocus(mNestedScrollView, mNestedScrollView);
         mNewsfeedRecyclerView = view.findViewById(R.id.newsfeed_recycler_view);
         mNewsfeedRecyclerView.setNestedScrollingEnabled(false);
+        //mNewsfeedRecyclerView.getParent().requestChildFocus(toolbar, toolbar);
+
 
         //  Button
         view.findViewById(R.id.newsfeed_add_message).setOnClickListener(this);
@@ -115,9 +149,9 @@ public class NewsfeedFragment extends BaseFragment implements View.OnClickListen
                 //  Get database & storage reference
                 dbPosts = dbManager.getDatabasePosts();
                 dbUsersData = dbManager.getDatabaseUsers();
-                mPostsQuery = dbPosts.orderByChild("date-inverse").limitToLast(1);
+                mPostsQuery = dbPosts.orderByChild("dateInverse").limitToLast(1);
 
-                dbPosts.orderByChild("date-inverse").limitToFirst(10).addListenerForSingleValueEvent(readPublicationListOnce());
+                dbPosts.orderByChild("dateInverse").limitToFirst(10).addListenerForSingleValueEvent(readPublicationListOnce());
             }
         } else {
             Log.e(TAG, "auth is null");
@@ -142,11 +176,6 @@ public class NewsfeedFragment extends BaseFragment implements View.OnClickListen
         }
     }
 
-    @SuppressWarnings("unchecked")
-    private void updateDB(final Post post) {
-
-    }
-
     private ValueEventListener readPublicationListOnce() {
         Log.d(TAG, "readPublicationListOnce");
         showProgressDialog();
@@ -157,13 +186,9 @@ public class NewsfeedFragment extends BaseFragment implements View.OnClickListen
                 for(DataSnapshot postSnapshot : dataSnapshot.getChildren()) {
                     Post post = postSnapshot.getValue(Post.class);
                     if(post != null) {
-                        DatabaseReference dbUserUpvotes = dbManager.getDatabaseUserUpvotes(fbUser.getUid());
-                        dbUserUpvotes.addValueEventListener(readUserUpvotes());
                         mPublicationList.add(postSnapshot.getValue(Post.class));
                     }
                 }
-                DatabaseReference dbUserUpvotes = dbManager.getDatabaseUserUpvotes(fbUser.getUid());
-                dbUserUpvotes.addValueEventListener(readUserUpvotes());
 
                 mNewsfeedAdapter = new PublicationAdapter(getContext(), fbUser, mPublicationList);
                 mNewsfeedRecyclerView.setAdapter(mNewsfeedAdapter);
@@ -177,52 +202,6 @@ public class NewsfeedFragment extends BaseFragment implements View.OnClickListen
             }
         };
     }
-
-    private ValueEventListener readUserUpvotes() {
-        return new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-
-                Log.e(TAG, String.valueOf(dataSnapshot.getChildrenCount()));
-
-                for (DataSnapshot postUpvotedByUser : dataSnapshot.getChildren()) {
-                    Post postUpvoted = postUpvotedByUser.getValue(Post.class);
-                    if(postUpvoted != null) {
-                        Log.e(TAG, postUpvoted.getPostid());
-
-                    }
-                }
-                /*ArrayList<Post> listUpvoted = new ArrayList<>();
-                for (DataSnapshot postUpvotedByUser : dataSnapshot.getChildren()) {
-                    listUpvoted.add(postUpvotedByUser.getValue(Post.class));
-                }
-                Log.i(TAG, String.valueOf(mPostList.size()));
-                for (int i = 0; i < mPostList.size(); i++)
-                {
-                    for(int j = 0; j < listUpvoted.size(); j++)
-                    {
-                        if (mPostList.get(i).getPostid().equals(listUpvoted.get(j).getPostid())) {
-                            Log.e(TAG, String.valueOf(isUpvoteByUser));
-                            Log.e(TAG, mPostList.get(i).getPostid());
-                            Log.e(TAG, listUpvoted.get(j).getPostid());
-                            setUpvoteButtonOn(holder);
-                            break;
-                        } else {
-                            Log.e(TAG, String.valueOf(isUpvoteByUser));
-                            setUpvoteButtonOff(holder);
-                        }
-                    }
-                }*/
-
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
-                Log.e(TAG, databaseError.getMessage());
-            }
-        };
-    }
-
 
     private ValueEventListener loadUserPostData() {
         return new ValueEventListener() {
@@ -250,23 +229,5 @@ public class NewsfeedFragment extends BaseFragment implements View.OnClickListen
                 }
         };
     }
-
-    private ValueEventListener loadUserData() {
-        return new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                for(DataSnapshot userSnapshot: dataSnapshot.getChildren()) {
-                    userList.add(userSnapshot.getValue(User.class));
-                    Log.e(TAG, "Size UserList: " + userList.size());
-                }
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
-                Log.e(TAG, "loadUserData failed " + databaseError.getMessage());
-            }
-        };
-    }
-
 
 }

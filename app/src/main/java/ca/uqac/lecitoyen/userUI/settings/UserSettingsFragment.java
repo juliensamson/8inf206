@@ -31,9 +31,11 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
+import java.util.Collection;
 
 import ca.uqac.lecitoyen.BaseFragment;
 import ca.uqac.lecitoyen.Interface.iHandleFragment;
+import ca.uqac.lecitoyen.MainActivity;
 import ca.uqac.lecitoyen.R;
 import ca.uqac.lecitoyen.database.DatabaseManager;
 import ca.uqac.lecitoyen.database.User;
@@ -152,17 +154,34 @@ public class UserSettingsFragment extends BaseFragment implements AdapterView.On
                 mUserData = dataSnapshot.getValue(User.class);
 
                 if(mUserData != null) {
-                    ArrayAdapter<String> adapter;
-                    if (mUserData.isVerify()) {
-                        adapter = new ArrayAdapter<String>(activity,
-                                android.R.layout.simple_list_item_1,
-                                activity.getResources().getStringArray(R.array.user_settings_verify));
-                    } else {
-                        adapter = new ArrayAdapter<String>(activity,
-                                android.R.layout.simple_list_item_1,
-                                activity.getResources().getStringArray(R.array.user_settings_not_verify));
+                    String[] values = new String[] { "Déconnter" };
+
+                    final ArrayList<String> list = new ArrayList<String>();
+                    for (int i = 0; i < values.length; ++i) {
+                        list.add(values[i]);
                     }
+                    //if (mUserData.isVerify()) {
+                       // adapter = new ArrayAdapter<String>(activity,
+                       //         android.R.layout.simple_list_item_1,
+                       //         activity.getResources().getStringArray(R.array.user_settings_verify));
+                    //} else {
+                    ArrayAdapter<String> adapter = new ArrayAdapter<String>(activity,
+                                android.R.layout.simple_list_item_1,
+                                list);
+                    //}
                     vEditSettingListView.setAdapter(adapter);
+
+                    vEditSettingListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                        @Override
+                        public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+                            switch (i) {
+                                case 0:
+                                    activity.signOutAccount();
+                                    destroyPreviousActivity(activity, MainActivity.class);
+                                    break;
+                            }
+                        }
+                    });
                 }
             }
 

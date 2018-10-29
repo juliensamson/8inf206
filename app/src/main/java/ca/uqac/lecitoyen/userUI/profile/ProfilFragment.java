@@ -95,15 +95,15 @@ public class ProfilFragment extends BaseFragment implements View.OnClickListener
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_profil, container, false);
+        View view = inflater.inflate(R.layout.fragment_profil_test, container, false);
 
         //  Toolbar
-        setFragmentToolbar(view, userMainActivity, R.id.toolbar_profil, getTag(), true);
+        //setFragmentToolbar(view, userMainActivity, R.id.toolbar_profil, getTag(), true);
 
         //  View
-        mNestedScrollView = view.findViewById(R.id.profil_nested_scroll_view);
+        //mNestedScrollView = view.findViewById(R.id.profil_nested_scroll_view);
         //  Put the view to the top
-        mNestedScrollView.getParent().requestChildFocus(mNestedScrollView, mNestedScrollView);
+        //mNestedScrollView.getParent().requestChildFocus(mNestedScrollView, mNestedScrollView);
 
         vProfilPicture = view.findViewById(R.id.profil_picture);
         vProfilName = view.findViewById(R.id.profil_name);

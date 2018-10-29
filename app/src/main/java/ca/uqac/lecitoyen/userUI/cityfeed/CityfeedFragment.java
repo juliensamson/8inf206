@@ -42,7 +42,7 @@ public class CityfeedFragment extends BaseFragment {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_cityfeed, container, false);
         mDisplayedMessage = view.findViewById(R.id.fragment_cityfeed_title);
-        setFragmentToolbar(view, userMainActivity, R.id.toolbar_newsfeed, getTag(), false);
+        setFragmentToolbar(view, userMainActivity, R.id.toolbar_default, getTag(), false);
         return view;
     }
 

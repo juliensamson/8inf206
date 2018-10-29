@@ -128,7 +128,7 @@ public class CreatePostActivity extends BaseActivity implements View.OnClickList
                 stUserProfilPicture = dbManager.getStorageUserProfilPicture(uid);
 
                 //  read user data
-                dbUserdata.addListenerForSingleValueEvent(readUserdata());
+                dbUserdata.addValueEventListener(readUserdata());
             }
         } else {
             Log.e(TAG, "auth is null");
@@ -250,14 +250,6 @@ public class CreatePostActivity extends BaseActivity implements View.OnClickList
                     currentTime
             );
 
-            //  Create storage reference if there is an image added to the post
-            if(mPictureLayout.getVisibility() != View.GONE && mImageUri != null) {
-                ArrayList<Image> postImageList = new ArrayList<>();
-                postImageList.add(new Image("image" + post.getPostid() + "1000"));
-                post.setImages(postImageList);
-                updateStorage(post);
-            }
-
             //  Create post-history object
             ArrayList postHistoryList = new ArrayList<PostHistory>();
             PostHistory postHistory = new PostHistory(
@@ -269,11 +261,17 @@ public class CreatePostActivity extends BaseActivity implements View.OnClickList
             postHistoryList.add(postHistory);
             post.setHistories(postHistoryList);
 
+            //  Create storage reference if there is an image added to the post
+            if(mPictureLayout.getVisibility() != View.GONE && mImageUri != null) {
+                ArrayList<Image> postImageList = new ArrayList<>();
+                postImageList.add(new Image("image" + post.getPostid() + "1000"));
+                post.setImages(postImageList);
+                updateStorage(post);
+            } else {
+                this.finish();
+            }
             //  Add data to fire base
             writePublicationToFirebase(post);
-
-            Toast.makeText(getApplicationContext(), "Data inserted", Toast.LENGTH_SHORT).show();
-            this.finish();
         } else {
             Log.e(TAG, "mUserdata empty");
         }
@@ -283,6 +281,8 @@ public class CreatePostActivity extends BaseActivity implements View.OnClickList
 
         stPosts = dbManager.getStoragePost(post.getPostid());
 
+        showProgressDialog();
+
         if(post.getImages() != null && !post.getImages().isEmpty()) {
             stPosts.child(post.getImages().get(0).getImageId())
                     .putFile(mImageUri)
@@ -290,19 +290,23 @@ public class CreatePostActivity extends BaseActivity implements View.OnClickList
                         @Override
                         public void onProgress(UploadTask.TaskSnapshot taskSnapshot) {
                             Log.d(TAG, "Byte transferred: " + taskSnapshot.getBytesTransferred());
+
                             //TODO: add byte transfer to ProgressDialog
                         }
                     })
                     .addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
                         @Override
                         public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                            hideProgressDialog();
+                            onBackPressed();
                             Log.d(TAG, "image uploaded");
                         }
                     }).addOnFailureListener(new OnFailureListener() {
-                @Override
-                public void onFailure(@NonNull Exception e) {
-                    Log.e(TAG, e.getMessage());
-                }
+                        @Override
+                        public void onFailure(@NonNull Exception e) {
+                            Log.e(TAG, e.getMessage());
+                            hideProgressDialog();
+                        }
             });
         } else
             Log.e(TAG, "picture id is null");
@@ -317,7 +321,7 @@ public class CreatePostActivity extends BaseActivity implements View.OnClickList
                 mUserdata = dataSnapshot.getValue(User.class);
 
                 if(mUserdata != null) {
-                    if (mUserdata.getPid() != null)
+                    if (mUserdata.getPid() != null && !mUserdata.getPid().isEmpty())
                         Glide.with(mContext).load(stUserProfilPicture.child(mUserdata.getPid())).into(mCircleImageView);
 
                 }
@@ -364,4 +368,9 @@ public class CreatePostActivity extends BaseActivity implements View.OnClickList
         return valid;
     }
 
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        this.finish();
+    }
 }

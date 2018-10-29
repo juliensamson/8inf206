@@ -31,12 +31,14 @@ import ca.uqac.lecitoyen.userUI.cityfeed.CityfeedFragment;
 import ca.uqac.lecitoyen.userUI.newsfeed.NewsfeedFragment;
 import ca.uqac.lecitoyen.userUI.messaging.MessageFragment;
 import ca.uqac.lecitoyen.userUI.profile.ProfilFragment;
+import ca.uqac.lecitoyen.userUI.profile.ProfilTestFragment;
 import ca.uqac.lecitoyen.userUI.search.SearchFragment;
 import ca.uqac.lecitoyen.userUI.settings.UserSettingsActivity;
 import ca.uqac.lecitoyen.database.DatabaseManager;
 import ca.uqac.lecitoyen.database.Post;
 import ca.uqac.lecitoyen.database.User;
 import it.sephiroth.android.library.bottomnavigation.BottomNavigation;
+import it.sephiroth.android.library.bottomnavigation.BottomNavigationFixedItemView;
 
 //TODO: Make the RecyclerView load automatically after making a post
 
@@ -49,7 +51,7 @@ public class UserMainActivity extends BaseActivity implements iHandleFragment {
     private SearchFragment searchFragment;
     private CityfeedFragment cityfeedFragment;
     private MessageFragment messageFragment;
-    private ProfilFragment profilFragment;
+    private ProfilTestFragment profilFragment;
 
     private DatabaseManager dbManager;
     private DatabaseReference dbUsersData;
@@ -68,7 +70,7 @@ public class UserMainActivity extends BaseActivity implements iHandleFragment {
     private FirebaseAuth fbAuth;
     private FirebaseUser fbUser;
 
-
+    private BottomNavigationFixedItemView bottomNavigationFixedItemView;
     private BottomNavigation mBottomNavigation;
     private BottomNavigation.OnMenuItemSelectionListener mOnNavigationItemSelectedListener;
 
@@ -119,6 +121,12 @@ public class UserMainActivity extends BaseActivity implements iHandleFragment {
         } else {
             Log.e(TAG, "auth is null");
         }
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.user_menu, menu);
+        return super.onCreateOptionsMenu(menu);
     }
 
     @Override
@@ -176,7 +184,7 @@ public class UserMainActivity extends BaseActivity implements iHandleFragment {
                 doFragmentTransaction(messageFragment, getString(R.string.fragment_messages), false, "");
                 break;
             case R.string.fragment_profil:
-                profilFragment = new ProfilFragment();
+                profilFragment = new ProfilTestFragment();
                 doFragmentTransaction(profilFragment, getString(R.string.fragment_profil), false, "");
                 break;
             default:
@@ -212,6 +220,7 @@ public class UserMainActivity extends BaseActivity implements iHandleFragment {
             @Override
             public void onMenuItemReselect(int navId, int listId, boolean b) {
                 //  Update feed
+                //  Or goe to the top
             }
 
         };

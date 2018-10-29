@@ -286,24 +286,10 @@ public class EditProfileFragment extends BaseFragment implements View.OnClickLis
         mUserData.setUsername(mUsernameField.getText().toString());
         mUserData.setBiography(mBiographyField.getText().toString());
         if(pid != null) { mUserData.setPid(pid);}
+        
+        dbManager.updateUserdata(mUserData);
 
-        showProgressDialog();
-
-        dbUserData.setValue(mUserData)
-                .addOnSuccessListener(new OnSuccessListener<Void>() {
-                    @Override
-                    public void onSuccess(Void aVoid) {
-                        Toast.makeText(activity, "Information enregistré", Toast.LENGTH_SHORT).show();
-                        hideProgressDialog();
-                    }
-                })
-                .addOnFailureListener(new OnFailureListener() {
-                    @Override
-                    public void onFailure(@NonNull Exception e) {
-                        Toast.makeText(activity, e.getMessage(), Toast.LENGTH_SHORT).show();
-                        hideProgressDialog();
-                    }
-        });
+        //
     }
 
     private ValueEventListener updateUserProfilPicture() {

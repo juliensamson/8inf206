@@ -2,16 +2,21 @@ package ca.uqac.lecitoyen.database;
 
 import android.support.annotation.NonNull;
 import android.util.Log;
+import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.Exclude;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
+import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -212,12 +217,13 @@ public class DatabaseManager  {
             Write data into firebase
 
      */
-    public void writeUpvoteToPost(User user, Post post) {
+    public void writeUpvoteToPost(final User user, final Post post) {
+
         /*
 
-            Update "posts/post-id/" reference
+           Update "posts/post-id/" reference
 
-         */
+        */
         DatabaseReference postRef = getDatabasePost(post.getPostid());
         postRef.child(CHILD_UPVOTE_COUNT).setValue(post.getUpvoteCount());
         postRef.child(CHILD_UPVOTE_USERS).setValue(post.getUpvoteUsers());
@@ -226,36 +232,109 @@ public class DatabaseManager  {
 
             Update "user-posts/user-id/post-id/ reference
 
-         */
-        DatabaseReference userPostRef = getDatabaseUserPost(user.getUid(), post.getPostid());
+        */
+        DatabaseReference userPostRef = getDatabaseUserPost(post.getUser().getUid(), post.getPostid());
         userPostRef.child(CHILD_UPVOTE_COUNT).setValue(post.getUpvoteCount());
         userPostRef.child(CHILD_UPVOTE_USERS).setValue(post.getUpvoteUsers());
 
-        /*
 
-        Update "users/user-id/" reference
+        /*final DatabaseReference userRef = getDatabaseUser(user.getUid());
+        User userTemps
+        userRef.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                User userTemps = dataSnapshot.getValue(User.class);
+                if (userTemps != null) {
 
-         */
-        DatabaseReference userRef = getDatabaseUser(user.getUid());
 
-        //  Create the list of upvote posts by user if doesn't exist
-        Post postTemp = new Post(post.getPostid());
-        Map<String, Post> posts = new HashMap<>();
-        if(user.getUpvotePosts() != null) {
-            if (!user.getUpvotePosts().isEmpty())
-                posts = user.getUpvotePosts();
-            else
-                posts = new HashMap<>();
-        }
-        posts.put(postTemp.getPostid(), postTemp);
-        user.setUpvoteCount(posts.size());
-        user.setUpvotePosts(posts);
+                    Update "users/user-id/" reference
 
-        userRef.child(CHILD_UPVOTE_COUNT).setValue(user.getUpvoteCount());
-        userRef.child(CHILD_UPVOTE_POSTS).setValue(user.getUpvotePosts());
+
+                    Map<String, Post> posts;
+                    Post postTemps = new Post(post.getPostid());
+                    if(userTemps.getUpvotePosts() != null)
+                        posts = userTemps.getUpvotePosts();
+                    else
+                        posts = new HashMap<>();
+
+                    posts.put(postTemps.getPostid(), postTemps);
+                    userTemps.setUpvotePosts(posts);
+                    userTemps.setUpvoteCount(posts.size());
+
+                    //DatabaseReference userRef = getDatabaseUser(user.getUid());
+
+                }
+            }
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
+
+        userRef.child(CHILD_UPVOTE_COUNT).setValue(userTemps.getUpvoteCount());
+        userRef.child(CHILD_UPVOTE_POSTS).setValue(userTemps.getUpvotePosts());
+        */
     }
 
-    public void removeUpvoteFromPost(User user, Post post) {
+    public void updateUserdata(final User user) {
+
+        // Update User
+        //  Update User
+        DatabaseReference userData = getDatabaseUser(user.getUid());
+        userData.setValue(user);
+
+        // Update user-post
+        final DatabaseReference dbUserPosts = getDatabaseUserPosts(user.getUid());
+        dbUserPosts.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+
+                for (DataSnapshot userPostSnapshot: dataSnapshot.getChildren()) {
+                    final Post userPost = userPostSnapshot.getValue(Post.class);
+                    if(userPost != null) {
+                        userPost.setUser(user);
+                        dbUserPosts.child(userPost.getPostid()).setValue(userPost);
+
+                        final DatabaseReference dbPosts = getDatabasePosts();
+                        dbPosts.addListenerForSingleValueEvent(new ValueEventListener() {
+                            @Override
+                            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                                for(DataSnapshot postSnapshot: dataSnapshot.getChildren()) {
+                                    Post post = postSnapshot.getValue(Post.class);
+                                    if(post != null) {
+                                        if (post.getPostid().equals(userPost.getPostid())) {
+                                            post.setUser(user);
+                                            dbPosts.child(post.getPostid()).setValue(post);
+                                            break;
+                                        }
+                                    }
+                                }
+                            }
+
+                            @Override
+                            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                            }
+                        });
+                    }
+                }
+
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+                Log.e(TAG, databaseError.getMessage());
+            }
+        });
+
+        // Update post
+        //DatabaseReference post = getDatabaseUser(user.getUid());
+        //userData.setValue(user);
+
+    }
+
+    public void removeUpvoteFromPost(final User user, final Post post) {
+
         /*
 
             Update "posts/post-id/" reference
@@ -270,32 +349,40 @@ public class DatabaseManager  {
             Update "user-posts/user-id/post-id/ reference
 
          */
-        DatabaseReference userPostRef = getDatabaseUserPost(user.getUid(), post.getPostid());
+        DatabaseReference userPostRef = getDatabaseUserPost(post.getUser().getUid(), post.getPostid());
         userPostRef.child(CHILD_UPVOTE_COUNT).setValue(post.getUpvoteCount());
         userPostRef.child(CHILD_UPVOTE_USERS).child(user.getUid()).removeValue();
 
-         /*
 
-            Update "users/user-id/" reference
+        /*
+        final DatabaseReference userRef = getDatabaseUser(user.getUid());
+        userRef.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                User userTemps = dataSnapshot.getValue(User.class);
+                if (userTemps != null) {
 
-         */
-        DatabaseReference userRef = getDatabaseUser(user.getUid());
+                    Map<String, Post> posts;
+                    if (userTemps.getUpvotePosts() != null)
+                        posts = userTemps.getUpvotePosts();
+                    else
+                        posts = new HashMap<>();
 
-        Map<String, Post> posts;
-        if(user.getUpvotePosts() != null)
-            posts = user.getUpvotePosts();
-        else
-            posts = new HashMap<>();
+                    posts.remove(post.getPostid());
+                    userTemps.setUpvoteCount(posts.size());
+                    userTemps.setUpvotePosts(posts);
 
-        if(posts.containsKey(post.getPostid()))
-        {
-            posts.remove(post.getPostid());
-            user.setUpvoteCount(posts.size());
-            user.setUpvotePosts(posts);
+                    userRef.child(CHILD_UPVOTE_COUNT).setValue(userTemps.getUpvoteCount());
+                    userRef.child(CHILD_UPVOTE_POSTS).child(post.getPostid()).removeValue();
 
-            userRef.child(CHILD_UPVOTE_COUNT).setValue(user.getUpvoteCount());
-            userRef.child(CHILD_UPVOTE_POSTS).child(post.getPostid()).removeValue();
-        }
+                }
+            }
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
+        */
     }
 
     public void writeRepostToPost(User user, Post post) {
@@ -313,16 +400,19 @@ public class DatabaseManager  {
             Update "user-posts/user-id/post-id/ reference
 
          */
-        DatabaseReference userPostRef = getDatabaseUserPost(user.getUid(), post.getPostid());
+        DatabaseReference userPostRef = getDatabaseUserPost(post.getUser().getUid(), post.getPostid());
         userPostRef.child(CHILD_REPOST_COUNT).setValue(post.getRepostCount());
         userPostRef.child(CHILD_REPOST_USERS).setValue(post.getRepostUsers());
 
+
+        //TODO: DON'T WORK BECAUSE the User only contain the userid
         /*
 
         Update "users/user-id/" reference
 
          */
-        DatabaseReference userRef = getDatabaseUser(user.getUid());
+
+        /*DatabaseReference userRef = getDatabaseUser(user.getUid());
 
         //  Create the list of Repost posts by user if doesn't exist
         Post postTemp = new Post(post.getPostid());
@@ -339,6 +429,7 @@ public class DatabaseManager  {
 
         userRef.child(CHILD_REPOST_COUNT).setValue(user.getRepostCount());
         userRef.child(CHILD_REPOST_POSTS).setValue(user.getRepostPosts());
+        */
     }
 
     public void removeRepostFromPost(User user, Post post) {
@@ -356,7 +447,7 @@ public class DatabaseManager  {
             Update "user-posts/user-id/post-id/ reference
 
          */
-        DatabaseReference userPostRef = getDatabaseUserPost(user.getUid(), post.getPostid());
+        DatabaseReference userPostRef = getDatabaseUserPost(post.getUser().getUid(), post.getPostid());
         userPostRef.child(CHILD_REPOST_COUNT).setValue(post.getRepostCount());
         userPostRef.child(CHILD_REPOST_USERS).child(user.getUid()).removeValue();
 
@@ -365,6 +456,7 @@ public class DatabaseManager  {
             Update "users/user-id/" reference
 
          */
+         /*
         DatabaseReference userRef = getDatabaseUser(user.getUid());
 
         Map<String, Post> posts;
@@ -373,15 +465,16 @@ public class DatabaseManager  {
         else
             posts = new HashMap<>();
 
-        if(posts.containsKey(post.getPostid()))
-        {
+        //if(posts.containsKey(post.getPostid()))
+        //{
             posts.remove(post.getPostid());
             user.setRepostCount(posts.size());
             user.setRepostPosts(posts);
 
             userRef.child(CHILD_REPOST_COUNT).setValue(user.getRepostCount());
             userRef.child(CHILD_REPOST_POSTS).child(post.getPostid()).removeValue();
-        }
+        //}
+        */
     }
 
     @Exclude

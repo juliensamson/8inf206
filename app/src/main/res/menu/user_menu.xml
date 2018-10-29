@@ -4,10 +4,17 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <item
+        android:id="@+id/menu_edit"
+        android:title="@string/setting_name"
+        android:icon="@drawable/ic_edit_white_24dp"
+        app:showAsAction="ifRoom">
+    </item>
+
+    <item
         android:id="@+id/menu_setting"
         android:title="@string/setting_name"
-        android:icon="@drawable/ic_settings_white_24dp"
-        app:showAsAction="always">
+        android:icon="@drawable/ic_more_vert_primary_24dp"
+        app:showAsAction="ifRoom">
     </item>
 
 </menu>

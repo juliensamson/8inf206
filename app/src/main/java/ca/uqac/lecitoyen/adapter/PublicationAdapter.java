@@ -60,25 +60,17 @@ public class PublicationAdapter extends RecyclerView.Adapter<PublicationAdapter.
     private static long hour = 60 * minute;
     private static long day = 24 * hour;
 
+    private DatabaseManager dbManager;
     private Context mContext;
-
-    private FirebaseUser fbUser;
-    private DatabaseManager dbManager = DatabaseManager.getInstance();
     private TimeUtility timeUtility;
 
     private User mCurrentUser;
     private String mCurrentUserId;
 
     private ArrayList<Post> mPostList = new ArrayList<>();
-    private ArrayList<String> mPostUpvotes = new ArrayList<>();
-    private ArrayList<User> mUpvoteUsers = new ArrayList<>();
-    private ArrayList<User> mUserList = new ArrayList<>();
-    private ArrayList<UserStorage> mProfilPictureList = new ArrayList<>();
 
-    private boolean isUpvoteByUser = false;
-    private boolean isRepostByUser = false;
-
-    private CustumButton mCustumButton;
+    private boolean isUpvoteByUser;
+    private boolean isRepostByUser;
 
     /*
 
@@ -88,9 +80,11 @@ public class PublicationAdapter extends RecyclerView.Adapter<PublicationAdapter.
 
     public PublicationAdapter(Context context, FirebaseUser user, ArrayList<Post> postList) {
         Log.d(TAG, "PublicationAdapter");
+        this.dbManager = DatabaseManager.getInstance();
         this.mContext = context;
-        this.fbUser = user;
         this.mPostList = postList;
+
+        FirebaseUser fbUser = user;
         if(fbUser != null) {
             this.mCurrentUserId = fbUser.getUid();
             this.mCurrentUser = new User(mCurrentUserId);
@@ -98,12 +92,42 @@ public class PublicationAdapter extends RecyclerView.Adapter<PublicationAdapter.
         this.timeUtility = new TimeUtility(mContext);
     }
 
-    public PublicationAdapter(Context context, ArrayList<Post> postList, ArrayList<String> upvotes) {
-        Log.d(TAG, "PublicationAdapter2");
-        this.mContext = context;
-        this.mPostList = postList;
-        this.mPostUpvotes = upvotes;
+    @NonNull
+    @Override
+    public PublicationAdapter.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+        Log.d(TAG, "onCreateViewHolder");
+        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.adapter_publication, parent, false);
+        return new PublicationAdapter.ViewHolder(view);
     }
+
+    @Override
+    public void onBindViewHolder(@NonNull final PublicationAdapter.ViewHolder holder, final int position) {
+        Log.d(TAG, "onBindViewHolder " + position);
+
+        if(mPostList != null) {
+            if(mPostList.size() != 0) {
+                /*      Get the information about the post      */
+                final Post holderPost = mPostList.get(holder.getAdapterPosition());
+                DatabaseReference dbPost = dbManager.getDatabasePost(holderPost.getPostid());
+                DatabaseReference dbUser = dbManager.getDatabaseUser(mCurrentUserId);
+
+                /*      Initialize views        */
+                setAdapterViews(holder, holderPost);
+                dbPost.addListenerForSingleValueEvent(initPost(holder, holderPost));
+
+                /*      OnClickListener         */
+                setMessageOnClickListener(holder, holderPost);
+                setProfilOnClickListener(holder, holderPost);
+                dbPost.addValueEventListener(readPostUpdate(holder, holderPost));
+            }
+        }
+    }
+
+    /*
+
+            Views
+
+    */
 
     public class ViewHolder extends RecyclerView.ViewHolder {
 
@@ -167,59 +191,6 @@ public class PublicationAdapter extends RecyclerView.Adapter<PublicationAdapter.
         }
     }
 
-    @NonNull
-    @Override
-    public PublicationAdapter.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        Log.d(TAG, "onCreateViewHolder");
-        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.adapter_publication, parent, false);
-        return new PublicationAdapter.ViewHolder(view);
-    }
-
-    @Override
-    public void onBindViewHolder(@NonNull final PublicationAdapter.ViewHolder holder, final int position) {
-        Log.d(TAG, "onBindViewHolder " + position);
-
-        /*
-
-               Get the information about the post
-
-         */
-        final Post holderPost = mPostList.get(holder.getAdapterPosition());
-        DatabaseReference dbPost = dbManager.getDatabasePost(holderPost.getPostid());
-
-        /*
-
-               Initialize views
-
-         */
-        setAdapterViews(holder, holderPost);
-
-        /*
-
-               OnClickListener
-
-        */
-        setMessageOnClickListener(holder, holderPost);
-
-        setProfilOnClickListener(holder, holderPost);
-
-        //setSocialOnClickListener(holder, currPost);
-
-        //test
-        dbPost.addValueEventListener(readPostUpdate(holder, holderPost));
-    }
-
-    /*
-
-            Methods
-
-     */
-
-    @Override
-    public int getItemCount() {
-        return mPostList.size();
-    }
-
     private void setAdapterViews(@NonNull final PublicationAdapter.ViewHolder holder, final Post holderPost) {
 
         Log.d(TAG, "setAdapterViews");
@@ -251,54 +222,9 @@ public class PublicationAdapter extends RecyclerView.Adapter<PublicationAdapter.
             }
             holder.upvoteCount.setText(String.valueOf(holderPost.getUpvoteCount()));
             holder.repostCount.setText(String.valueOf(holderPost.getRepostCount()));
-
-            DatabaseReference dbPost = dbManager.getDatabasePost(holderPost.getPostid());
-            dbPost.addListenerForSingleValueEvent(initPost(holder, holderPost));
-
         } else {
             //TODO: Create blank canvas
         }
-    }
-
-    private void setMessageOnClickListener(@NonNull final PublicationAdapter.ViewHolder holder, final Post currPost) {
-        holder.messageLayout.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Log.d(TAG, "message layout clicked");
-            }
-        });
-
-        if(currPost.getHistories().size() > 1) {
-            holder.messageLayout.setOnLongClickListener(new View.OnLongClickListener() {
-                @Override
-                public boolean onLongClick(View view) {
-                    showPostHistory(currPost);
-                    return true;
-                }
-            });
-        }
-    }
-
-    private void setProfilOnClickListener(@NonNull final PublicationAdapter.ViewHolder holder, final Post currPost) {
-        holder.profilPicture.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Log.d(TAG, "profil picture clicked");
-            }
-        });
-
-        holder.profilLayout.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Log.d(TAG, "profil layout clicked");
-            }
-        });
-        holder.dropdown.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Log.d(TAG, "dropdown clicked");
-            }
-        });
     }
 
     /*
@@ -314,18 +240,8 @@ public class PublicationAdapter extends RecyclerView.Adapter<PublicationAdapter.
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
 
-                final DataSnapshot upvoteUsersSnapshot = dataSnapshot.child("upvoteUsers");
-
-                //  Get upvote users
-                final Map<String, User> upvoteUsers = new HashMap<>();
-                final Map<String, User> repostUsers = new HashMap<>();
-                for(DataSnapshot userSnapshot: upvoteUsersSnapshot.getChildren()) {
-                    User user = userSnapshot.getValue(User.class);
-                    if(user != null) {
-                        upvoteUsers.put(user.getUid(), user);
-                        repostUsers.put(user.getUid(), user);
-                    }
-                }
+                final Map<String, User> upvoteUsers = getUsers(dataSnapshot.child("upvoteUsers"));
+                final Map<String, User> repostUsers = getUsers(dataSnapshot.child("repostUsers"));
 
                 //  Get users count
                 holderPost.setUpvoteCount(upvoteUsers.size());
@@ -391,12 +307,61 @@ public class PublicationAdapter extends RecyclerView.Adapter<PublicationAdapter.
         };
     }
 
+    /*
+
+
+            View OnClickListener
+
+
+    */
+
+    private void setMessageOnClickListener(@NonNull final PublicationAdapter.ViewHolder holder, final Post currPost) {
+        holder.messageLayout.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Log.d(TAG, "message layout clicked");
+            }
+        });
+
+        if(currPost.getHistories().size() > 1) {
+            holder.messageLayout.setOnLongClickListener(new View.OnLongClickListener() {
+                @Override
+                public boolean onLongClick(View view) {
+                    showPostHistory(currPost);
+                    return true;
+                }
+            });
+        }
+    }
+
+    private void setProfilOnClickListener(@NonNull final PublicationAdapter.ViewHolder holder, final Post currPost) {
+        holder.profilPicture.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Log.d(TAG, "profil picture clicked");
+            }
+        });
+
+        holder.profilLayout.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Log.d(TAG, "profil layout clicked");
+            }
+        });
+        holder.dropdown.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Log.d(TAG, "dropdown clicked");
+            }
+        });
+    }
+
     private View.OnClickListener setUpvoteOnClickListener(@NonNull final PublicationAdapter.ViewHolder holder,
                                                           final Post holderPost, final Map<String, User> users) {
         return new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-
+                //DatabaseReference dbUser = dbManager.getDatabaseUser(mCurrentUserId);
                 if(!isUpvoteByUser) {
                     /*
                       Update data structure
@@ -414,6 +379,7 @@ public class PublicationAdapter extends RecyclerView.Adapter<PublicationAdapter.
                             mCurrentUser,
                             holderPost
                     );
+                    //dbManager.writeUpvoteToUser(mCurrentUser);
 
                     //  Update UI
                     setUpvoteButtonOn(holder);
@@ -424,19 +390,15 @@ public class PublicationAdapter extends RecyclerView.Adapter<PublicationAdapter.
                       - Update Upvote count with the new size of Users
                       - Update Upvote users with the new users
                     */
+                    users.remove(mCurrentUserId);
+                    holderPost.setUpvoteCount(users.size());
+                    holderPost.setUpvoteUsers(users);
 
-                    if(users.containsKey(mCurrentUserId)) {
-                        users.remove(mCurrentUserId);
-                        holderPost.setUpvoteCount(users.size());
-                        holderPost.setUpvoteUsers(users);
-
-                        //  Update firebase
-                        dbManager.removeUpvoteFromPost(
-                                mCurrentUser,
-                                holderPost
-                        );
-                    } else
-                        Log.e(TAG, mCurrentUserId + " didn't like this post");
+                    //  Update firebase
+                    dbManager.removeUpvoteFromPost(
+                            mCurrentUser,
+                            holderPost
+                    );
 
                     //Upddate UI of button
                     setUpvoteButtonOff(holder);
@@ -479,19 +441,15 @@ public class PublicationAdapter extends RecyclerView.Adapter<PublicationAdapter.
                       - Update Repost count with the new size of Users
                       - Update Repost users with the new users
                     */
+                    users.remove(mCurrentUserId);
+                    holderPost.setRepostCount(users.size());
+                    holderPost.setRepostUsers(users);
 
-                    if(users.containsKey(mCurrentUserId)) {
-                        users.remove(mCurrentUserId);
-                        holderPost.setRepostCount(users.size());
-                        holderPost.setRepostUsers(users);
-
-                        //  Update firebase
-                        dbManager.removeRepostFromPost(
-                                mCurrentUser,
-                                holderPost
-                        );
-                    } else
-                        Log.e(TAG, mCurrentUserId + " didn't like this post");
+                    //  Update firebase
+                    dbManager.removeRepostFromPost(
+                            mCurrentUser,
+                            holderPost
+                    );
 
                     //Upddate UI of button
                     setRepostButtonOff(holder);
@@ -500,6 +458,28 @@ public class PublicationAdapter extends RecyclerView.Adapter<PublicationAdapter.
                 holder.repostCount.setText(String.valueOf(holderPost.getRepostCount()));
             }
         };
+    }
+
+    /*
+
+            Methods
+
+     */
+
+    @Override
+    public int getItemCount() {
+        return mPostList.size();
+    }
+
+    private Map<String, User> getUsers(DataSnapshot snapshot) {
+        final Map<String, User> users = new HashMap<>();
+        for(DataSnapshot userSnapshot: snapshot.getChildren()) {
+            User user = userSnapshot.getValue(User.class);
+            if(user != null) {
+                users.put(user.getUid(), user);
+            }
+        }
+        return users;
     }
 
     /*
