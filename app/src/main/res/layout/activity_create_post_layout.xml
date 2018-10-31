@@ -41,23 +41,15 @@
             </FrameLayout>
 
             <FrameLayout
+                android:id="@+id/create_post_audioplayer"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:layout_marginBottom="@dimen/activity_vertical_margin">
+                android:layout_height="wrap_content"
+                android:visibility="gone"/>
 
-                <include
-                    layout="@layout/layout_single_picture_frame" />
-
-            </FrameLayout>
-
-            <FrameLayout
-                android:id="@+id/create_post_player_layout"
+            <ca.uqac.lecitoyen.utility.MultimediaView
+                android:id="@+id/create_post_multimedia"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:visibility="gone">
-
-
-            </FrameLayout>
+                android:layout_height="wrap_content" />
 
         </LinearLayout>
 

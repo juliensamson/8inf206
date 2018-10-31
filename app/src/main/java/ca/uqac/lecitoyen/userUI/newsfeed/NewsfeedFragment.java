@@ -20,6 +20,7 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.daimajia.swipe.adapters.RecyclerSwipeAdapter;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
@@ -34,6 +35,7 @@ import ca.uqac.lecitoyen.BaseFragment;
 import ca.uqac.lecitoyen.Interface.iHandleFragment;
 import ca.uqac.lecitoyen.R;
 import ca.uqac.lecitoyen.adapter.PublicationAdapter;
+import ca.uqac.lecitoyen.adapter.SwipePostAdapter;
 import ca.uqac.lecitoyen.userUI.UserMainActivity;
 import ca.uqac.lecitoyen.database.DatabaseManager;
 import ca.uqac.lecitoyen.database.Post;
@@ -60,7 +62,8 @@ public class NewsfeedFragment extends BaseFragment implements View.OnClickListen
 
     private NestedScrollView mNestedScrollView;
     private RecyclerView mNewsfeedRecyclerView;
-    private RecyclerView.Adapter mNewsfeedAdapter;
+    //private RecyclerView.Adapter mNewsfeedAdapter;
+    private RecyclerSwipeAdapter mNewsfeedAdapter;
     private RecyclerView.LayoutManager mLayoutManager;
 
     private ArrayList<Post> mPublicationList = new ArrayList<>();
@@ -190,7 +193,9 @@ public class NewsfeedFragment extends BaseFragment implements View.OnClickListen
                     }
                 }
 
-                mNewsfeedAdapter = new PublicationAdapter(getContext(), fbUser, mPublicationList);
+                //mNewsfeedAdapter = new PublicationAdapter(getContext(), fbUser, mPublicationList);
+                //mNewsfeedRecyclerView.setAdapter(mNewsfeedAdapter);
+                mNewsfeedAdapter = new SwipePostAdapter(getContext(), fbUser, mPublicationList);
                 mNewsfeedRecyclerView.setAdapter(mNewsfeedAdapter);
                 hideProgressDialog();
             }

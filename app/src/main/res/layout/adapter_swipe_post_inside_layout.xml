@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="utf-8"?>
+<merge
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:swipe="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <LinearLayout
+        android:id="@+id/swipe_post_inside_layout"
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:orientation="horizontal">
+
+        <FrameLayout
+            android:id="@+id/swipe_post_button_history"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:padding="@dimen/activity_vertical_margin"
+            android:background="@color/primary_300">
+
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                swipe:srcCompat="@drawable/ic_history_black_24dp" />
+
+        </FrameLayout>
+
+        <FrameLayout
+            android:id="@+id/swipe_post_button_modify"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:padding="@dimen/activity_vertical_margin"
+            android:background="@color/analogous_p_300">
+
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                swipe:srcCompat="@drawable/ic_edit_black_24dp" />
+
+        </FrameLayout>
+
+        <FrameLayout
+            android:id="@+id/swipe_post_button_delete"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:padding="@dimen/activity_vertical_margin"
+            android:background="@color/secondary_300">
+
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                swipe:srcCompat="@drawable/ic_delete_forever_black_24dp" />
+
+        </FrameLayout>
+
+    </LinearLayout>
+
+</merge>

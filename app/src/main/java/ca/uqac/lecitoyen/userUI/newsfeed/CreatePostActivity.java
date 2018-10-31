@@ -1,14 +1,18 @@
 package ca.uqac.lecitoyen.userUI.newsfeed;
 
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
 import android.support.annotation.NonNull;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
+import android.util.AttributeSet;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -40,11 +44,13 @@ import java.util.Map;
 
 import ca.uqac.lecitoyen.BaseActivity;
 import ca.uqac.lecitoyen.R;
+import ca.uqac.lecitoyen.adapter.SwipePostAdapter;
 import ca.uqac.lecitoyen.database.DatabaseManager;
 import ca.uqac.lecitoyen.database.Image;
 import ca.uqac.lecitoyen.database.Post;
 import ca.uqac.lecitoyen.database.PostHistory;
 import ca.uqac.lecitoyen.database.User;
+import ca.uqac.lecitoyen.utility.MultimediaView;
 import de.hdodenhof.circleimageview.CircleImageView;
 import nl.changer.audiowife.AudioWife;
 
@@ -65,6 +71,7 @@ public class CreatePostActivity extends BaseActivity implements View.OnClickList
     private TextView mToolbarButton;
     private EditText mPublicationView;
     private CircleImageView mCircleImageView;
+    private MultimediaView mMultimediaView;
     private ImageView mPicture;
     private FrameLayout mPlayerLayout;
     private ImageButton mCameraButton;
@@ -106,9 +113,10 @@ public class CreatePostActivity extends BaseActivity implements View.OnClickList
         setToolbar();
         mPublicationView = findViewById(R.id.post_message);
         mCircleImageView = findViewById(R.id.post_profil_picture);
+        mMultimediaView = findViewById(R.id.create_post_multimedia);
         mPicture = findViewById(R.id.publication_picture);
         mPictureLayout = findViewById(R.id.publication_picture_layout);
-        mPlayerLayout = findViewById(R.id.create_post_player_layout);
+        mPlayerLayout = findViewById(R.id.create_post_audioplayer);
 
         //  Button
         findViewById(R.id.toolbar_post_publish).setOnClickListener(this);
@@ -210,8 +218,9 @@ public class CreatePostActivity extends BaseActivity implements View.OnClickList
             switch (requestCode) {
                 case GALLERY_REQUEST_CODE:
                     mImageUri = data.getData();
-                    mPictureLayout.setVisibility(View.VISIBLE);
-                    Glide.with(this).load(mImageUri).into(mPicture);
+                    mMultimediaView.setMultimediaImage(mImageUri);
+                    //mPictureLayout.setVisibility(View.VISIBLE);
+                    //Glide.with(this).load(mImageUri).into(mPicture);
                     break;
                 case CAMERA_REQUEST_CODE:    //TODO: Make this work somehow
                     //checkInternalStorage();
@@ -219,10 +228,10 @@ public class CreatePostActivity extends BaseActivity implements View.OnClickList
                     break;
                 case AUDIO_REQUEST_CODE:
                     mAudioUri = data.getData();
-                    Log.d(TAG, "Audio request code");
-                    mPlayerLayout.setVisibility(View.VISIBLE);
-                    audioManager.init(mContext, mAudioUri)
+                    AudioWife.getInstance().init(mContext, mAudioUri)
                             .useDefaultUi(mPlayerLayout, getLayoutInflater());
+                    Log.d(TAG, "Audio request code");
+                    //showAudioSetup(mAudioUri);
                     break;
                 case DELETE_REQUEST_CODE:
                     break;
@@ -428,6 +437,47 @@ public class CreatePostActivity extends BaseActivity implements View.OnClickList
 
             dbReference.updateChildren(childUpdates);
     }
+    /*
+    private void showAudioSetup(Uri uri) {
+        final AlertDialog.Builder builder = new AlertDialog.Builder(mContext);
+
+        LayoutInflater inflater = this.getLayoutInflater();
+        View dialogView = inflater.inflate(R.layout.alert_dialog_audio_layout, null);
+
+        FrameLayout playerAudio = dialogView.findViewById(R.id.dialog_audio_player);
+        final EditText titleAudio = dialogView.findViewById(R.id.dialog_audio_title);
+        final ImageView imageAudio = dialogView.findViewById(R.id.dialog_audio_image);
+        imageAudio.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                openGallery();
+            }
+        });
+        AudioWife.getInstance().init(mContext, uri).useDefaultUi(playerAudio,getLayoutInflater());
+
+        builder.setTitle("Configurer votre fichier audio")
+                .setIcon(R.drawable.ic_music_note_black_24dp)
+                .setView(dialogView)
+                .setPositiveButton("Ajouter", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+
+                        if(titleAudio.getText() == null && titleAudio.getText().toString().isEmpty())
+                            return;
+                        if(imageAudio.getDrawable() == null)
+                            return;
+                        mMultimediaView.setMultimediaMusic(imageAudio.getD);
+                    }
+                })
+                .setNegativeButton("Annuler", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        dialogInterface.dismiss();
+                    }
+                })
+                .show();
+    }
+    */
 
     private boolean validateForm() {
         boolean valid = true;

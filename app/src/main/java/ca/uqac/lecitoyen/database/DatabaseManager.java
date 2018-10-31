@@ -217,6 +217,14 @@ public class DatabaseManager  {
             Write data into firebase
 
      */
+
+    public void deleteHolderPost(Post holderPost) {
+        getDatabasePost(holderPost.getPostid()).removeValue();
+        getDatabaseUserPost(holderPost.getUser().getUid(), holderPost.getPostid()).removeValue();
+        getStoragePost(holderPost.getPostid()).delete();
+        //Delete Repost & Like of user of post is deleted
+    }
+
     public void writeUpvoteToPost(final User user, final Post post) {
 
         /*

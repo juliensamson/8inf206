@@ -21,12 +21,12 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent">
 
-            <include layout="@layout/layout_publication" />
+            <include layout="@layout/activity_create_post_layout" />
 
         </android.support.v4.widget.NestedScrollView>
 
     </LinearLayout>
 
-    <include layout="@layout/layout_create_post_bottom_item" />
+    <include layout="@layout/activity_create_post_bottom_item_layout" />
 
 </android.support.design.widget.CoordinatorLayout>

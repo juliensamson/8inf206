@@ -7,6 +7,9 @@ import android.content.Intent;
 import android.net.Uri;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.constraint.ConstraintLayout;
+import android.support.design.widget.CoordinatorLayout;
+import android.support.design.widget.SwipeDismissBehavior;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.LinearLayoutManager;
@@ -19,8 +22,10 @@ import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
+import com.daimajia.swipe.SwipeLayout;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -49,6 +54,7 @@ import ca.uqac.lecitoyen.database.User;
 import ca.uqac.lecitoyen.database.UserStorage;
 import ca.uqac.lecitoyen.userUI.newsfeed.EditPostActivity;
 import ca.uqac.lecitoyen.utility.CustumButton;
+import ca.uqac.lecitoyen.utility.OnSwipeTouchListener;
 import ca.uqac.lecitoyen.utility.TimeUtility;
 import de.hdodenhof.circleimageview.CircleImageView;
 import nl.changer.audiowife.AudioWife;
@@ -66,6 +72,7 @@ public class PublicationAdapter extends RecyclerView.Adapter<PublicationAdapter.
     private static long day = 24 * hour;
 
     private DatabaseManager dbManager;
+    private AudioWife audioManager;
     private Context mContext;
     private TimeUtility timeUtility;
 
@@ -86,6 +93,7 @@ public class PublicationAdapter extends RecyclerView.Adapter<PublicationAdapter.
     public PublicationAdapter(Context context, FirebaseUser user, ArrayList<Post> postList) {
         Log.d(TAG, "PublicationAdapter");
         this.dbManager = DatabaseManager.getInstance();
+        this.audioManager = AudioWife.getInstance();
         this.mContext = context;
         this.mPostList = postList;
 
@@ -124,6 +132,64 @@ public class PublicationAdapter extends RecyclerView.Adapter<PublicationAdapter.
                 setMessageOnClickListener(holder, holderPost);
                 setProfilOnClickListener(holder, holderPost);
                 dbPost.addValueEventListener(readPostUpdate(holder, holderPost));
+
+                /*holder.mainLayout.setShowMode(SwipeLayout.ShowMode.LayDown);
+                holder.mainLayout.set
+                holder.mainLayout.addDrag(SwipeLayout.DragEdge.Left, holder.cardLayout.findViewById(R.id.publication_card_layout));
+                holder.mainLayout.setRightSwipeEnabled(false);
+                holder.mainLayout.setBottomSwipeEnabled(false);
+                holder.mainLayout.setTopSwipeEnabled(false);
+                holder.mainLayout.setLeftSwipeEnabled(true);
+                holder.mainLayout.addSwipeListener(new SwipeLayout.SwipeListener() {
+                    @Override
+                    public void onClose(SwipeLayout layout) {
+                        //when the SurfaceView totally cover the BottomView.
+                    }
+
+                    @Override
+                    public void onUpdate(SwipeLayout layout, int leftOffset, int topOffset) {
+                        //you are swiping.
+                    }
+
+                    @Override
+                    public void onStartOpen(SwipeLayout layout) {
+
+                    }
+
+                    @Override
+                    public void onOpen(SwipeLayout layout) {
+                        //when the BottomView totally show.
+                    }
+
+                    @Override
+                    public void onStartClose(SwipeLayout layout) {
+
+                    }
+
+                    @Override
+                    public void onHandRelease(SwipeLayout layout, float xvel, float yvel) {
+                        //when user's hand released.
+                    }
+                });*/
+                /*holder.mainLayout.setOnTouchListener(new OnSwipeTouchListener(mContext) {
+                    @Override
+                    public void onSwipeRight() {
+                        Toast.makeText(mContext, "right", Toast.LENGTH_SHORT).show();
+                    }
+                    @Override
+                    public void onSwipeLeft() {
+                        Toast.makeText(mContext, "left", Toast.LENGTH_SHORT).show();
+                    }
+                    @Override
+                    public void onSwipeTop() {
+                        Toast.makeText(mContext, "Top", Toast.LENGTH_SHORT).show();
+                    }
+                    @Override
+                    public void onSwipeBottom() {
+                        Toast.makeText(mContext, "Bottom", Toast.LENGTH_SHORT).show();
+                    }
+
+                });*/
             }
         }
     }
@@ -136,6 +202,8 @@ public class PublicationAdapter extends RecyclerView.Adapter<PublicationAdapter.
 
     public class ViewHolder extends RecyclerView.ViewHolder {
 
+        CoordinatorLayout mainLayout;
+        CardView cardLayout;
         LinearLayout profilLayout;
         FrameLayout messageLayout, playerLayout;
         CardView pictureLayout;
@@ -161,6 +229,8 @@ public class PublicationAdapter extends RecyclerView.Adapter<PublicationAdapter.
             modify = itemView.findViewById(R.id.publication_is_modify);
             picture = itemView.findViewById(R.id.publication_picture);
             playerLayout = itemView.findViewById(R.id.publication_audio_layout);
+            mainLayout = itemView.findViewById(R.id.publication_main_layout);
+            cardLayout = itemView.findViewById(R.id.publication_card_layout);
 
             dropdown = itemView.findViewById(R.id.publication_dropdown_menu);
 
@@ -232,12 +302,15 @@ public class PublicationAdapter extends RecyclerView.Adapter<PublicationAdapter.
                     stPosts.child(holderPost.getAudio()).getDownloadUrl().addOnCompleteListener(new OnCompleteListener<Uri>() {
                         @Override
                         public void onComplete(@NonNull Task<Uri> task) {
-                            Uri audio = task.getResult();
-                            if(audio != null) {
-                                AudioWife.getInstance().init(mContext, audio)
-                                        .useDefaultUi(holder.playerLayout, LayoutInflater.from(mContext));
+                            if(task.isSuccessful()) {
+                                Uri audio = task.getResult();
+                                if (audio != null) {
+                                    audioManager.init(mContext, audio)
+                                            .useDefaultUi(holder.playerLayout, LayoutInflater.from(mContext));
+                                } else
+                                    Log.e(TAG, "Audio file is null");
                             } else
-                                Log.e(TAG, "Audio file is null");
+                                Log.e(TAG, "task is not successful");
                         }
                     });
                 }
@@ -338,7 +411,7 @@ public class PublicationAdapter extends RecyclerView.Adapter<PublicationAdapter.
     */
 
     private void setMessageOnClickListener(@NonNull final PublicationAdapter.ViewHolder holder, final Post currPost) {
-        holder.messageLayout.setOnClickListener(new View.OnClickListener() {
+        holder.mainLayout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 Log.d(TAG, "message layout clicked");
@@ -346,7 +419,7 @@ public class PublicationAdapter extends RecyclerView.Adapter<PublicationAdapter.
         });
 
         if(currPost.getHistories().size() > 1) {
-            holder.messageLayout.setOnLongClickListener(new View.OnLongClickListener() {
+            holder.mainLayout.setOnLongClickListener(new View.OnLongClickListener() {
                 @Override
                 public boolean onLongClick(View view) {
                     showPostHistory(currPost);

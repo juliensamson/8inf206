@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="utf-8"?>
+<merge
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <android.support.v7.widget.CardView
+        android:id="@+id/multimedia_main_layout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:cardCornerRadius="10dp"
+        app:cardElevation="5dp"
+        android:visibility="visible">
+
+        <ImageView
+            android:id="@+id/multimedia_picture"
+            android:layout_width="match_parent"
+            android:layout_height="200dp"
+            android:background="@drawable/scrim_top"
+            android:visibility="gone"
+            android:scaleType="centerCrop" />
+
+        <TextView
+            android:id="@+id/multimedia_remove"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="@dimen/activity_horizontal_margin"
+            android:layout_gravity="top|end"
+            android:visibility="gone"
+            android:background="@drawable/button_close_circle" />
+
+
+        <LinearLayout
+            android:id="@+id/multimedia_bottom_layout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_gravity="bottom"
+            android:visibility="visible"
+            android:background="@drawable/corners">
+
+            <ImageView
+                android:id="@+id/multimedia_icon_type"
+                android:layout_width="32dp"
+                android:layout_height="32dp"
+                android:layout_margin="8dp"
+                android:layout_gravity="center"
+                android:alpha="0.89"
+                app:srcCompat="@drawable/ic_play_circle_outline_black_24dp"/>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:orientation="vertical"
+                android:paddingStart="@dimen/activity_horizontal_margin"
+                android:paddingEnd="@dimen/activity_horizontal_margin"
+                android:paddingTop="4dp"
+                android:paddingBottom="4dp">
+
+                <TextView
+                    android:id="@+id/multimedia_title"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Title"
+                    android:textSize="16sp"
+                    android:textColor="@color/black_600"/>
+
+                <TextView
+                    android:id="@+id/multimedia_link"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="4dp"
+                    android:text="Link"
+                    android:textSize="14sp"
+                    android:textColor="@color/black_300"
+                    android:visibility="visible"/>
+
+            </LinearLayout>
+
+        </LinearLayout>
+
+    </android.support.v7.widget.CardView>
+
+</merge>
