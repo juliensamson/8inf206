@@ -1,0 +1,134 @@
+<?xml version="1.0" encoding="utf-8"?>
+<merge
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <FrameLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <ImageView
+                android:id="@+id/audioplayer.album.image"
+                android:layout_width="192dp"
+                android:layout_height="192dp"
+                android:layout_marginTop="96dp"
+                android:layout_gravity="center_horizontal"
+                android:scaleType="centerCrop"/>
+
+            <ImageView
+                android:id="@+id/audioplayer.album.image.background"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent" />
+
+        </FrameLayout>
+
+        <FrameLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="bottom">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="32dp"
+                android:layout_marginBottom="64dp"
+                android:layout_marginStart="32dp"
+                android:layout_marginEnd="32dp"
+                android:orientation="vertical">
+
+                <TextView
+                    android:id="@+id/audioplayer.title"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Title"
+                    android:textSize="24sp"
+                    android:textColor="@color/white_50"/>
+
+                <TextView
+                    android:id="@+id/audioplayer.creator"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="@dimen/activity_vertical_margin"
+                    android:text="Name of user"
+                    android:textSize="14sp"
+                    android:textColor="@color/white_50"/>
+
+                <SeekBar
+                    android:id="@+id/audioplayer.seekbar.time"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content" />
+
+                <FrameLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+
+                    <TextView
+                        android:id="@+id/audioplayer.run.time"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="8dp"
+                        android:layout_gravity="start"
+                        android:text="0:00"
+                        android:textColor="@color/white_50"/>
+
+                    <TextView
+                        android:id="@+id/audioplayer.total.time"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginEnd="8dp"
+                        android:layout_gravity="end"
+                        android:text="4:35"
+                        android:textColor="@color/white_50"/>
+
+                </FrameLayout>
+
+                <FrameLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+
+                    <FrameLayout
+                        android:id="@+id/audioplayer.play.view"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center">
+
+                        <ImageView
+                            android:id="@+id/audioplayer.play.button"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_margin="@dimen/activity_vertical_margin"
+                            app:srcCompat="@drawable/ic_play_arrow_white_24dp" />
+
+                    </FrameLayout>
+
+                    <FrameLayout
+                        android:id="@+id/audioplayer.pause.view"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center">
+
+                        <ImageView
+                            android:id="@+id/audioplayer.pause.button"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_margin="@dimen/activity_vertical_margin"
+                            app:srcCompat="@drawable/ic_pause_white_24dp" />
+
+                    </FrameLayout>
+
+                </FrameLayout>
+
+            </LinearLayout>
+
+        </FrameLayout>
+
+
+    </FrameLayout>
+
+</merge>

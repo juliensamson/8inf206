@@ -4,129 +4,133 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <android.support.constraint.ConstraintLayout
+    <FrameLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:elevation="3dp">
+        android:layout_marginBottom="32dp">
 
         <LinearLayout
+            android:id="@+id/linearLayout3"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="horizontal"
             android:layout_margin="8dp"
-            app:layout_constraintBottom_toBottomOf="parent"
+            android:orientation="horizontal"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent">
 
             <!--    ******* Profil picture *******   -->
 
-            <de.hdodenhof.circleimageview.CircleImageView
-                android:id="@+id/swipe_post_profil_picture"
-                android:layout_width="48dp"
-                android:layout_height="48dp"
-                android:src="@mipmap/ic_launcher_round" />
+            <FrameLayout
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent">
+
+                <de.hdodenhof.circleimageview.CircleImageView
+                    android:id="@+id/swipe_post_profil_picture"
+                    android:layout_width="48dp"
+                    android:layout_height="48dp"
+                    android:src="@mipmap/ic_launcher_round" />
+
+            </FrameLayout>
 
             <!--    ******* User detail, message & social interaction *******   -->
 
-            <LinearLayout
+            <android.support.design.widget.CoordinatorLayout
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="8dp"
-                android:orientation="vertical">
+                android:layout_height="match_parent">
 
-                <!-- *********  User information  ********* -->
                 <LinearLayout
-                    android:id="@+id/swipe_post_profil_layout"
-                    android:layout_width="wrap_content"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:orientation="horizontal">
 
-                    <TextView
-                        android:id="@+id/swipe_post_name"
+                    android:layout_marginStart="8dp"
+                    android:orientation="vertical">
+
+                    <!-- *********  User information  ********* -->
+                    <LinearLayout
+                        android:id="@+id/swipe_post_profil_layout"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_marginEnd="8dp"
-                        android:text="Name"
-                        android:textStyle="bold" />
+                        android:orientation="horizontal">
 
-                    <TextView
-                        android:id="@+id/swipe_post_username"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginEnd="8dp"
-                        android:text="Username"
-                        android:textStyle="italic" />
+                        <TextView
+                            android:id="@+id/swipe_post_name"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginEnd="8dp"
+                            android:text="Name"
+                            android:textStyle="bold" />
 
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginEnd="8dp"
-                        android:text="-"
-                        android:textStyle="bold" />
+                        <TextView
+                            android:id="@+id/swipe_post_username"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginEnd="8dp"
+                            android:text="Username"
+                            android:textStyle="italic" />
 
-                    <TextView
-                        android:id="@+id/swipe_post_publish_time"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginEnd="8dp"
-                        android:text="date" />
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginEnd="8dp"
+                            android:text="-"
+                            android:textStyle="bold" />
 
-                    <TextView
-                        android:id="@+id/swipe_post_is_modify"
-                        android:layout_width="wrap_content"
+                        <TextView
+                            android:id="@+id/swipe_post_publish_time"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginEnd="8dp"
+                            android:text="date" />
+
+                        <TextView
+                            android:id="@+id/swipe_post_is_modify"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="@string/post_history_modify"
+                            android:visibility="gone" />
+
+                    </LinearLayout>
+
+                    <!-- *********  Message  ********** -->
+                    <FrameLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content">
+
+                        <TextView
+                            android:id="@+id/swipe_post_message"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:text="Some message here..."
+                            android:textColor="@color/black_700"
+                            android:textSize="16sp" />
+
+                    </FrameLayout>
+
+                    <!-- *********  Multimedia Frame ******** -->
+                    <ca.uqac.lecitoyen.utility.MultimediaView
+                        android:id="@+id/swipe_post_multimedia"
+                        android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:text="@string/post_history_modify"
-                        android:visibility="gone" />
+                        android:layout_marginBottom="8dp"
+                        android:layout_marginTop="8dp" />
 
                 </LinearLayout>
 
-                <!-- *********  Message  ********** -->
-                <FrameLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content">
 
-                    <TextView
-                        android:id="@+id/swipe_post_message"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_marginBottom="@dimen/activity_vertical_margin"
-                        android:text="Some message here..."
-                        android:textColor="@color/black_700"
-                        android:textSize="16sp"/>
-
-                </FrameLayout>
-
-                <!-- *********  Multimedia Frame ******** -->
-                <ca.uqac.lecitoyen.utility.MultimediaView
-                    android:id="@+id/swipe_post_multimedia"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content" />
-
-                <!-- Picture (if there is a picture added) -->
-                <FrameLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:layout_marginBottom="@dimen/activity_vertical_margin">
-
-                    <include layout="@layout/layout_single_picture_frame" />
-
-                </FrameLayout>
-
-                <!-- Audio (if there is a audio added) -->
-                <FrameLayout
-                    android:id="@+id/publication_audio_layout"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:visibility="gone"/>
-
-                <!-- Social interaction -->
-                <include layout="@layout/layout_publication_social_icon" />
-
-            </LinearLayout>
+            </android.support.design.widget.CoordinatorLayout>
 
         </LinearLayout>
 
-    </android.support.constraint.ConstraintLayout>
+        <!-- *********  Social interaction ********** -->
+        <include
+            android:layout_height="wrap_content"
+            android:layout_width="match_parent"
+            android:layout_marginStart="56dp"
+            android:layout_marginBottom="8dp"
+            android:layout_gravity="bottom"
+            layout="@layout/adapter_swipe_post_surface_social_icon_layout" />
+
+    </FrameLayout>
 
 </merge>

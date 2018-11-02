@@ -66,7 +66,6 @@ public class CreatePostActivity extends BaseActivity implements View.OnClickList
     private Context mContext;
 
     private Toolbar mToolbar;
-    private FrameLayout mPictureLayout;
     private TextView mToolbarTitle;
     private TextView mToolbarButton;
     private EditText mPublicationView;
@@ -80,7 +79,6 @@ public class CreatePostActivity extends BaseActivity implements View.OnClickList
 
     private Uri mImageUri;
     private Uri mAudioUri;
-    private AudioWife audioManager;
     private User mUserdata;
 
     //  Firebase Authentification
@@ -107,7 +105,6 @@ public class CreatePostActivity extends BaseActivity implements View.OnClickList
 
         //  Initiate database
         dbManager = DatabaseManager.getInstance();
-        audioManager = AudioWife.getInstance();
 
         //  View
         setToolbar();
@@ -115,7 +112,6 @@ public class CreatePostActivity extends BaseActivity implements View.OnClickList
         mCircleImageView = findViewById(R.id.post_profil_picture);
         mMultimediaView = findViewById(R.id.create_post_multimedia);
         mPicture = findViewById(R.id.publication_picture);
-        mPictureLayout = findViewById(R.id.publication_picture_layout);
         mPlayerLayout = findViewById(R.id.create_post_audioplayer);
 
         //  Button
@@ -124,8 +120,8 @@ public class CreatePostActivity extends BaseActivity implements View.OnClickList
         findViewById(R.id.create_post_picture_camera).setOnClickListener(this);
         findViewById(R.id.create_post_music).setOnClickListener(this);
         findViewById(R.id.create_post_link).setOnClickListener(this);
-        findViewById(R.id.publication_picture_remove).setVisibility(View.VISIBLE);
-        findViewById(R.id.publication_picture_remove).setOnClickListener(this);
+        //findViewById(R.id.publication_picture_remove).setVisibility(View.VISIBLE);
+        //findViewById(R.id.publication_picture_remove).setOnClickListener(this);
 
     }
 
@@ -185,10 +181,6 @@ public class CreatePostActivity extends BaseActivity implements View.OnClickList
                 openStorage();
                 break;
             case R.id.create_post_link:
-                break;
-            case R.id.publication_picture_remove:
-                mPictureLayout.setVisibility(View.GONE);
-                mPicture.setImageDrawable(null);
                 break;
         }
     }
@@ -310,7 +302,7 @@ public class CreatePostActivity extends BaseActivity implements View.OnClickList
 
             stPosts = dbManager.getStoragePost(post.getPostid());
             //  Create storage reference if there is an image added to the post
-            if (mPictureLayout.getVisibility() != View.GONE && mImageUri != null) {
+            if (mMultimediaView.getVisibility() != View.GONE && mImageUri != null) {
 
                 ArrayList<Image> postImageList = new ArrayList<>();
                 postImageList.add(new Image("image" + post.getPostid() + "1000"));
@@ -515,6 +507,5 @@ public class CreatePostActivity extends BaseActivity implements View.OnClickList
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        this.finish();
     }
 }

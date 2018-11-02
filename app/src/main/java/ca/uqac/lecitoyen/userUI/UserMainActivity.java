@@ -1,25 +1,18 @@
 package ca.uqac.lecitoyen.userUI;
 
-import android.app.FragmentManager;
 import android.content.Intent;
 import android.graphics.Typeface;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
-import android.view.MenuInflater;
-import android.view.MenuItem;
 import android.widget.TextView;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
 
@@ -30,10 +23,8 @@ import ca.uqac.lecitoyen.database.UserStorage;
 import ca.uqac.lecitoyen.userUI.cityfeed.CityfeedFragment;
 import ca.uqac.lecitoyen.userUI.newsfeed.NewsfeedFragment;
 import ca.uqac.lecitoyen.userUI.messaging.MessageFragment;
-import ca.uqac.lecitoyen.userUI.profile.ProfilFragment;
 import ca.uqac.lecitoyen.userUI.profile.ProfilTestFragment;
 import ca.uqac.lecitoyen.userUI.search.SearchFragment;
-import ca.uqac.lecitoyen.userUI.settings.UserSettingsActivity;
 import ca.uqac.lecitoyen.database.DatabaseManager;
 import ca.uqac.lecitoyen.database.Post;
 import ca.uqac.lecitoyen.database.User;

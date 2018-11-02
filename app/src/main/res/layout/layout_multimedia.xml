@@ -3,21 +3,21 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
-    <android.support.v7.widget.CardView
+    <FrameLayout
         android:id="@+id/multimedia_main_layout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        app:cardCornerRadius="10dp"
-        app:cardElevation="5dp"
+        android:background="@drawable/shape_corner"
         android:visibility="visible">
 
-        <ImageView
+        <com.makeramen.roundedimageview.RoundedImageView
             android:id="@+id/multimedia_picture"
             android:layout_width="match_parent"
             android:layout_height="200dp"
-            android:background="@drawable/scrim_top"
-            android:visibility="gone"
-            android:scaleType="centerCrop" />
+            android:scaleType="centerCrop"
+            app:riv_corner_radius="10dp"
+            app:riv_mutate_background="true"
+            app:riv_oval="false" />
 
         <TextView
             android:id="@+id/multimedia_remove"
@@ -28,7 +28,6 @@
             android:visibility="gone"
             android:background="@drawable/button_close_circle" />
 
-
         <LinearLayout
             android:id="@+id/multimedia_bottom_layout"
             android:layout_width="match_parent"
@@ -36,7 +35,7 @@
             android:orientation="horizontal"
             android:layout_gravity="bottom"
             android:visibility="visible"
-            android:background="@drawable/corners">
+            android:background="@drawable/shape_corner_bottom">
 
             <ImageView
                 android:id="@+id/multimedia_icon_type"
@@ -44,7 +43,7 @@
                 android:layout_height="32dp"
                 android:layout_margin="8dp"
                 android:layout_gravity="center"
-                android:alpha="0.89"
+                android:alpha="0.54"
                 app:srcCompat="@drawable/ic_play_circle_outline_black_24dp"/>
 
             <LinearLayout
@@ -79,6 +78,6 @@
 
         </LinearLayout>
 
-    </android.support.v7.widget.CardView>
+    </FrameLayout>
 
 </merge>

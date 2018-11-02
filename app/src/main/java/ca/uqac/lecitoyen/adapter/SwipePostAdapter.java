@@ -2,6 +2,8 @@ package ca.uqac.lecitoyen.adapter;
 
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
+import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.LinearLayoutManager;
@@ -34,6 +36,7 @@ import ca.uqac.lecitoyen.R;
 import ca.uqac.lecitoyen.database.DatabaseManager;
 import ca.uqac.lecitoyen.database.Post;
 import ca.uqac.lecitoyen.database.User;
+import ca.uqac.lecitoyen.userUI.ExpandPostActivity;
 import ca.uqac.lecitoyen.utility.MultimediaView;
 import ca.uqac.lecitoyen.utility.TimeUtility;
 import de.hdodenhof.circleimageview.CircleImageView;
@@ -46,6 +49,9 @@ public class SwipePostAdapter extends RecyclerSwipeAdapter<SwipePostAdapter.View
     private static String TAG = "SwipePostAdapter";
     private static float SELECT_TRANSPARENCE = 0.89f;
     private static float UNSELECT_TRANSPARENCE = 0.54f;
+
+    private static int PHOTO_CODE = 100;
+    private static int AUDIO_CODE = 101;
 
     public static class ViewHolder extends RecyclerView.ViewHolder {
 
@@ -153,7 +159,6 @@ public class SwipePostAdapter extends RecyclerSwipeAdapter<SwipePostAdapter.View
     }
 
     private DatabaseManager dbManager;
-    private AudioWife audioManager;
     private Context mContext;
     private TimeUtility timeUtility;
 
@@ -170,13 +175,11 @@ public class SwipePostAdapter extends RecyclerSwipeAdapter<SwipePostAdapter.View
 
     public SwipePostAdapter(Context context, FirebaseUser user, ArrayList<Post> posts) {
         this.dbManager = DatabaseManager.getInstance();
-        this.audioManager = AudioWife.getInstance();
         this.mContext = context;
         this.mPostList = posts;
 
-        FirebaseUser fbUser = user;
-        if(fbUser != null) {
-            this.mCurrentUserId = fbUser.getUid();
+        if(user != null) {
+            this.mCurrentUserId = user.getUid();
             this.mCurrentUser = new User(mCurrentUserId);
         }
         this.timeUtility = new TimeUtility(mContext);
@@ -244,6 +247,7 @@ public class SwipePostAdapter extends RecyclerSwipeAdapter<SwipePostAdapter.View
             }
             if(holderPost.getAudio() != null) {
                 if (!holderPost.getAudio().isEmpty()) {
+                    Log.d(TAG, holderPost.getAudio());
                     holder.multimediaView.setMultimediaMusic(holderPost.getAudio());
                 }
             }
@@ -334,6 +338,27 @@ public class SwipePostAdapter extends RecyclerSwipeAdapter<SwipePostAdapter.View
 
     private void setOnClickListener(@NonNull final ViewHolder holder) {
         final Post holderPost = mPostList.get(holder.getAdapterPosition());
+        holder.multimediaView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Bundle bundle = new Bundle();
+                if(holder.multimediaView.isPhoto()) {
+                    Intent intent = new Intent(mContext, ExpandPostActivity.class);
+                    intent.putExtra(TAG, holderPost.getPostid());
+                    intent.putExtra(TAG, PHOTO_CODE);
+                    mContext.startActivity(intent);
+                }
+                if(holder.multimediaView.isAudio()) {
+                    Intent intent = new Intent(mContext, ExpandPostActivity.class);
+                    intent.putExtra(TAG, holderPost.getPostid());
+                    intent.putExtra(TAG, AUDIO_CODE);
+                    mContext.startActivity(intent);
+                }
+                if(holder.multimediaView.isLink()) {
+
+                }
+            }
+        });
         holder.historyButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {

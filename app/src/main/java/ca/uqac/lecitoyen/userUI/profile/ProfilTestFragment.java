@@ -30,6 +30,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
+import com.daimajia.swipe.adapters.RecyclerSwipeAdapter;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
@@ -44,6 +45,7 @@ import ca.uqac.lecitoyen.BaseFragment;
 import ca.uqac.lecitoyen.Interface.iHandleFragment;
 import ca.uqac.lecitoyen.R;
 import ca.uqac.lecitoyen.adapter.PublicationAdapter;
+import ca.uqac.lecitoyen.adapter.SwipePostAdapter;
 import ca.uqac.lecitoyen.database.DatabaseManager;
 import ca.uqac.lecitoyen.database.Post;
 import ca.uqac.lecitoyen.database.User;
@@ -85,7 +87,7 @@ public class ProfilTestFragment extends BaseFragment implements View.OnClickList
     private TextView mFollowingCount;
     private TextView mEditAccountButton;
     private RecyclerView mProfilRecyclerView;
-    private RecyclerView.Adapter mAdapter;
+    private RecyclerSwipeAdapter mAdapter;
     private RecyclerView.LayoutManager mLayoutManager;
 
 
@@ -329,7 +331,7 @@ public class ProfilTestFragment extends BaseFragment implements View.OnClickList
 
                 if(listUserPost != null || listUserPost.size() != 0) {
                     mToolbarPostCount.setText((Integer.toString(listUserPost.size())));
-                    mAdapter = new PublicationAdapter(userMainActivity, fbUser, listUserPost);
+                    mAdapter = new SwipePostAdapter(userMainActivity, fbUser, listUserPost);
                     mProfilRecyclerView.setAdapter(mAdapter);
                 }
             }

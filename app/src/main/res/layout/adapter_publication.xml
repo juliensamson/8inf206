@@ -131,7 +131,7 @@
                             android:visibility="gone"/>
 
                         <!-- Social interaction -->
-                        <include layout="@layout/layout_publication_social_icon" />
+                        <include layout="@layout/adapter_swipe_post_surface_social_icon_layout" />
 
                     </LinearLayout>
 

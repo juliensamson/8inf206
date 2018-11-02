@@ -213,7 +213,6 @@ public class PublicationAdapter extends RecyclerView.Adapter<PublicationAdapter.
 
 
         LinearLayout upvoteLayout, repostLayout, commentLayout;
-        FrameLayout shareLayout;
         TextView upvote, repost, comment, share;
         TextView upvoteCount, repostCount, commentCount;
 
@@ -238,7 +237,6 @@ public class PublicationAdapter extends RecyclerView.Adapter<PublicationAdapter.
             upvoteLayout = itemView.findViewById(R.id.publication_social_upvote_layout);
             repostLayout = itemView.findViewById(R.id.publication_social_repost_layout);
             commentLayout = itemView.findViewById(R.id.publication_social_comment_layout);
-            shareLayout = itemView.findViewById(R.id.publication_social_share_layout);
 
             upvote = itemView.findViewById(R.id.publication_social_upvote);
             repost = itemView.findViewById(R.id.publication_social_repost);
@@ -263,7 +261,6 @@ public class PublicationAdapter extends RecyclerView.Adapter<PublicationAdapter.
             upvoteCount.setAlpha(UNSELECT_TRANSPARENCE);
             comment.setAlpha(UNSELECT_TRANSPARENCE);
             commentCount.setAlpha(UNSELECT_TRANSPARENCE);
-            shareLayout.setAlpha(UNSELECT_TRANSPARENCE);
         }
     }
 

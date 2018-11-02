@@ -43,8 +43,7 @@
             <FrameLayout
                 android:id="@+id/create_post_audioplayer"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:visibility="gone"/>
+                android:layout_height="wrap_content" />
 
             <ca.uqac.lecitoyen.utility.MultimediaView
                 android:id="@+id/create_post_multimedia"

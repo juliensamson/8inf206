@@ -9,12 +9,14 @@
         android:id="@+id/swipe_post_inside_layout"
         android:layout_width="wrap_content"
         android:layout_height="match_parent"
-        android:orientation="horizontal">
+        android:weightSum="3"
+        android:orientation="vertical">
 
         <FrameLayout
             android:id="@+id/swipe_post_button_history"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
+            android:layout_weight="1"
             android:padding="@dimen/activity_vertical_margin"
             android:background="@color/primary_300">
 
@@ -30,6 +32,7 @@
             android:id="@+id/swipe_post_button_modify"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
+            android:layout_weight="1"
             android:padding="@dimen/activity_vertical_margin"
             android:background="@color/analogous_p_300">
 
@@ -45,6 +48,7 @@
             android:id="@+id/swipe_post_button_delete"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
+            android:layout_weight="1"
             android:padding="@dimen/activity_vertical_margin"
             android:background="@color/secondary_300">
 

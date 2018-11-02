@@ -1,33 +1,17 @@
 package ca.uqac.lecitoyen.utility;
 
 import android.app.Activity;
-import android.app.Fragment;
-import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
-import android.support.annotation.NonNull;
-import android.util.Log;
-import android.widget.ArrayAdapter;
-import android.widget.Toast;
 
-import com.google.android.gms.tasks.OnFailureListener;
-import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.ValueEventListener;
-import com.google.firebase.storage.OnProgressListener;
 import com.google.firebase.storage.StorageReference;
-import com.google.firebase.storage.UploadTask;
 
 import java.util.ArrayList;
 
 import ca.uqac.lecitoyen.BaseActivity;
 import ca.uqac.lecitoyen.database.User;
 import ca.uqac.lecitoyen.database.UserStorage;
-import ca.uqac.lecitoyen.userUI.profile.EditProfileActivity;
-import ca.uqac.lecitoyen.userUI.profile.EditProfileFragment;
-import ca.uqac.lecitoyen.userUI.profile.ProfilFragment;
 
 
 public class PictureHandler extends BaseActivity {

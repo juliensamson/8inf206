@@ -11,9 +11,14 @@
 
     <!--    Toolbar     -->
     <style name="MainToolbarStyle" parent="ThemeOverlay.AppCompat.Dark.ActionBar">
-        <item name="android:background">@color/i_primary_800</item>
-        <item name="android:textColor">@color/white_50</item>
+        <item name="android:background">@color/white_100</item>
+        <item name="android:textColor">@color/i_primary_800</item>
         <item name="android:textSize">@dimen/toolbar_title</item>
+    </style>
+
+    <!--    Toolbar     -->
+    <style name="TransparentToolbarStyle" parent="ThemeOverlay.AppCompat.Dark.ActionBar">
+        <item name="android:background">@color/white_100</item>
     </style>
 
 

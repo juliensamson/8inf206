@@ -4,8 +4,8 @@
 
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.CAMERA" />
-    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
-    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
 
     <application
         android:allowBackup="true"
@@ -33,8 +33,9 @@
         <activity
             android:name=".userUI.UserMainActivity"
             android:label="@string/title_activity_user" />
-        <activity android:name=".userUI.newsfeed.CreatePostActivity"
-            android:windowSoftInputMode="adjustResize"/>
+        <activity
+            android:name=".userUI.newsfeed.CreatePostActivity"
+            android:windowSoftInputMode="adjustResize" />
 
         <!-- USER SETTING ACTIVITY -->
         <activity
@@ -65,7 +66,8 @@
             </intent-filter>
         </activity>
         <activity android:name=".userUI.newsfeed.EditPostActivity" />
-        <activity android:name=".userUI.profile.EditProfileActivity"></activity>
+        <activity android:name=".userUI.profile.EditProfileActivity" />
+        <activity android:name=".userUI.ExpandPostActivity"></activity>
     </application>
 
 </manifest>
