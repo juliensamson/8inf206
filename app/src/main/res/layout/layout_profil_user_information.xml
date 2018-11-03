@@ -20,6 +20,7 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="0dp"
             android:layout_marginEnd="8dp"
+            android:baselineAligned="false"
             android:orientation="horizontal"
             android:weightSum="100">
 

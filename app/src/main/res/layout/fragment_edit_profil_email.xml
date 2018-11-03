@@ -10,7 +10,7 @@
     android:layout_marginTop="@dimen/activity_vertical_margin"
     android:layout_marginStart="@dimen/activity_horizontal_margin"
     android:layout_marginEnd="@dimen/activity_horizontal_margin"
-    tools:context=".userUI.profile.EditEmailFragment">
+    tools:context=".fragments.UserEditEmailFragment">
 
     <EditText
         android:id="@+id/change_email_password"

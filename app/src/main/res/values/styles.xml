@@ -1,26 +1,58 @@
 <resources>
 
     <!-- Base application theme. -->
-    <style name="AppTheme" parent="Theme.AppCompat.Light.DarkActionBar">
-        <!-- Customize your theme here. -->
-        <item name="colorPrimary">@color/i_primary_800</item>
-        <item name="colorPrimaryDark">@color/primary_900</item>
-        <item name="colorAccent">@color/i_secondary_700</item>
+    <style name="LightAppTheme" parent="Theme.AppCompat.Light.NoActionBar" >
+        <item name="colorAccent">@color/primaryColor</item>
+        <item name="android:textColorHint">@color/primaryLightColor</item>
     </style>
 
+    <!-- ******** Light Toolbar ******** -->
+    <style name="LightToolbarTheme" parent="LightAppTheme">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">?attr/actionBarSize</item>
+        <item name="android:gravity">center_vertical</item>
+    </style>
 
-    <!--    Toolbar     -->
-    <style name="MainToolbarStyle" parent="ThemeOverlay.AppCompat.Dark.ActionBar">
-        <item name="android:background">@color/white_100</item>
-        <item name="android:textColor">@color/i_primary_800</item>
+    <style name="LightToolbarTheme.Title">
         <item name="android:textSize">@dimen/toolbar_title</item>
+        <item name="android:textColor">@color/primaryColor</item>
+        <item name="android:textStyle">bold</item>
     </style>
+
+
+    <style name="LightToolbarTitle">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+    </style>
+
 
     <!--    Toolbar     -->
     <style name="TransparentToolbarStyle" parent="ThemeOverlay.AppCompat.Dark.ActionBar">
         <item name="android:background">@color/white_100</item>
     </style>
 
+    <!-- *********  TEXTVIEW STYLE  ********* -->
+    <style name="TextView">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_marginStart">0dp</item>
+        <item name="android:layout_marginEnd">@dimen/textview_marginEnd</item>
+        <item name="android:layout_marginTop">8dp</item>
+        <item name="android:layout_marginBottom">8dp</item>
+    </style>
+
+    <style name="TextView.Number">
+        <item name="android:text">0</item>
+        <item name="android:textSize">@dimen/textview_number</item>
+        <item name="android:textColor">@color/black_700</item>
+        <item name="android:textStyle">bold</item>
+    </style>
+
+    <style name="TextView.Static">
+        <item name="android:layout_marginEnd">@dimen/textview_marginEnd</item>
+        <item name="android:textSize">@dimen/textview_static</item>
+        <item name="android:textColor">@color/black_500</item>
+    </style>
 
     <!--    EditText    -->
     <style name="EditTextStyle" parent="TextAppearance.AppCompat">
@@ -37,12 +69,15 @@
     <style name="CreateAccountButtonStyle" parent="Widget.AppCompat.Button.Colored">
         <item name="android:background">@color/i_primary_800</item>
     </style>
+
     <style name="SettingsButtonBorderlessStyle" parent="Base.Widget.AppCompat.Button.Borderless.Colored">
         <item name="android:textColor">@color/i_primary_800</item>
     </style>
+
     <style name="DeleteAccountButtonStyle" parent="Widget.AppCompat.Button.Colored">
         <item name="android:background">@color/i_secondary_700</item>
     </style>
+
     <style name="DeleteAccountButtonBorderlessStyle" parent="Widget.AppCompat.Button.Borderless.Colored">
         <item name="android:textColor">@color/i_secondary_700</item>
     </style>
@@ -60,5 +95,9 @@
         <item name="android:gravity">center</item>
         <item name="android:textSize">36sp</item>
     </style>
+
+    <style name="AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar" />
+
+    <style name="PopupOverlay" parent="ThemeOverlay.AppCompat.Light" />
 
 </resources>

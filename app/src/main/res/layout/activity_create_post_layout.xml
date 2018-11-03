@@ -45,7 +45,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content" />
 
-            <ca.uqac.lecitoyen.utility.MultimediaView
+            <ca.uqac.lecitoyen.util.MultimediaView
                 android:id="@+id/create_post_multimedia"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content" />

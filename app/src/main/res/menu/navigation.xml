@@ -1,17 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    app:bbn_itemColorActive="@color/i_primary_800"
-    app:bbn_itemColorInactive="@color/white_600"
-    app:bbn_badgeColor="@color/i_secondary_700"
-    app:bbn_alwaysShowLabels="false"
-    app:itemIconTint="@drawable/bottom_navigation_color_selector"
-    app:itemTextColor="@drawable/bottom_navigation_color_selector">
+    app:bbn_itemColorActive="@color/primaryColor"
+    app:bbn_itemColorInactive="@color/black_900"
+    app:bbn_badgeColor="@color/primaryLightColor"
+    app:bbn_alwaysShowLabels="false">
 
     <item
         android:id="@+id/navigation_newsfeed"
         android:icon="@drawable/ic_home_black_24dp"
-        android:title="@string/fragment_newsfeed" />
+        android:title="@string/fragment_forum" />
 
     <item
         android:id="@+id/navigation_search"

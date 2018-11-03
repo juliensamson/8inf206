@@ -27,7 +27,7 @@
         android:layout_height="wrap_content"
         android:text="Ajouter une image?"/>
 
-    <ca.uqac.lecitoyen.utility.MultimediaView
+    <ca.uqac.lecitoyen.util.MultimediaView
         android:id="@+id/dialog_audio_image"
         android:layout_width="match_parent"
         android:layout_height="wrap_content" />

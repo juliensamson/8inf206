@@ -14,8 +14,8 @@
         android:noHistory="false"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
-        android:theme="@style/Theme.AppCompat.Light.NoActionBar">
-        <activity android:name=".MainActivity">
+        android:theme="@style/LightAppTheme">
+        <activity android:name=".activities.MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -24,24 +24,24 @@
         </activity>
 
         <!-- BASE ACTIVITY -->
-        <activity android:name=".BaseActivity" />
+        <activity android:name=".activities.BaseActivity" />
 
         <!-- LOGIN ACTIVITY -->
 
 
         <!-- USER ACTIVITY -->
         <activity
-            android:name=".userUI.UserMainActivity"
+            android:name=".activities.MainUserActivity"
             android:label="@string/title_activity_user" />
         <activity
-            android:name=".userUI.newsfeed.CreatePostActivity"
+            android:name=".activities.CreatePostActivity"
             android:windowSoftInputMode="adjustResize" />
 
         <!-- USER SETTING ACTIVITY -->
         <activity
-            android:name=".userUI.settings.UserSettingsActivity"
+            android:name=".activities.SettingsActivity"
             android:launchMode="standard"
-            android:parentActivityName=".userUI.UserMainActivity"
+            android:parentActivityName=".activities.MainUserActivity"
             android:windowSoftInputMode="stateHidden|adjustResize" />
 
         <!-- FACEBOOK LOGIN ACTIVITY -->
@@ -65,9 +65,13 @@
                 <data android:scheme="@string/fb_login_protocol_scheme" />
             </intent-filter>
         </activity>
-        <activity android:name=".userUI.newsfeed.EditPostActivity" />
-        <activity android:name=".userUI.profile.EditProfileActivity" />
-        <activity android:name=".userUI.ExpandPostActivity"></activity>
+        <activity android:name=".activities.EditPostActivity" />
+        <activity android:name=".activities.EditProfilActivity" />
+        <activity android:name=".activities.ExpandPostImageActivity" />
+        <activity
+            android:name=".activities.ExpandPostAudioActivity"
+            android:label="@string/title_activity_post_expand_audio"
+            android:theme="@style/Theme.AppCompat.Light.NoActionBar"></activity>
     </application>
 
 </manifest>

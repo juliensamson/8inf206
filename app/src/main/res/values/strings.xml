@@ -1,12 +1,20 @@
 <resources>
+
+    <!-- ********************************************** -->
+    <!-- ************* GENERAL STRINGS  *************** -->
+    <!-- ********************************************** -->
     <string name="app_name">Le Citoyen</string>
     <string name="setting_name">Réglages</string>
     <string name="unsub">Se désinscrire</string>
     <string name="title_activity_user">UserActivity</string>
 
-    <!--    Format date & time-->
+
+    <!-- ********************************************** -->
+    <!-- *************   DATE & TIME    *************** -->
+    <!-- ********************************************** -->
     <string name="long_date_format">dd MMM yyyy HH:MM:ss</string>
-    <string name="short_date_format">dd MMM yyyy</string>
+    <string name="short_date_format_with_year">dd MMM yyyy</string>
+    <string name="short_date_format_without_year">dd MMM</string>
     <string name="time_format">HH:MM</string>
     <string name="time_format_with_seconds">HH:MM:ss</string>
     <string name="time_short_second">s</string>
@@ -33,7 +41,7 @@
     <string name="fragment_forgot_account">Mot de passe oublié</string>
 
     <!--         User UI Fragment                       -->
-    <string name="fragment_newsfeed">Forum</string>
+    <string name="fragment_forum">Forum</string>
     <string name="fragment_newsfeed_public_profil">Profil publique</string>
     <string name="fragment_search">Rechercher</string>
     <string name="fragment_cityfeed">Ville</string>
@@ -59,14 +67,19 @@
 
 
     <!-- ********************************************** -->
-    <!-- ***************  TEXT VIEWS   **************** -->
+    <!-- ************ STATIC TEXT VIEWS  ************** -->
     <!-- ********************************************** -->
-
-
+    <string name="textview_followers">abonné(s)</string>
+    <string name="textview_following">suivi(s)</string>
     <string name="textview_forgot_password">Mot de passe oublié?</string>
     <string name="textview_verify_account">Vérifier votre compte</string>
+    <string name="long_subtitle_app_mission">Une place pour partager ses créations et regarder les dernières nouvelles de la ville</string>
+    <string name="long_subtitle_forgot_account">"Vous avez oublié votre mot de passe? \n\nVous n'avez qu'à entrer votre addresse courriel dans le champ si-dessus. Vous recevrez un courriel sous peu."</string>
 
-    <!--    EditField Hint-->
+
+    <!-- ********************************************** -->
+    <!-- *************  EDITTEXT FIELD  *************** -->
+    <!-- ********************************************** -->
     <string name="email">Adresse courriel</string>
     <string name="new_email">Nouvelle adresse courriel</string>
     <string name="email_again">Adresse courriel, un autre fois</string>
@@ -82,8 +95,11 @@
     <string name="phone_number">Téléphone</string>
     <string name="add_phone_number">Ajouter ton numéro de téléphone</string>
 
-    <!--    BUTTON Text-->
+    <!-- ********************************************** -->
+    <!-- *************   BUTTONS TEXT   *************** -->
+    <!-- ********************************************** -->
     <string name="button_cancel">Annuler</string>
+    <string name="button_delete">Supprimer</string>
     <string name="button_create_account">Créer un compte</string>
     <string name="button_delete_account">Suprimer votre compte</string>
     <string name="button_signin">Se connecter</string>
@@ -94,18 +110,19 @@
     <string name="button_change_password">Changer de mot de passe</string>
     <string name="button_verify_account">Vérifier</string>
 
+    <!-- ********************************************** -->
+    <!-- *******  DIALOG & ADAPTER INTERFACE   ******** -->
+    <!-- ********************************************** -->
+    <string name="adapter_post_is_modify">(modifié)</string>
+    <string name="dialog_post_history_title">Historique</string>
+    <string name="dialog_post_history_post_original">Publication originale</string>
+    <string name="dialog_post_history_post_number">Modification</string>
+    <string name="dialog_delete_title">Supprimer publication</string>
+    <string name="dialog_delete_message">Êtes-vous certain de vouloir tout supprimer?</string>
 
-    <!--    Title & others-->
-    <string name="long_subtitle_app_mission">Une place pour partager ses créations et regarder les dernières nouvelles de la ville</string>
-    <string name="long_subtitle_forgot_account">"Vous avez oublié votre mot de passe? \n\nVous n'avez qu'à entrer votre addresse courriel dans le champ si-dessus. Vous recevrez un courriel sous peu."</string>
-
-    <!--    Listview & Adapter    -->
-    <string name="post_history">Historique</string>
-    <string name="post_history_original">Publication originale</string>
-    <string name="post_history_modify">(modifié)</string>
-    <string name="post_history_number_modify">Modification</string>
-
-    <!--    TOAST Text-->
+    <!-- ********************************************** -->
+    <!-- ******************  TOAST   ****************** -->
+    <!-- ********************************************** -->
     <string name="toast_email_field_empty">Aucun email</string>
     <string name="toast_password_field_empty">Aucun mot de passe</string>
 
@@ -241,4 +258,5 @@
     <string name="pref_ringtone_silent">Silent</string>
 
     <string name="pref_title_vibrate">Vibrate</string>
+    <string name="title_activity_post_expand_audio">PostExpandAudioActivity</string>
 </resources>

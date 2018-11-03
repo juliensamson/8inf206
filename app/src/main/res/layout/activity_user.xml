@@ -6,7 +6,7 @@
     android:id="@+id/container"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="ca.uqac.lecitoyen.userUI.UserMainActivity"
+    tools:context="ca.uqac.lecitoyen.activities.MainUserActivity"
     android:fitsSystemWindows="false">
 
     <FrameLayout

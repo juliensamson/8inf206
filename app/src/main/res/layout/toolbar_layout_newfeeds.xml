@@ -1,21 +1,20 @@
 <?xml version="1.0" encoding="utf-8"?>
 <android.support.design.widget.AppBarLayout
-    android:id="@+id/toolbar_newsfeed_layout"
+    android:id="@+id/toolbar_forum_layout"
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="48dp">
 
     <android.support.widget.Toolbar
-        android:id="@+id/toolbar_newsfeed_1"
+        android:id="@+id/toolbar_forum"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:elevation="6dp"
-        app:layout_scrollFlags="scroll"
-        android:theme="@style/MainToolbarStyle">
+        app:layout_scrollFlags="scroll">
 
         <TextView
-            android:id="@+id/toolbar_newsfeed_title"
+            android:id="@+id/toolbar_forum_title"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginStart="@dimen/activity_horizontal_margin"

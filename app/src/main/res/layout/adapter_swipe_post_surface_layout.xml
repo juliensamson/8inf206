@@ -87,7 +87,7 @@
                             android:id="@+id/swipe_post_is_modify"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="@string/post_history_modify"
+                            android:text="@string/adapter_post_is_modify"
                             android:visibility="gone" />
 
                     </LinearLayout>
@@ -108,7 +108,7 @@
                     </FrameLayout>
 
                     <!-- *********  Multimedia Frame ******** -->
-                    <ca.uqac.lecitoyen.utility.MultimediaView
+                    <ca.uqac.lecitoyen.util.MultimediaView
                         android:id="@+id/swipe_post_multimedia"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"

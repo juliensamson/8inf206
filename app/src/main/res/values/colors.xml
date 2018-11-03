@@ -1,5 +1,28 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <color name="primaryColor">#4489ff</color>
+    <color name="primaryLightColor">#83b8ff</color>
+    <color name="primaryDarkColor">#005dcb</color>
+    <!--
+    <color name="primaryColor">#8bc34a</color>
+    <color name="primaryLightColor">#bef67a</color>
+    <color name="primaryDarkColor">#5a9216</color>-->
+    <color name="primaryTextColor">#000000</color>
+    <color name="secondaryTextColor">#000000</color>
+
+
+    <color name="primaryText">#212121</color>
+    <color name="secondaryText">#757575</color>
+    <color name="icons">#212121</color>
+    <color name="divider">#BDBDBD</color>
+
+    <color name="error">#B00020</color>
+    <color name="on_error">#000000</color>
+
+    <color name="surface">#FFFFFF</color>
+    <color name="on_surface">#000000</color>
+
+
     <color name="black_900">#000000</color>
     <color name="black_800">#262626</color>
     <color name="black_700">#434343</color>

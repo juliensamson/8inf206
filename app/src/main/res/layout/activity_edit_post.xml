@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="ca.uqac.lecitoyen.userUI.newsfeed.EditPostActivity">
+    tools:context="ca.uqac.lecitoyen.activities.EditPostActivity">
 
     <include
         layout="@layout/toolbar_default"
