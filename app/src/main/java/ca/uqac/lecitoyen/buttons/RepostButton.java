@@ -40,7 +40,6 @@ public class RepostButton extends FrameLayout implements iToggleButton {
     }
 
     private void create(Context context) {
-        Log.d(TAG, "create");
         View rootView = inflate(context, R.layout.button_repost, this);
 
         mRepostOn  = rootView.findViewById(R.id.button_repost_layout_on);
@@ -54,7 +53,6 @@ public class RepostButton extends FrameLayout implements iToggleButton {
 
     @Override
     public void setButtonOn() {
-        Log.d(TAG, "on()");
 
         if(mRepostOn != null)
             mRepostOn.setVisibility(VISIBLE);
@@ -68,7 +66,7 @@ public class RepostButton extends FrameLayout implements iToggleButton {
 
     @Override
     public void setButtonOff() {
-        Log.d(TAG, "off()");
+
         if(mRepostOn != null)
             mRepostOn.setVisibility(GONE);
 

@@ -3,7 +3,7 @@
     <!-- Base application theme. -->
     <style name="LightAppTheme" parent="Theme.AppCompat.Light.NoActionBar" >
         <item name="colorAccent">@color/primaryColor</item>
-        <item name="android:textColorHint">@color/primaryLightColor</item>
+        <item name="android:textColorHint">@color/black_300</item>
     </style>
 
     <!-- ******** Light Toolbar ******** -->
@@ -13,18 +13,40 @@
         <item name="android:gravity">center_vertical</item>
     </style>
 
+    <style name="LightToolbarTheme.WithTab">
+        <item name="android:layout_height">100dp</item>
+        <item name="android:minHeight">?attr/actionBarSize</item>
+        <item name="android:gravity">top</item>
+    </style>
+
+    <style name="LightToolbarTheme.ImageView">
+        <item name="android:layout_width">32dp</item>
+        <item name="android:layout_height">32dp</item>
+        <item name="android:layout_marginEnd">@dimen/activity_horizontal_margin</item>
+        <item name="android:src">@mipmap/ic_launcher_round</item>
+    </style>
+
     <style name="LightToolbarTheme.Title">
         <item name="android:textSize">@dimen/toolbar_title</item>
         <item name="android:textColor">@color/primaryColor</item>
         <item name="android:textStyle">bold</item>
     </style>
 
-
-    <style name="LightToolbarTitle">
-        <item name="android:layout_width">match_parent</item>
-        <item name="android:layout_height">wrap_content</item>
+    <style name="LightToolbarTheme.Title.Name">
+        <item name="android:textSize">15sp</item>
     </style>
 
+    <style name="LightToolbarTheme.Title.Post">
+        <item name="android:textSize">15sp</item>
+        <item name="android:textStyle">normal</item>
+    </style>
+
+
+
+    <style name="LightFloatingActionButton" parent="LightAppTheme">
+        <item name="android:layout_margin">@dimen/activity_horizontal_margin</item>
+        <item name="android:backgroundTint">@color/primaryColor</item>
+    </style>
 
     <!--    Toolbar     -->
     <style name="TransparentToolbarStyle" parent="ThemeOverlay.AppCompat.Dark.ActionBar">
@@ -35,23 +57,60 @@
     <style name="TextView">
         <item name="android:layout_width">wrap_content</item>
         <item name="android:layout_height">wrap_content</item>
+        <item name="android:textColor">@color/black_700</item>
+        <item name="android:textSize">16sp</item>
+    </style>
+
+    <style name="TextView.Normal">
         <item name="android:layout_marginStart">0dp</item>
         <item name="android:layout_marginEnd">@dimen/textview_marginEnd</item>
         <item name="android:layout_marginTop">8dp</item>
         <item name="android:layout_marginBottom">8dp</item>
     </style>
 
+    <style name="TextView.Italic">
+        <item name="android:textSize">16sp</item>
+        <item name="android:textStyle">italic</item>
+        <item name="android:layout_marginStart">0dp</item>
+        <item name="android:layout_marginEnd">@dimen/textview_marginEnd</item>
+        <item name="android:layout_marginTop">8dp</item>
+        <item name="android:layout_marginBottom">8dp</item>
+    </style>
+
+    <style name="TextView.Large">
+        <item name="android:layout_marginBottom">8dp</item>
+        <item name="android:textSize">18sp</item>
+    </style>
+    <style name="TextView.ExtraLarge">
+        <item name="android:layout_marginBottom">8dp</item>
+        <item name="android:textSize">26sp</item>
+    </style>
+
     <style name="TextView.Number">
         <item name="android:text">0</item>
         <item name="android:textSize">@dimen/textview_number</item>
         <item name="android:textColor">@color/black_700</item>
-        <item name="android:textStyle">bold</item>
     </style>
 
     <style name="TextView.Static">
         <item name="android:layout_marginEnd">@dimen/textview_marginEnd</item>
         <item name="android:textSize">@dimen/textview_static</item>
         <item name="android:textColor">@color/black_500</item>
+    </style>
+
+    <style name="BorderlessButton" parent="Widget.AppCompat.Button.Borderless">
+        <item name="android:textAllCaps">false</item>
+        <item name="android:paddingTop">32dp</item>
+        <item name="android:paddingBottom">32dp</item>
+        <item name="android:gravity">center_vertical</item>
+        <item name="android:textSize">18sp</item>
+        <item name="android:textColor">@color/black_600</item>
+    </style>
+
+    <style name="Divider">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">1dp</item>
+        <item name="android:background">@color/black_300</item>
     </style>
 
     <!--    EditText    -->

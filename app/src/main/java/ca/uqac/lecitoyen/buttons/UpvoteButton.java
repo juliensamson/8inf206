@@ -40,7 +40,7 @@ public class UpvoteButton extends FrameLayout implements iToggleButton {
     }
 
     public void create(Context context) {
-        Log.d(TAG, "create");
+
         View rootView = inflate(context, R.layout.button_upvote, this);
 
         mUpvoteOn  = rootView.findViewById(R.id.button_upvote_layout_on);
@@ -54,7 +54,6 @@ public class UpvoteButton extends FrameLayout implements iToggleButton {
 
     @Override
     public void setButtonOn() {
-        Log.d(TAG, "on()");
 
         if(mUpvoteOn != null)
             mUpvoteOn.setVisibility(VISIBLE);
@@ -63,11 +62,11 @@ public class UpvoteButton extends FrameLayout implements iToggleButton {
             mUpvoteOff.setVisibility(GONE);
 
         isUpvoteOn = true;
+
     }
 
     @Override
     public void setButtonOff() {
-        Log.d(TAG, "off()");
 
         if(mUpvoteOn != null)
             mUpvoteOn.setVisibility(GONE);
@@ -76,6 +75,7 @@ public class UpvoteButton extends FrameLayout implements iToggleButton {
             mUpvoteOff.setVisibility(VISIBLE);
 
         isUpvoteOn = false;
+
     }
 
     @Override

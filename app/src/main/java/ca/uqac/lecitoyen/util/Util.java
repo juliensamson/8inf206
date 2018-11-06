@@ -1,9 +1,12 @@
 package ca.uqac.lecitoyen.util;
 
 import android.app.Application;
+import android.app.ProgressDialog;
 import android.content.Context;
+import android.content.res.TypedArray;
 import android.os.Build;
 import android.support.annotation.NonNull;
+import android.support.v7.widget.Toolbar;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -17,6 +20,8 @@ import ca.uqac.lecitoyen.models.PostHistory;
 
 public final class Util {
 
+
+    private ProgressDialog mProgressDialog;
 
     private Util() {}
 
@@ -72,6 +77,30 @@ public final class Util {
         }
 
     }
+
+    public static int getToolbarHeight(Context context) {
+        int[] attrs = new int[] {R.attr.actionBarSize};
+        TypedArray ta = context.obtainStyledAttributes(attrs);
+        int toolBarHeight = ta.getDimensionPixelSize(0, -1);
+        ta.recycle();
+        return toolBarHeight;
+    }
+
+    public static String setStringPlurial(int size, String word) {
+
+        if (size == 0 || size == 1 )
+            return Integer.toString(size) + Constants.SPACE + word;
+        else
+            return Integer.toString(size) + Constants.SPACE + word + Constants.PLURIAL;
+
+    }
+
+    public static void checkLongDelay(long startDelay) {
+        //if(System.currentTimeMillis() - startDelay > 5000) {
+        //    return
+        //}
+    }
+
 
 
     /**

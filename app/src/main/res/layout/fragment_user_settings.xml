@@ -1,18 +1,47 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     tools:context=".fragments.settings.SettingsMainFragment">
 
-    <ListView
-        android:id="@+id/user_setting_listview"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent">
 
-    </ListView>
+    <Button
+        android:id="@+id/settings_verify_account"
+        style="@style/BorderlessButton"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/button_verify_account" />
+
+    <View style="@style/Divider" />
+
+    <Button
+        android:id="@+id/settings_change_password"
+        style="@style/BorderlessButton"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/button_change_password" />
+
+    <View style="@style/Divider" />
+
+    <Button
+        android:id="@+id/settings_delete_account"
+        style="@style/BorderlessButton"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/button_delete_account" />
+
+    <View style="@style/Divider" />
+
+    <Button
+        android:id="@+id/settings_sign_out"
+        style="@style/BorderlessButton"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/button_signout" />
+
+    <View style="@style/Divider" />
 
 </LinearLayout>

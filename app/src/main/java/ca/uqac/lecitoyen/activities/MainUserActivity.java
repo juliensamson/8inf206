@@ -3,7 +3,9 @@ package ca.uqac.lecitoyen.activities;
 import android.content.Intent;
 import android.graphics.Typeface;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
@@ -12,7 +14,10 @@ import android.widget.TextView;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
 
@@ -49,12 +54,15 @@ public class MainUserActivity extends BaseActivity implements iHandleFragment {
     private DatabaseReference dbPosts;
 
     public UserStorage mUserStorage;
-    private ArrayList<Post> mPublicationList = new ArrayList<>();
+    private ArrayList<Post> mPosts = new ArrayList<>();
     public ArrayList<User> mUserList = new ArrayList<>();
     private ArrayList<UserStorage> listUserProfilPicture = new ArrayList<>();
 
     private Toolbar mUserToolbar;
     private TextView mUserToolbarTitle;
+
+    private String currentFragmentTag;
+    private boolean isFragmentInitialize = false;
 
     //Firebase
     private FirebaseAuth fbAuth;
@@ -73,7 +81,8 @@ public class MainUserActivity extends BaseActivity implements iHandleFragment {
         //  Database
         dbManager = DatabaseManager.getInstance();
 
-        //  Create fragment
+        //Toolbar userToolbar = findViewById(R.id.toolbar_user);
+        //setSupportActionBar(userToolbar);
 
         //  Initialize auth
         fbAuth = FirebaseAuth.getInstance();
@@ -84,7 +93,7 @@ public class MainUserActivity extends BaseActivity implements iHandleFragment {
         cityfeedFragment = new CityfeedFragment();
         messageFragment = new MessageFragment();
         profilFragment   = new ProfilFragment();
-        doFragmentTransaction(forumFragment, getString(R.string.fragment_forum), true, "");
+        doFragmentTransaction(forumFragment, getString(R.string.fragment_forum), false, "");
 
         //  Bottom navigation
         mBottomNavigation = findViewById(R.id.navigation);
@@ -119,23 +128,63 @@ public class MainUserActivity extends BaseActivity implements iHandleFragment {
     }
 
     @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.user_menu, menu);
-        return super.onCreateOptionsMenu(menu);
-    }
-
-    @Override
     public void onBackPressed() {
         super.onBackPressed();
         moveTaskToBack(true);
     }
 
-    private void updateUI() {
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        //FragmentManager manager = getSupportFragmentManager();
+        //manager.putFragment(outState, );
+    }
 
+    private void updateUI() {
+        dbPosts.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+
+                for(DataSnapshot postSnapshot : dataSnapshot.getChildren()) {
+
+                    Post post = postSnapshot.getValue(Post.class);
+
+                    if(post != null) {
+                        mPosts.add(post);
+                    }
+                }
+
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
+    }
+
+    private void initFragment(FragmentTransaction transaction) {
+        forumFragment = new ForumFragment();
+        searchFragment = new SearchFragment();
+        cityfeedFragment = new CityfeedFragment();
+        messageFragment = new MessageFragment();
+        profilFragment   = new ProfilFragment();
+
+        transaction
+                .add(R.id.user_container, forumFragment, forumFragment.getTag())
+                .add(R.id.user_container, searchFragment, searchFragment.getTag())
+                .add(R.id.user_container, cityfeedFragment, cityfeedFragment.getTag())
+                .add(R.id.user_container, messageFragment, messageFragment.getTag())
+                .add(R.id.user_container, profilFragment, profilFragment.getTag());
+
+        currentFragmentTag = forumFragment.getTag();
+
+        isFragmentInitialize = true;
     }
 
     private void doFragmentTransaction(Fragment fragment, String tag, boolean addToBackStack, String message) {
         Log.d(TAG, "doFragmentTransaction");
+
         FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
 
         transaction.replace(R.id.user_container, fragment, tag);
@@ -144,7 +193,34 @@ public class MainUserActivity extends BaseActivity implements iHandleFragment {
             transaction.addToBackStack(tag);
         }
         transaction.commit();
+
+        currentFragmentTag = tag;
     }
+
+    private void doFragmentTransaction(Fragment nextFragment, String nextFragmentTag) {
+        Log.d(TAG, "doFragmentTransaction");
+
+        FragmentManager manager = getSupportFragmentManager();
+        FragmentTransaction transaction = manager.beginTransaction();
+        if(!isFragmentInitialize) {
+            initFragment(transaction);
+        }
+
+        Fragment currentFragment = manager.getPrimaryNavigationFragment();
+
+        if(!transaction.isEmpty()) {
+            transaction.replace(R.id.user_container, nextFragment, nextFragmentTag);
+            /*transaction
+                    .hide(currentFragment)
+                    .show(nextFragment)
+                    .commit();
+                    */
+
+            currentFragmentTag = nextFragmentTag;
+        }
+
+    }
+
 
     @Override
     public void setToolbarTitle(String fragmentTag) {
@@ -158,18 +234,23 @@ public class MainUserActivity extends BaseActivity implements iHandleFragment {
         {
             case R.string.fragment_forum:
                 doFragmentTransaction(forumFragment, getString(R.string.fragment_forum), true, "");
+                //doFragmentTransaction(forumFragment, getString(R.string.fragment_forum));
                 break;
             case R.string.fragment_search:
-                doFragmentTransaction(searchFragment, getString(R.string.fragment_search), false, "");
+                doFragmentTransaction(searchFragment, getString(R.string.fragment_search), true, "");
+                //doFragmentTransaction(searchFragment, getString(R.string.fragment_search));
                 break;
             case R.string.fragment_cityfeed:
-                doFragmentTransaction(cityfeedFragment, getString(R.string.fragment_cityfeed), false, "");
+                doFragmentTransaction(cityfeedFragment, getString(R.string.fragment_cityfeed), true, "");
+                //doFragmentTransaction(cityfeedFragment, getString(R.string.fragment_cityfeed));
                 break;
             case R.string.fragment_messages:
-                doFragmentTransaction(messageFragment, getString(R.string.fragment_messages), false, "");
+                doFragmentTransaction(messageFragment, getString(R.string.fragment_messages), true, "");
+                //doFragmentTransaction(messageFragment, getString(R.string.fragment_messages));
                 break;
             case R.string.fragment_profil:
-                doFragmentTransaction(profilFragment, getString(R.string.fragment_profil), false, "");
+                doFragmentTransaction(profilFragment, getString(R.string.fragment_profil), true, "");
+                //doFragmentTransaction(profilFragment, getString(R.string.fragment_profil));
                 break;
             default:
                 break;
@@ -228,7 +309,7 @@ public class MainUserActivity extends BaseActivity implements iHandleFragment {
         return this.mUserList;
     }
 
-    public ArrayList<Post> getPublicationList() { return this.mPublicationList;}
+    public ArrayList<Post> getPosts() { return this.mPosts;}
 
     public ArrayList<UserStorage> getListUserProfilPicture() {
         return this.listUserProfilPicture;

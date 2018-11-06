@@ -80,9 +80,15 @@ public class SettingsActivity extends BaseActivity implements iHandleFragment {
         mUser = mAuth.getCurrentUser();
 
         //  Toolbar
-        mSettingToolbar = findViewById(R.id.toolbar_setting);
-        mSettingToolbarTitle = findViewById(R.id.toolbar_title);
+        mSettingToolbar = findViewById(R.id.toolbar_simple);
+        mSettingToolbarTitle = findViewById(R.id.toolbar_simple_title);
         setSupportActionBar(mSettingToolbar);
+        /*if(getSupportActionBar() != null) {
+            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+            getSupportActionBar().setHomeAsUpIndicator(R.drawable.ic_arrow_back_primary_24dp);
+        }
+        else
+            Log.e(TAG,"Toolbar is null");*/
     }
 
     @Override

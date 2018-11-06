@@ -5,7 +5,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
-import android.support.v7.app.AlertDialog;
+import android.support.design.widget.CoordinatorLayout;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -21,7 +21,6 @@ import com.bumptech.glide.Glide;
 import com.daimajia.swipe.SimpleSwipeListener;
 import com.daimajia.swipe.SwipeLayout;
 import com.daimajia.swipe.adapters.RecyclerSwipeAdapter;
-import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -33,11 +32,11 @@ import java.util.HashMap;
 import java.util.Map;
 
 import ca.uqac.lecitoyen.R;
-import ca.uqac.lecitoyen.activities.ExpandPostImageActivity;
+import ca.uqac.lecitoyen.activities.ExpandPostActivity;
+import ca.uqac.lecitoyen.activities.ExpandPostMediaActivity;
 import ca.uqac.lecitoyen.buttons.RepostButton;
 import ca.uqac.lecitoyen.dialogs.DeletePostDialog;
 import ca.uqac.lecitoyen.dialogs.PostHistoryDialog;
-import ca.uqac.lecitoyen.helpers.RecyclerTouchListener;
 import ca.uqac.lecitoyen.models.DatabaseManager;
 import ca.uqac.lecitoyen.models.Post;
 import ca.uqac.lecitoyen.models.User;
@@ -49,7 +48,7 @@ import de.hdodenhof.circleimageview.CircleImageView;
 
 public class SwipePostAdapter extends RecyclerSwipeAdapter<SwipePostAdapter.ViewHolder> {
 
-    private static String TAG = "SwipePostAdapter";
+    private static String TAG = SwipePostAdapter.class.getSimpleName();
     private static float SELECT_TRANSPARENCE = 0.89f;
     private static float UNSELECT_TRANSPARENCE = 0.54f;
 
@@ -59,7 +58,7 @@ public class SwipePostAdapter extends RecyclerSwipeAdapter<SwipePostAdapter.View
     public static class ViewHolder extends RecyclerView.ViewHolder {
 
         SwipeLayout swipeLayout;
-        CardView mainLayout;
+        CoordinatorLayout mainLayout;
 
         FrameLayout historyButton, editButton, deleteButton;
 
@@ -141,7 +140,7 @@ public class SwipePostAdapter extends RecyclerSwipeAdapter<SwipePostAdapter.View
 
     public SwipePostAdapter() {}
 
-    public SwipePostAdapter(Context context, FirebaseUser user, ArrayList<Post> posts) {
+    public SwipePostAdapter(Context context, User user, ArrayList<Post> posts) {
         this.dbManager = DatabaseManager.getInstance();
         this.mContext = context;
         this.mPostList = posts;
@@ -189,8 +188,10 @@ public class SwipePostAdapter extends RecyclerSwipeAdapter<SwipePostAdapter.View
 
         final Post holderPost = mPostList.get(holder.getAdapterPosition());
 
+
         if(holderPost != null)
         {
+
             setHolderBottomLayout(holder);
             User user = holderPost.getUser();
 
@@ -239,14 +240,14 @@ public class SwipePostAdapter extends RecyclerSwipeAdapter<SwipePostAdapter.View
     }
 
     private void setHolderBottomLayout(@NonNull final ViewHolder holder) {
-        Post holderPost = mPostList.get(holder.getAdapterPosition());
+        /*Post holderPost = mPostList.get(holder.getAdapterPosition());
         if(!mCurrentUserId.equals(holderPost.getUser().getUid())) {
             holder.editButton.setVisibility(View.GONE);
             holder.deleteButton.setVisibility(View.GONE);
         } else {
             holder.editButton.setVisibility(View.VISIBLE);
             holder.deleteButton.setVisibility(View.VISIBLE);
-        }
+        }*/
     }
 
     /*
@@ -269,7 +270,7 @@ public class SwipePostAdapter extends RecyclerSwipeAdapter<SwipePostAdapter.View
         holder.swipeLayout.setOnDoubleClickListener(new SwipeLayout.DoubleClickListener() {
             @Override
             public void onDoubleClick(SwipeLayout layout, boolean surface) {
-                Toast.makeText(mContext, "DoubleClick", Toast.LENGTH_SHORT).show();
+                mContext.startActivity(new Intent(mContext, ExpandPostActivity.class));
             }
         });
     }
@@ -282,16 +283,23 @@ public class SwipePostAdapter extends RecyclerSwipeAdapter<SwipePostAdapter.View
             @Override
             public void onClick(View view) {
                 Bundle bundle = new Bundle();
+                bundle.putString("postid", holderPost.getPostid());
                 if(holder.multimediaView.isPhoto()) {
-                    Intent intent = new Intent(mContext, ExpandPostImageActivity.class);
-                    intent.putExtra(TAG, holderPost.getPostid());
-                    intent.putExtra(TAG, PHOTO_CODE);
+
+                    bundle.putInt("code", PHOTO_CODE);
+
+                    Intent intent = new Intent(mContext, ExpandPostMediaActivity.class);
+                    intent.putExtras(bundle);
+
                     mContext.startActivity(intent);
                 }
                 if(holder.multimediaView.isAudio()) {
-                    Intent intent = new Intent(mContext, ExpandPostImageActivity.class);
-                    intent.putExtra(TAG, holderPost.getPostid());
-                    intent.putExtra(TAG, AUDIO_CODE);
+
+                    bundle.putInt("code", AUDIO_CODE);
+
+                    Intent intent = new Intent(mContext, ExpandPostMediaActivity.class);
+                    intent.putExtras(bundle);
+
                     mContext.startActivity(intent);
                 }
                 if(holder.multimediaView.isLink()) {

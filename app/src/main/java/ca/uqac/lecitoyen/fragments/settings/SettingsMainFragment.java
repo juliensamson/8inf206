@@ -35,7 +35,7 @@ import ca.uqac.lecitoyen.models.DatabaseManager;
 import ca.uqac.lecitoyen.models.User;
 
 
-public class SettingsMainFragment extends BaseFragment implements AdapterView.OnItemLongClickListener {
+public class SettingsMainFragment extends BaseFragment implements View.OnClickListener {
 
     private static String TAG = "SettingsActivity";
 
@@ -75,14 +75,13 @@ public class SettingsMainFragment extends BaseFragment implements AdapterView.On
 
         //  Toolbar
         mHandleFragment.setToolbarTitle(getTag());
-        setFragmentToolbar(activity, R.drawable.ic_arrow_back_white_24dp, true, false);
+        setFragmentToolbar(activity, R.drawable.ic_arrow_back_primary_24dp, true, false);
 
-
-        //  View
-        vEditSettingListView = view.findViewById(R.id.user_setting_listview);
-
-        //  Button
-        vEditSettingListView.setOnItemLongClickListener(this);
+        //  Buttons
+        view.findViewById(R.id.settings_verify_account).setOnClickListener(this);
+        view.findViewById(R.id.settings_change_password).setOnClickListener(this);
+        view.findViewById(R.id.settings_delete_account).setOnClickListener(this);
+        view.findViewById(R.id.settings_sign_out).setOnClickListener(this);
 
         return view;
     }
@@ -130,8 +129,24 @@ public class SettingsMainFragment extends BaseFragment implements AdapterView.On
     }
 
     @Override
-    public boolean onItemLongClick(AdapterView<?> adapterView, View view, int i, long l) {
-        return false;
+    public void onClick(View view) {
+
+        switch (view.getId())
+        {
+            case R.id.settings_verify_account:
+                mHandleFragment.inflateFragment(R.string.fragment_verify_account,"");
+                break;
+            case R.id.settings_change_password:
+                mHandleFragment.inflateFragment(R.string.fragment_change_password,"");
+                break;
+            case R.id.settings_delete_account:
+                mHandleFragment.inflateFragment(R.string.fragment_delete_account,"");
+                break;
+            case R.id.settings_sign_out:
+                activity.signOutAccount();
+                break;
+        }
+
     }
 
 
@@ -148,34 +163,12 @@ public class SettingsMainFragment extends BaseFragment implements AdapterView.On
                 mUserData = dataSnapshot.getValue(User.class);
 
                 if(mUserData != null) {
-                    String[] values = new String[] { "Déconnter" };
 
-                    final ArrayList<String> list = new ArrayList<String>();
-                    for (int i = 0; i < values.length; ++i) {
-                        list.add(values[i]);
-                    }
                     //if (mUserData.isVerify()) {
                        // adapter = new ArrayAdapter<String>(activity,
                        //         android.R.layout.simple_list_item_1,
                        //         activity.getResources().getStringArray(R.array.user_settings_verify));
                     //} else {
-                    ArrayAdapter<String> adapter = new ArrayAdapter<String>(activity,
-                                android.R.layout.simple_list_item_1,
-                                list);
-                    //}
-                    vEditSettingListView.setAdapter(adapter);
-
-                    vEditSettingListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-                        @Override
-                        public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-                            switch (i) {
-                                case 0:
-                                    activity.signOutAccount();
-                                    destroyPreviousActivity(activity, MainActivity.class);
-                                    break;
-                            }
-                        }
-                    });
                 }
             }
 
@@ -185,5 +178,4 @@ public class SettingsMainFragment extends BaseFragment implements AdapterView.On
             }
         };
     }
-
 }

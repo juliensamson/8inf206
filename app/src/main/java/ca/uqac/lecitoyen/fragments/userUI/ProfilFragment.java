@@ -19,6 +19,7 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
@@ -43,6 +44,7 @@ import ca.uqac.lecitoyen.models.DatabaseManager;
 import ca.uqac.lecitoyen.models.Post;
 import ca.uqac.lecitoyen.models.User;
 import ca.uqac.lecitoyen.activities.MainUserActivity;
+import ca.uqac.lecitoyen.util.Util;
 import de.hdodenhof.circleimageview.CircleImageView;
 
 public class ProfilFragment extends BaseFragment implements View.OnClickListener {
@@ -63,14 +65,18 @@ public class ProfilFragment extends BaseFragment implements View.OnClickListener
 
     private Toolbar toolbar;
     private CollapsingToolbarLayout collapsingToolbar;
-    private boolean appBarExpanded;
+    private boolean appBarExpanded = true;
 
     private AppBarLayout appBarLayout;
+
+    private User mUserdata;
+
     //  Toolbar expanded false
     private CircleImageView mToolbarProfilPictureView;
     private TextView mToolbarName;
     private TextView mToolbarPostCount;
     //  Toolbar expanded true
+    private ImageView mBackgroundView;
     private CircleImageView mProfilPictureView;
     private TextView mNameView;
     private TextView mUsernameView;
@@ -82,9 +88,16 @@ public class ProfilFragment extends BaseFragment implements View.OnClickListener
     private RecyclerSwipeAdapter mAdapter;
     private RecyclerView.LayoutManager mLayoutManager;
 
-
+    private int previousOffset;
     private Menu collapsedMenu;
 
+    public enum State {
+        EXPANDED,
+        COLLAPSED,
+        IDLE
+    }
+
+    private State mCurrentState = State.IDLE;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -100,7 +113,7 @@ public class ProfilFragment extends BaseFragment implements View.OnClickListener
 
         Log.d(TAG, "onCreateView");
         //  Handle toolbar
-        toolbar = view.findViewById(R.id.toolbar_profil);
+        toolbar = view.findViewById(R.id.toolbar_user_profil);
         ((AppCompatActivity) mainUserActivity).setSupportActionBar(toolbar);
         setHasOptionsMenu(true);
 
@@ -109,12 +122,13 @@ public class ProfilFragment extends BaseFragment implements View.OnClickListener
         mToolbarProfilPictureView = view.findViewById(R.id.toolbar_profil_picture);
         mToolbarName = view.findViewById(R.id.toolbar_profil_name);
         mToolbarPostCount= view.findViewById(R.id.toolbar_profil_post_count);
+        mBackgroundView = view.findViewById(R.id.toolbar_profil_collapsing_background);
         mProfilPictureView = view.findViewById(R.id.toolbar_profil_collapsing_picture);
         mNameView = view.findViewById(R.id.toolbar_profil_collapsing_name);
         mUsernameView = view.findViewById(R.id.toolbar_profil_collapsing_username);
         mBiographyView = view.findViewById(R.id.toolbar_profil_collapsing_biography);
-        mFollowerCount = view.findViewById(R.id.profil_followers_count);
-        mFollowingCount = view.findViewById(R.id.profil_following_count);
+        mFollowerCount = view.findViewById(R.id.toolbar_profil_collapsing_follower_count);
+        mFollowingCount = view.findViewById(R.id.toolbar_profil_collapsing_following_count);
 
         //  Button
         view.findViewById(R.id.toolbar_profil_collapsing_button).setOnClickListener(this);
@@ -159,22 +173,32 @@ public class ProfilFragment extends BaseFragment implements View.OnClickListener
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         super.onCreateOptionsMenu(menu, inflater);
+        Log.d(TAG, "onCreateOptionsMenu");
         inflater.inflate(R.menu.user_menu, menu);
-        //collapsedMenu = menu;
+        collapsedMenu = menu;
     }
 
     @Override
     public void onPrepareOptionsMenu(Menu menu) {
         super.onPrepareOptionsMenu(collapsedMenu);
-        /*if (collapsedMenu != null && (!appBarExpanded || collapsedMenu.size() != 1)) {
-            //collapsed
-            collapsedMenu.add("Add")
-                    .setIcon(R.drawable.ic_edit_black_24dp)
-                    .setShowAsAction(MenuItem.SHOW_AS_ACTION_IF_ROOM);
-        } else {
-            //expanded
 
-        }*/
+        if(collapsedMenu != null) {
+            MenuItem settingsItem = collapsedMenu.findItem(R.id.menu_settings);
+            MenuItem editItem = collapsedMenu.findItem(R.id.menu_edit);
+
+            Log.d(TAG, "onPrepareOptionsMenu");
+            Log.d(TAG, editItem.toString());
+
+            if (!appBarExpanded) {
+                settingsItem.setVisible(true);
+                settingsItem.setIcon(R.drawable.ic_more_vert_primary_24dp);
+                editItem.setVisible(true);
+            } else {
+                settingsItem.setVisible(true);
+                settingsItem.setIcon(R.drawable.ic_more_vert_white_24dp);
+                editItem.setVisible(false);
+            }
+        }
         //return super.onPrepareOptionsMenu(collapsedMenu);
     }
 
@@ -187,7 +211,7 @@ public class ProfilFragment extends BaseFragment implements View.OnClickListener
                 Log.w(TAG, "menu_edit clicked");
                 startActivity(new Intent(mainUserActivity.getApplicationContext(), EditProfilActivity.class ));
                 return true;
-            case R.id.menu_setting:
+            case R.id.menu_settings:
                 Log.w(TAG, "menu_setting clicked");
                 startActivity(new Intent(mainUserActivity.getApplicationContext(), SettingsActivity.class ));
                 return true;
@@ -210,46 +234,48 @@ public class ProfilFragment extends BaseFragment implements View.OnClickListener
         return new AppBarLayout.OnOffsetChangedListener() {
             @Override
             public void onOffsetChanged(AppBarLayout appBarLayout, int verticalOffset) {
+
+
+                int width = appBarLayout.getWidth();
+                int imageRadius = (mProfilPictureView.getWidth()/2);
+                //Log.d(TAG, String.valueOf(imageWidth));
                 float percentage = ((float)Math.abs(verticalOffset)/appBarLayout.getTotalScrollRange());
+                float imageScaleRatio = ((float)Math.abs(verticalOffset)/mBackgroundView.getHeight());
+                float imageTranslationRatio =((float)Math.abs(verticalOffset)/imageRadius);
+
                 //float horizontalRa = ((float)Math.abs(verticalOffset)/(appBarLayout.getWidth()/2));
-                //float horizontal = ((float)Math.abs(verticalOffset)/(toolbarCollapsingPicture.getX()));
-                //too.setAlpha(percentage);
+                float horizontal = ((float)Math.abs(verticalOffset)/(mProfilPictureView.getX()));
+                //too.setAlpha(percentastyle="@style/LightToolbarTheme.SubTitle"m);
 
-                if(Math.abs(verticalOffset) >  250) {
+
+
+                mProfilPictureView.setScaleX(1.06f - imageScaleRatio);
+                mProfilPictureView.setScaleY(1.06f - imageScaleRatio);
+                mProfilPictureView.setTranslationX(0 - imageScaleRatio * imageRadius);
+
+                Log.e(TAG, "Offset: " + verticalOffset + " Percentage: " + percentage);
+                //if(mProfilPictureView.getVisibility() == View.GON )
+
+                if(!appBarExpanded)
+                    mainUserActivity.invalidateOptionsMenu();
+                if(Math.abs(verticalOffset) >  415) {
                     appBarExpanded = false;
-                    mToolbarName.setVisibility(View.VISIBLE);
-                    mToolbarPostCount.setVisibility(View.VISIBLE);
+                    mProfilPictureView.setVisibility(View.GONE);
                     mToolbarProfilPictureView.setVisibility(View.VISIBLE);
-                    mToolbarName.setAlpha((2 * percentage));
-                    mToolbarProfilPictureView.setAlpha(2 * percentage);
-                    mToolbarPostCount.setAlpha(2 * percentage);
-
-                    mProfilPictureView.setScaleX(1 - ( percentage));
-                    mProfilPictureView.setScaleY(1 - (percentage));
-
+                    mToolbarPostCount.setVisibility(View.VISIBLE);
+                    mToolbarPostCount.setAlpha(percentage);
+                    mToolbarName.setVisibility(View.VISIBLE);
+                    mToolbarName.setAlpha((percentage));
                 } else {
                     appBarExpanded = true;
-                    mToolbarName.setVisibility(View.INVISIBLE);
-                    mToolbarPostCount.setVisibility(View.INVISIBLE);
-                    mToolbarProfilPictureView.setVisibility(View.INVISIBLE);
+                    mProfilPictureView.setVisibility(View.VISIBLE);
+                    mToolbarProfilPictureView.setVisibility(View.GONE);
+
+                    mToolbarName.setVisibility(View.GONE);
+                    mToolbarPostCount.setVisibility(View.GONE);
+                    mToolbarProfilPictureView.setVisibility(View.GONE);
                 }
 
-                //float middle = toolbarCollapsingPicture.getX();
-                //toolbarCollapsingPicture.setTranslationX(0 - (horizontal * middle));
-
-/*
-                if(Math.abs(verticalOffset) > 550) {
-                    appBarExpanded = true;
-                    toolbarPicture.setVisibility(View.GONE);
-                    toolbarName.setVisibility(View.GONE);
-                    toolbarPostCount.setVisibility(View.GONE);
-                    //toolbarCollapsingPicture.startAnimation(scaleDownLeft);
-                    //invalidateOptionsMenu();
-                } else {
-                    toolbarPicture.setVisibility(View.VISIBLE);
-                    toolbarName.setVisibility(View.VISIBLE);
-                    toolbarPostCount.setVisibility(View.VISIBLE);
-                }*/
 
                 if(Math.abs(verticalOffset) == 0)
                     Log.d(TAG, "Offset = "+ verticalOffset);
@@ -284,22 +310,29 @@ public class ProfilFragment extends BaseFragment implements View.OnClickListener
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 Log.d(TAG, "loadUserData");
-                User userData = dataSnapshot.getValue(User.class);
+                mUserdata = dataSnapshot.getValue(User.class);
 
-                if(userData != null)
+                if(mUserdata != null)
                 {
-                    if(userData.getPid() != null && !userData.getPid().isEmpty()) {
-                        Glide.with(mainUserActivity).load(stUserProfilPicture.child(userData.getPid())).into(mToolbarProfilPictureView);
-                        Glide.with(mainUserActivity).load(stUserProfilPicture.child(userData.getPid())).into(mProfilPictureView);
+                    if(mUserdata.getPid() != null && !mUserdata.getPid().isEmpty()) {
+                        Glide.with(mainUserActivity).load(stUserProfilPicture.child(mUserdata.getPid())).into(mToolbarProfilPictureView);
+                        Glide.with(mainUserActivity).load(stUserProfilPicture.child(mUserdata.getPid())).into(mProfilPictureView);
                     }
-                    if (userData.getName() != null && !userData.getName().isEmpty()) {
-                        mToolbarName.setText(userData.getName());
-                        mNameView.setText(userData.getName());
+                    if (mUserdata.getName() != null && !mUserdata.getName().isEmpty()) {
+                        mToolbarName.setText(mUserdata.getName());
+                        mNameView.setText(mUserdata.getName());
                     }
-                    if (userData.getUsername() != null && !userData.getUsername().isEmpty())
-                        mUsernameView.setText(userData.getUsername());
-                    if (userData.getBiography() != null && !userData.getBiography().isEmpty())
-                        mBiographyView.setText(userData.getBiography());
+                    if (mUserdata.getUsername() != null && !mUserdata.getUsername().isEmpty())
+                        mUsernameView.setText(mUserdata.getUsername());
+                    if (mUserdata.getBiography() != null && !mUserdata.getBiography().isEmpty())
+                        mBiographyView.setText(mUserdata.getBiography());
+
+                    mFollowerCount.setText(Util.setStringPlurial(
+                            0,
+                            getString(R.string.textview_follower)));
+                    mFollowingCount.setText(Util.setStringPlurial(
+                            0,
+                            getString(R.string.textview_following)));
                     //  Following & Follower
                 }
             }
@@ -322,8 +355,11 @@ public class ProfilFragment extends BaseFragment implements View.OnClickListener
                 }
 
                 if(listUserPost != null || listUserPost.size() != 0) {
-                    mToolbarPostCount.setText((Integer.toString(listUserPost.size())));
-                    mAdapter = new SwipePostAdapter(mainUserActivity, fbUser, listUserPost);
+                    mToolbarPostCount.setText(Util.setStringPlurial(
+                            listUserPost.size(),
+                            getString(R.string.textview_post))
+                    );
+                    mAdapter = new SwipePostAdapter(mainUserActivity, mUserdata, listUserPost);
                     mProfilRecyclerView.setAdapter(mAdapter);
                 }
             }

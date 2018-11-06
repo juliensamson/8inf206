@@ -7,6 +7,8 @@
     <string name="setting_name">Réglages</string>
     <string name="unsub">Se désinscrire</string>
     <string name="title_activity_user">UserActivity</string>
+    <string name="space"> </string>
+    <string name="plurial">s</string>
 
 
     <!-- ********************************************** -->
@@ -69,8 +71,9 @@
     <!-- ********************************************** -->
     <!-- ************ STATIC TEXT VIEWS  ************** -->
     <!-- ********************************************** -->
-    <string name="textview_followers">abonné(s)</string>
-    <string name="textview_following">suivi(s)</string>
+    <string name="textview_post">publication</string>
+    <string name="textview_follower">abonné</string>
+    <string name="textview_following">abonnement</string>
     <string name="textview_forgot_password">Mot de passe oublié?</string>
     <string name="textview_verify_account">Vérifier votre compte</string>
     <string name="long_subtitle_app_mission">Une place pour partager ses créations et regarder les dernières nouvelles de la ville</string>
@@ -108,7 +111,7 @@
     <string name="button_signin_facebook_account">Connexion avec Facebook</string>
     <string name="button_email_reinitialization">Envoyer</string>
     <string name="button_change_password">Changer de mot de passe</string>
-    <string name="button_verify_account">Vérifier</string>
+    <string name="button_verify_account">Vérifier votre compte</string>
 
     <!-- ********************************************** -->
     <!-- *******  DIALOG & ADAPTER INTERFACE   ******** -->
@@ -185,6 +188,9 @@
     <!-- Strings related to Settings -->
     <!-- Strings related to Settings -->
 
+
+    <string name="ca_uqac_fab_behavior">ca.uqac.lecitoyen.helpers.ScrollingFabBehavior</string>
+    <string name="ca_uqac_profil_image_behavior">ca.uqac.lecitoyen.helpers.ProfilPcitureBehavior</string>
 
     <!-- Example General settings -->
     <string name="activity_settings_title">Paramètres</string>

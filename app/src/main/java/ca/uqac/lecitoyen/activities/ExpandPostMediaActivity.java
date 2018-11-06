@@ -20,17 +20,17 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.StorageReference;
 
-import ca.uqac.lecitoyen.activities.BaseActivity;
 import ca.uqac.lecitoyen.R;
+import ca.uqac.lecitoyen.adapters.SwipePostAdapter;
 import ca.uqac.lecitoyen.models.DatabaseManager;
 import ca.uqac.lecitoyen.models.Post;
-import ca.uqac.lecitoyen.util.AudioPlayer;
 import nl.changer.audiowife.AudioWife;
 
-public class ExpandPostImageActivity extends BaseActivity {
+public class ExpandPostMediaActivity extends BaseActivity {
 
-    private static final String TAG = "ExpandPostImageActivity";
+    private static final String TAG = "ExpandPostMediaActivity";
 
+    private FrameLayout mMediaLayout;
     private ImageView mPictureView;
     private FrameLayout mPlayerView;
 
@@ -47,38 +47,38 @@ public class ExpandPostImageActivity extends BaseActivity {
     String mPostId;
     int codePrev;
 
-    AudioPlayer mAudioplayer;
+    AudioWife mAudioplayer;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_expand_post);
+        setContentView(R.layout.activity_expand_post_media);
+        mAudioplayer = AudioWife.getInstance();
 
         //  Get bundle
         Bundle bundle = getIntent().getExtras();
         if(bundle != null) {
-            mPostId = bundle.getString("SwipePostAdapter");
-            codePrev = bundle.getInt("SwipePostAdapter");
-            Log.d(TAG, "post id ");
+            String key = SwipePostAdapter.class.getSimpleName();
+            mPostId = bundle.getString("postid");
+            codePrev = bundle.getInt("code");
+            Log.d(TAG, "post id " + mPostId);
+            Log.d(TAG, "prevCode " + codePrev);
         }else
             Log.e(TAG, "bundle is null");
 
         dbManager = DatabaseManager.getInstance();
 
-        mPictureView = findViewById(R.id.expand_post_picture);
-        mPlayerView  = findViewById(R.id.expand_post_mediaplayer);
+        mMediaLayout = findViewById(R.id.expand_post_media_layout);
+        mPictureView = findViewById(R.id.expand_post_media_picture);
+        mPlayerView  = findViewById(R.id.expand_post_media_mediaplayer);
 
 
-        Toolbar toolbar = findViewById(R.id.expand_post_toolbar);
+        Toolbar toolbar = findViewById(R.id.expand_post_media_toolbar);
         setSupportActionBar(toolbar);
-        try {
+        if(getSupportActionBar() != null) {
             getSupportActionBar().setTitle("");
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-
-        } catch (NullPointerException npe) {
-
-            Log.e(TAG, npe.getMessage());
-
+            getSupportActionBar().setHomeAsUpIndicator(R.drawable.ic_arrow_back_primary_24dp);
         }
         //mAudioplayer = new AudioPlayer(this);
         //mAudioplayer = findViewById(R.id.expand_post_audioplayer);
@@ -110,10 +110,24 @@ public class ExpandPostImageActivity extends BaseActivity {
         switch (item.getItemId())
         {
             case android.R.id.home:
+                mAudioplayer.pause();
                 this.finish();
                 return true;
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+        mAudioplayer.pause();
+        this.finish();
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        Log.e(TAG, "onDestroy");
     }
 
     private void updateUI() {
@@ -157,7 +171,8 @@ public class ExpandPostImageActivity extends BaseActivity {
             stPost.child(post.getAudio()).getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
                 @Override
                 public void onSuccess(Uri uri) {
-                    AudioWife.getInstance()
+
+                    mAudioplayer
                             .init(getBaseContext(), uri)
                             .useDefaultUi(mPlayerView, getLayoutInflater());
                 }
