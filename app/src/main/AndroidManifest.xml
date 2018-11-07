@@ -67,11 +67,8 @@
         </activity>
         <activity android:name=".activities.EditPostActivity" />
         <activity android:name=".activities.EditProfilActivity" />
-        <activity android:name=".activities.ExpandPostImageActivity" />
-        <activity
-            android:name=".activities.ExpandPostAudioActivity"
-            android:label="@string/title_activity_post_expand_audio"
-            android:theme="@style/Theme.AppCompat.Light.NoActionBar"></activity>
+        <activity android:name=".activities.ExpandPostMediaActivity" />
+        <activity android:name=".activities.ExpandPostActivity"></activity>
     </application>
 
 </manifest>

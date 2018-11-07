@@ -73,7 +73,7 @@ public class DeleteUserFragment extends BaseFragment implements View.OnClickList
 
         //  Toolbar
         mHandleFragment.setToolbarTitle(getTag());
-        setFragmentToolbar(activity, R.drawable.ic_close_white_24dp, true, true);
+        setFragmentToolbar(activity, R.drawable.ic_close_primary_24dp, true, true);
 
         //  View
         mPasswordField = view.findViewById(R.id.delete_account_actual_password);

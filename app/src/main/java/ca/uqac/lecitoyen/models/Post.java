@@ -2,11 +2,12 @@ package ca.uqac.lecitoyen.models;
 
 import com.google.firebase.database.Exclude;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
-public class Post {
+public class Post implements Serializable {
 
     //  Post information
     private String postid;

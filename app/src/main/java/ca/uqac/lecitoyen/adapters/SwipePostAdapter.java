@@ -34,12 +34,14 @@ import java.util.Map;
 import ca.uqac.lecitoyen.R;
 import ca.uqac.lecitoyen.activities.ExpandPostActivity;
 import ca.uqac.lecitoyen.activities.ExpandPostMediaActivity;
+import ca.uqac.lecitoyen.activities.MainUserActivity;
 import ca.uqac.lecitoyen.buttons.RepostButton;
 import ca.uqac.lecitoyen.dialogs.DeletePostDialog;
 import ca.uqac.lecitoyen.dialogs.PostHistoryDialog;
 import ca.uqac.lecitoyen.models.DatabaseManager;
 import ca.uqac.lecitoyen.models.Post;
 import ca.uqac.lecitoyen.models.User;
+import ca.uqac.lecitoyen.util.Constants;
 import ca.uqac.lecitoyen.util.MultimediaView;
 import ca.uqac.lecitoyen.buttons.UpvoteButton;
 import ca.uqac.lecitoyen.util.Util;
@@ -49,11 +51,6 @@ import de.hdodenhof.circleimageview.CircleImageView;
 public class SwipePostAdapter extends RecyclerSwipeAdapter<SwipePostAdapter.ViewHolder> {
 
     private static String TAG = SwipePostAdapter.class.getSimpleName();
-    private static float SELECT_TRANSPARENCE = 0.89f;
-    private static float UNSELECT_TRANSPARENCE = 0.54f;
-
-    private static int PHOTO_CODE = 100;
-    private static int AUDIO_CODE = 101;
 
     public static class ViewHolder extends RecyclerView.ViewHolder {
 
@@ -267,10 +264,19 @@ public class SwipePostAdapter extends RecyclerSwipeAdapter<SwipePostAdapter.View
     }
 
     private void setOnDoubleClickListener(@NonNull final ViewHolder holder) {
+
+        final Post holderPost = mPostList.get(holder.getAdapterPosition());
+
         holder.swipeLayout.setOnDoubleClickListener(new SwipeLayout.DoubleClickListener() {
             @Override
             public void onDoubleClick(SwipeLayout layout, boolean surface) {
-                mContext.startActivity(new Intent(mContext, ExpandPostActivity.class));
+                Bundle bundle = new Bundle();
+                bundle.putString("postid", holderPost.getPostid());
+                Intent intent = new Intent(mContext, ExpandPostActivity.class);
+                intent.putExtras(bundle);
+                //intent.putExtra(TAG, holderPost);
+                mContext.startActivity(intent);
+                //mainUserActivity.overridePendingTransition(R.anim.fadein, R.anim.fadeout);
             }
         });
     }
@@ -286,7 +292,7 @@ public class SwipePostAdapter extends RecyclerSwipeAdapter<SwipePostAdapter.View
                 bundle.putString("postid", holderPost.getPostid());
                 if(holder.multimediaView.isPhoto()) {
 
-                    bundle.putInt("code", PHOTO_CODE);
+                    bundle.putInt("code", Constants.EXPAND_PHOTO);
 
                     Intent intent = new Intent(mContext, ExpandPostMediaActivity.class);
                     intent.putExtras(bundle);
@@ -295,7 +301,7 @@ public class SwipePostAdapter extends RecyclerSwipeAdapter<SwipePostAdapter.View
                 }
                 if(holder.multimediaView.isAudio()) {
 
-                    bundle.putInt("code", AUDIO_CODE);
+                    bundle.putInt("code", Constants.EXPAND_AUDIO);
 
                     Intent intent = new Intent(mContext, ExpandPostMediaActivity.class);
                     intent.putExtras(bundle);

@@ -1,29 +1,160 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.constraint.ConstraintLayout
+<LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@drawable/shape_flat_scrim"
-    tools:context="ca.uqac.lecitoyen.activities.ExpandPostImageActivity">
+    android:orientation="vertical"
+    tools:context="ca.uqac.lecitoyen.activities.ExpandPostActivity">
 
-    <android.support.v7.widget.Toolbar
+    <include
         android:id="@+id/expand_post_toolbar"
+        layout="@layout/toolbar_simple" />
+
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@color/transparent" />
+        android:layout_marginTop="@dimen/activity_vertical_margin"
+        android:layout_marginStart="@dimen/activity_horizontal_margin"
+        android:layout_marginEnd="@dimen/activity_vertical_margin"
+        android:layout_marginBottom="@dimen/activity_vertical_margin"
+        android:orientation="horizontal">
 
-    <ImageView
-        android:id="@+id/expand_post_picture"
+        <!--    ******* Profil picture *******   -->
+
+        <FrameLayout
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent">
+
+            <de.hdodenhof.circleimageview.CircleImageView
+                android:id="@+id/expand_post_profil_picture"
+                android:layout_width="64dp"
+                android:layout_height="64dp"
+                android:src="@mipmap/ic_launcher_round" />
+
+        </FrameLayout>
+
+        <!--    ******* User detail, message & social interaction *******   -->
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+
+                android:layout_marginStart="8dp"
+                android:orientation="vertical">
+
+                <!-- *********  User information  ********* -->
+                <LinearLayout
+                    android:id="@+id/expand_post_profil_layout"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:id="@+id/expand_post_name"
+                        android:text="name"
+                        android:textStyle="bold"
+                        style="@style/TextView.Large"/>
+
+                    <TextView
+                        android:text="username"
+                        android:id="@+id/expand_post_username"
+                        android:textStyle="italic"
+                        android:textColor="@color/black_400"
+                        style="@style/TextView.Large" />
+
+                </LinearLayout>
+
+                <!-- *********  Multimedia Frame ******** -->
+                <ca.uqac.lecitoyen.util.MultimediaView
+                    android:id="@+id/swipe_post_multimedia"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="8dp"
+                    android:layout_marginTop="8dp" />
+
+            </LinearLayout>
+
+    </LinearLayout>
+
+    <!-- *********  Message  ********** -->
+    <TextView
+        android:id="@+id/expand_post_message"
+        android:layout_marginStart="@dimen/activity_horizontal_margin"
+        android:layout_marginEnd="@dimen/activity_vertical_margin"
+        android:layout_marginBottom="@dimen/activity_vertical_margin"
+        android:text="Message"
+        style="@style/TextView.ExtraLarge" />
+
+    <!-- *********  Multimedia Frame ******** -->
+    <ca.uqac.lecitoyen.util.MultimediaView
+        android:id="@+id/expand_post_multimedia"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content" />
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/activity_horizontal_margin"
+        android:layout_marginEnd="@dimen/activity_horizontal_margin"
+        android:layout_marginBottom="@dimen/activity_vertical_margin"
+        android:layout_marginTop="@dimen/activity_vertical_margin" />
 
-    <FrameLayout
-        android:id="@+id/expand_post_mediaplayer"
+    <!-- *********  Date Frame ******** -->
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/activity_horizontal_margin"
+        android:layout_marginEnd="@dimen/activity_vertical_margin"
+        android:layout_marginBottom="@dimen/activity_vertical_margin"
+        android:orientation="horizontal">
 
-    </FrameLayout>
+        <TextView
+            android:id="@+id/expand_post_publish_time"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="8dp"
+            android:text="date" />
 
-</android.support.constraint.ConstraintLayout>
+        <TextView
+            android:id="@+id/expand_post_is_modify"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/adapter_post_is_modify"
+            android:visibility="gone" />
+
+    </LinearLayout>
+
+    <View style="@style/Divider" />
+
+    <include
+        android:layout_height="wrap_content"
+        android:layout_width="match_parent"
+        android:layout_marginStart="@dimen/activity_vertical_margin"
+        android:layout_marginEnd="@dimen/activity_vertical_margin"
+        android:layout_marginTop="8dp"
+        android:layout_marginBottom="8dp"
+        layout="@layout/adapter_swipe_post_surface_social_icon_layout" />
+
+    <View style="@style/Divider" />
+
+    <android.support.v4.widget.SwipeRefreshLayout
+        android:id="@+id/expand_post_refresh_layout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior">
+
+        <android.support.v4.widget.NestedScrollView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:scrollbars="vertical"
+            android:fillViewport="true">
+
+            <android.support.v7.widget.RecyclerView
+                android:id="@+id/expand_post_recycler_view"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:scrollbars="vertical"  />
+
+        </android.support.v4.widget.NestedScrollView>
+
+    </android.support.v4.widget.SwipeRefreshLayout>
+
+</LinearLayout>

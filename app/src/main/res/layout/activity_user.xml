@@ -1,30 +1,40 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/container"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="ca.uqac.lecitoyen.activities.MainUserActivity"
-    android:fitsSystemWindows="false">
+    android:fitsSystemWindows="false"
+    tools:context="ca.uqac.lecitoyen.activities.MainUserActivity">
+
+    <!--
+    <include
+        android:id="@+id/toolbar_user"
+        layout="@layout/toolbar_simple" />
+        -->
 
     <FrameLayout
         android:id="@+id/user_container"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_above="@+id/navigation" />
+        android:layout_marginBottom="?attr/actionBarSize"
+        app:layout_constraintBottom_toTopOf="@+id/navigation"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
     <it.sephiroth.android.library.bottomnavigation.BottomNavigation
         android:id="@+id/navigation"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_alignParentStart="true"
-        android:layout_alignParentEnd="true"
-        android:layout_alignParentBottom="true"
+
         app:bbn_badgeProvider="@string/bbn_badgeProvider"
         app:bbn_entries="@menu/navigation"
-        app:bbn_scrollEnabled="true"/>
+        app:bbn_scrollEnabled="true"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
 
 
-</RelativeLayout>
+</android.support.constraint.ConstraintLayout>

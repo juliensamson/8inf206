@@ -29,7 +29,7 @@ import ca.uqac.lecitoyen.fragments.BaseFragment;
 
 public class EditPasswordFragment extends BaseFragment {
 
-    private static String TAG = "EditPasswordFragment";
+    private static String TAG = EditPasswordFragment.class.getSimpleName();
 
     private EditText mActualPasswordField;
     private EditText mNewPasswordField;
@@ -62,7 +62,7 @@ public class EditPasswordFragment extends BaseFragment {
 
         //  Toolbar
         mHandleFragment.setToolbarTitle(getTag());
-        setFragmentToolbar(activity, R.drawable.ic_close_white_24dp, true, true);
+        setFragmentToolbar(activity, R.drawable.ic_close_primary_24dp, true, true);
 
         //  View
         mActualPasswordField = view.findViewById(R.id.change_password_actual_password);
