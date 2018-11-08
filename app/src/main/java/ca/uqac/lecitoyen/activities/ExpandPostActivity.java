@@ -173,7 +173,7 @@ public class ExpandPostActivity extends BaseActivity implements View.OnClickList
 
                     if(post.getImages() != null) {
                         if (!post.getImages().get(0).getImageId().isEmpty()){
-                            mMultimediaView.setMultimediaImage(stPost
+                            mMultimediaView.loadImages(stPost
                                     .child(post.getImages().get(0).getImageId()));
                         }
                     }
@@ -181,7 +181,7 @@ public class ExpandPostActivity extends BaseActivity implements View.OnClickList
                     if(post.getAudio() != null) {
                         if (!post.getAudio().isEmpty()) {
                             Log.d(TAG, post.getAudio());
-                            mMultimediaView.setMultimediaMusic(post.getAudio());
+                            mMultimediaView.loadAudio(post.getAudio());
                         }
                     }
 

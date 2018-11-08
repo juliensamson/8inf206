@@ -1,19 +1,22 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.design.widget.CoordinatorLayout
+<LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:swipe="http://schemas.android.com/apk/res-auto"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:swipe="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/swipe_post_main_layout"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content">
+    android:layout_height="wrap_content"
+    android:background="?attr/selectableItemBackground"
+    android:elevation="5dp"
+    android:clickable="true"
+    android:focusable="true"
+    android:orientation="vertical">
 
     <com.daimajia.swipe.SwipeLayout
         android:id="@+id/swipe_post_swipe_layout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:clickable="true"
-        android:focusable="true"
-        android:background="?attr/selectableItemBackground"
         swipe:clickToClose="true"
         swipe:drag_edge="right">
 
@@ -21,11 +24,46 @@
         <include layout="@layout/adapter_swipe_post_inside_layout" />
 
         <!--    ********* Surface view *********     -->
-        <include layout="@layout/adapter_swipe_post_surface_layout" />
+        <include layout="@layout/adapter_swipe_post_outside_layout" />
 
     </com.daimajia.swipe.SwipeLayout>
 
-    <View style="@style/Divider"
-        android:layout_gravity="bottom"/>
+    <!-- *********  Message  ********** -->
+    <TextView
+        android:id="@+id/swipe_post_message"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="72dp"
+        android:text="Some message here..."
+        android:textColor="@color/black_700"
+        android:textSize="16sp" />
 
-</android.support.design.widget.CoordinatorLayout>
+    <!-- *********  Multimedia Frame ******** -->
+    <ca.uqac.lecitoyen.util.MultimediaView
+        android:id="@+id/swipe_post_multimedia"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="72dp"
+        android:layout_marginEnd="16dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginBottom="8dp"/>
+
+    <!-- *********  Social interaction ********** -->
+    <include
+        layout="@layout/adapter_swipe_post_surface_social_icon_layout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom"
+        android:layout_marginStart="72dp"
+        android:layout_marginEnd="16dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginBottom="8dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <View
+        style="@style/Divider"
+        android:layout_gravity="bottom" />
+
+</LinearLayout>

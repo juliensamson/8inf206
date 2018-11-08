@@ -3,6 +3,7 @@ package ca.uqac.lecitoyen.util;
 import android.content.Context;
 import android.net.Uri;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.View;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
@@ -17,7 +18,32 @@ import ca.uqac.lecitoyen.R;
 
 public class MultimediaView extends FrameLayout {
 
+    private final static String TAG = MultimediaView.class.getSimpleName();
 
+    public class loadImages extends android.support.v7.widget.AppCompatImageView {
+
+        public loadImages(Context context) {
+            super(context);
+            createImageView(context);
+        }
+
+        public loadImages(Context context, AttributeSet attrs) {
+            super(context, attrs);
+            createImageView(context);
+        }
+
+        public loadImages(Context context, AttributeSet attrs, int defStyleAttr) {
+            super(context, attrs, defStyleAttr);
+            createImageView(context);
+        }
+
+        private void createImageView(Context context) {
+            //Set all element of view
+            mRemove  = mRootView.findViewById(R.id.multimedia_remove);
+            mPicture = mRootView.findViewById(R.id.multimedia_picture);
+        }
+
+    }
 
     private MultimediaView mMultimediaView;
     private Context mContext;
@@ -84,19 +110,30 @@ public class MultimediaView extends FrameLayout {
      *
      */
 
-    public void setMultimediaImage(Uri uri) {
+    public MultimediaView loadImages(Uri uri) {
+
+        isFrameEditable();
+
         setPictureLayout(uri, null);
         setMediaUsed(true, false, false);
+
+        return this;
     }
 
-    public void setMultimediaImage(StorageReference storageReference) {
+    public MultimediaView loadImages(StorageReference storageReference) {
+
         setPictureLayout(null, storageReference);
         setMediaUsed(true, false, false);
+
+        return this;
     }
 
-    public void setMultimediaMusic(String title) {
+    public MultimediaView loadAudio(String title) {
+
         setBottomTextLayout(R.drawable.ic_play_circle_outline_black_24dp, title, "");
         setMediaUsed(false, true, false);
+
+        return this;
     }
 
     public void setMultimediaLink(String title, String link) {
@@ -114,6 +151,44 @@ public class MultimediaView extends FrameLayout {
 
     public boolean isLink() {
         return isLink;
+    }
+
+    public MultimediaView setEditable(boolean isEditable) {
+        this.isEditable = isEditable;
+        return this;
+    }
+
+    public boolean isEditable() {
+        return this.isEditable;
+    }
+
+    public MultimediaView setFullHeight() {
+        Log.d(TAG, "full size");
+        mPicture.requestLayout();
+        LayoutParams params = (LayoutParams) mPicture.getLayoutParams();
+        params.height = mPicture.getMaxHeight();
+        mPicture.setLayoutParams(params);
+        Log.d(TAG, "Height " + params.height);
+
+        return this;
+    }
+
+    public MultimediaView setMinimumHeight() {
+        Log.d(TAG, "small size");
+        LayoutParams params = (LayoutParams) mPicture.getLayoutParams();
+        params.height = mPicture.getMinimumHeight();
+        mPicture.setLayoutParams(params);
+        Log.d(TAG, "Height " + params.height);
+
+        return this;
+    }
+
+    public MultimediaView setCustumHeight(int pixelHeight) {
+        Log.d(TAG, "small size");
+        LayoutParams params = (LayoutParams) mPicture.getLayoutParams();
+        params.height = pixelHeight;
+        mPicture.setLayoutParams(params);
+        return this;
     }
 
     /**
@@ -137,8 +212,16 @@ public class MultimediaView extends FrameLayout {
     private void isFrameEditable() {
         if(!isEditable)
             mRemove.setVisibility(GONE);
-        else
+        else {
             mRemove.setVisibility(VISIBLE);
+            mRemove.setOnClickListener(new OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    mRootView.setVisibility(GONE);
+                    mPicture.setVisibility(GONE);
+                }
+            });
+        }
     }
 
     private void setPictureLayout(Uri uri, StorageReference stReference) {

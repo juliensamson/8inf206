@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <item
+        android:id="@+id/menu_fab_camera"
+        android:title="Camera"
+        android:icon="@drawable/ic_camera_alt_black_24dp">
+    </item>
+
+    <item
+        android:id="@+id/menu_fab_gallery"
+        android:title="Gallery"
+        android:icon="@drawable/ic_image_black_24dp">
+    </item>
+
+    <item
+        android:id="@+id/menu_fab_audio"
+        android:title="Gallery"
+        android:icon="@drawable/ic_music_note_black_24dp">
+    </item>
+
+    <item
+        android:id="@+id/menu_fab_link"
+        android:title="Gallery"
+        android:icon="@drawable/ic_link_black_24dp">
+    </item>
+
+</menu>

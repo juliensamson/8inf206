@@ -5,61 +5,61 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <LinearLayout
-        android:id="@+id/swipe_post_inside_layout"
-        android:layout_width="wrap_content"
-        android:layout_height="match_parent"
-        android:weightSum="3"
-        android:orientation="vertical">
-
-        <FrameLayout
-            android:id="@+id/swipe_post_button_history"
+        <LinearLayout
+            android:id="@+id/swipe_post_inside_layout"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:padding="@dimen/activity_vertical_margin"
-            android:background="@color/primary_300">
+            android:weightSum="3"
+            android:orientation="horizontal">
 
-            <ImageView
+            <FrameLayout
+                android:id="@+id/swipe_post_button_history"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                swipe:srcCompat="@drawable/ic_history_black_24dp" />
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:padding="@dimen/activity_vertical_margin"
+                android:background="@color/primary_300">
 
-        </FrameLayout>
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    swipe:srcCompat="@drawable/ic_history_black_24dp" />
 
-        <FrameLayout
-            android:id="@+id/swipe_post_button_modify"
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:padding="@dimen/activity_vertical_margin"
-            android:background="@color/analogous_p_300">
+            </FrameLayout>
 
-            <ImageView
+            <FrameLayout
+                android:id="@+id/swipe_post_button_modify"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                swipe:srcCompat="@drawable/ic_edit_black_24dp" />
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:padding="@dimen/activity_vertical_margin"
+                android:background="@color/analogous_p_300">
 
-        </FrameLayout>
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    swipe:srcCompat="@drawable/ic_edit_black_24dp" />
 
-        <FrameLayout
-            android:id="@+id/swipe_post_button_delete"
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:padding="@dimen/activity_vertical_margin"
-            android:background="@color/secondary_300">
+            </FrameLayout>
 
-            <ImageView
+            <FrameLayout
+                android:id="@+id/swipe_post_button_delete"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                swipe:srcCompat="@drawable/ic_delete_forever_black_24dp" />
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:padding="@dimen/activity_vertical_margin"
+                android:background="@color/secondary_300">
 
-        </FrameLayout>
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    swipe:srcCompat="@drawable/ic_delete_forever_black_24dp" />
 
-    </LinearLayout>
+            </FrameLayout>
+
+        </LinearLayout>
 
 </merge>

@@ -6,6 +6,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.constraint.ConstraintLayout;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
@@ -15,6 +16,8 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -60,29 +63,24 @@ public class SwipePostAdapter extends RecyclerSwipeAdapter<SwipePostAdapter.View
 
     public static class ViewHolder extends RecyclerView.ViewHolder {
 
+        LinearLayout mainLayout;
         SwipeLayout swipeLayout;
-        CoordinatorLayout mainLayout;
 
         FrameLayout historyButton, editButton, deleteButton;
+
 
         LinearLayout profilLayout;
         CircleImageView profilPicture;
         TextView name, userName, time, modify, message;
-
-        //ImageView pictureFrame;
         MultimediaView multimediaView;
 
         UpvoteButton upvoteButton;
         RepostButton repostButton;
 
-        LinearLayout upvoteLayout, repostLayout, commentLayout, shareLayout;
-        TextView upvote, repost, comment, share;
-        TextView upvoteCount, repostCount, commentCount;
-
-
         public ViewHolder(View itemView) {
             super(itemView);
 
+            mainLayout = itemView.findViewById(R.id.swipe_post_main_layout);
             swipeLayout = itemView.findViewById(R.id.swipe_post_swipe_layout);
             historyButton = itemView.findViewById(R.id.swipe_post_button_history);
             editButton = itemView.findViewById(R.id.swipe_post_button_modify);
@@ -95,22 +93,15 @@ public class SwipePostAdapter extends RecyclerSwipeAdapter<SwipePostAdapter.View
             time = itemView.findViewById(R.id.swipe_post_publish_time);
             modify = itemView.findViewById(R.id.swipe_post_is_modify);
             message = itemView.findViewById(R.id.swipe_post_message);
+            multimediaView = itemView.findViewById(R.id.swipe_post_multimedia);
 
             upvoteButton = itemView.findViewById(R.id.post_upvote_button);
             repostButton = itemView.findViewById(R.id.post_repost_button);
 
             //  Multimedia
-            multimediaView = itemView.findViewById(R.id.swipe_post_multimedia);
 
-            mainLayout = itemView.findViewById(R.id.swipe_post_main_layout);
 
-            commentLayout = itemView.findViewById(R.id.publication_social_comment_layout);
-            shareLayout = itemView.findViewById(R.id.publication_social_share_layout);
 
-            comment = itemView.findViewById(R.id.publication_social_comment);
-            share = itemView.findViewById(R.id.publication_social_share);
-
-            commentCount = itemView.findViewById(R.id.publication_social_comment_count);
         }
     }
 
@@ -223,15 +214,22 @@ public class SwipePostAdapter extends RecyclerSwipeAdapter<SwipePostAdapter.View
 
             if(holderPost.getImages() != null) {
                 if (!holderPost.getImages().get(0).getImageId().isEmpty()){
-                    holder.multimediaView.setMultimediaImage(stPosts
-                            .child(holderPost.getImages().get(0).getImageId()));
-                }
-            }
+                    holder.multimediaView
+                            .loadImages(stPosts.child(holderPost.getImages().get(0).getImageId()))
+                            .setMinimumHeight();
+
+
+                    //holder.multimediaView.setMultimediaImage(stPosts
+                     //       .child(holderPost.getImages().get(0).getImageId()));
+                } else
+                    Log.e(TAG, "nothing");
+            }else
+                Log.e(TAG, "image null");
 
             if(holderPost.getAudio() != null) {
                 if (!holderPost.getAudio().isEmpty()) {
                     Log.d(TAG, holderPost.getAudio());
-                    holder.multimediaView.setMultimediaMusic(holderPost.getAudio());
+                    holder.multimediaView.loadAudio(holderPost.getAudio());
                 }
             }
 
@@ -245,14 +243,14 @@ public class SwipePostAdapter extends RecyclerSwipeAdapter<SwipePostAdapter.View
     }
 
     private void setHolderBottomLayout(@NonNull final ViewHolder holder) {
-        /*Post holderPost = mPostList.get(holder.getAdapterPosition());
+        Post holderPost = mPostList.get(holder.getAdapterPosition());
         if(!mCurrentUserId.equals(holderPost.getUser().getUid())) {
             holder.editButton.setVisibility(View.GONE);
             holder.deleteButton.setVisibility(View.GONE);
         } else {
             holder.editButton.setVisibility(View.VISIBLE);
             holder.deleteButton.setVisibility(View.VISIBLE);
-        }*/
+        }
     }
 
     /*
@@ -267,6 +265,7 @@ public class SwipePostAdapter extends RecyclerSwipeAdapter<SwipePostAdapter.View
             @Override
             public void onOpen(SwipeLayout layout) {
                 layout.findViewById(R.id.swipe_post_inside_layout);
+
             }
         });
     }
@@ -292,6 +291,18 @@ public class SwipePostAdapter extends RecyclerSwipeAdapter<SwipePostAdapter.View
     private void setOnClickListener(@NonNull final ViewHolder holder) {
 
         final Post holderPost = mPostList.get(holder.getAdapterPosition());
+
+        holder.mainLayout.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Bundle bundle = new Bundle();
+                bundle.putString("postid", holderPost.getPostid());
+                Intent intent = new Intent(mContext, ExpandPostActivity.class);
+                intent.putExtras(bundle);
+                //intent.putExtra(TAG, holderPost);
+                mContext.startActivity(intent);
+            }
+        });
 
         holder.profilPicture.setOnClickListener(new View.OnClickListener() {
             @Override

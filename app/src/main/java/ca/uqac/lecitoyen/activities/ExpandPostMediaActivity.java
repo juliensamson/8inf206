@@ -24,6 +24,7 @@ import ca.uqac.lecitoyen.R;
 import ca.uqac.lecitoyen.adapters.SwipePostAdapter;
 import ca.uqac.lecitoyen.models.DatabaseManager;
 import ca.uqac.lecitoyen.models.Post;
+import ca.uqac.lecitoyen.util.Constants;
 import nl.changer.audiowife.AudioWife;
 
 public class ExpandPostMediaActivity extends BaseActivity {
@@ -143,10 +144,12 @@ public class ExpandPostMediaActivity extends BaseActivity {
 
                     switch (codePrev)
                     {
-                        case 101:
+                        case Constants.EXPAND_AUDIO:
+                            Log.d(TAG, "Audio");
                             setAudioPlayer(post);
                             break;
-                        case 100:
+                        case Constants.EXPAND_PHOTO:
+                            Log.d(TAG, "Picture");
                             Glide.with(getBaseContext())
                                     .load(stPost.child(post.getImages().get(0).getImageId()))
                                     .into(mPictureView);

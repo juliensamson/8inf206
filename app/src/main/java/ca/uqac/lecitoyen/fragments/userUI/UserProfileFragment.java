@@ -184,9 +184,12 @@ public class UserProfileFragment extends BaseFragment implements View.OnClickLis
         Log.d(TAG, "onCreateOptionsMenu");
         if (mUserAuthId.equals(mUserSelect.getUid())) {
             inflater.inflate(R.menu.user_menu, menu);
-            mCollapsedMenu = menu;
-            mSettingsMenuItem = mCollapsedMenu.findItem(R.id.menu_settings);
-            mEditMenuItem = mCollapsedMenu.findItem(R.id.menu_edit);
+            if(mCollapsedMenu == null)
+                mCollapsedMenu = menu;
+            if(mSettingsMenuItem == null)
+                mSettingsMenuItem = mCollapsedMenu.findItem(R.id.menu_settings);
+            if(mEditMenuItem == null)
+                mEditMenuItem = mCollapsedMenu.findItem(R.id.menu_edit);
         }
     }
 
@@ -240,6 +243,9 @@ public class UserProfileFragment extends BaseFragment implements View.OnClickLis
         super.onDetach();
         mHandleFragment = null;
         mUserSelect = null;
+        mCollapsedMenu = null;
+        mSettingsMenuItem = null;
+        mEditMenuItem = null;
     }
 
     @Override

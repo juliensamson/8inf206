@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
-<merge xmlns:android="http://schemas.android.com/apk/res/android"
+<merge
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="wrap_content">
 
     <FrameLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="32dp">
+        android:layout_height="wrap_content">
 
         <LinearLayout
             android:id="@+id/linearLayout3"
@@ -20,21 +20,17 @@
             app:layout_constraintTop_toTopOf="parent">
 
             <!--    ******* Profil picture *******   -->
-
             <FrameLayout
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent">
 
                 <de.hdodenhof.circleimageview.CircleImageView
                     android:id="@+id/swipe_post_profil_picture"
-                    android:layout_width="48dp"
-                    android:layout_height="48dp"
-                    android:src="@mipmap/ic_launcher_round" />
+                    style="@style/ProfileImage.Normal" />
 
             </FrameLayout>
 
             <!--    ******* User detail, message & social interaction *******   -->
-
             <android.support.design.widget.CoordinatorLayout
                 android:layout_width="match_parent"
                 android:layout_height="match_parent">
@@ -92,44 +88,11 @@
 
                     </LinearLayout>
 
-                    <!-- *********  Message  ********** -->
-                    <FrameLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content">
-
-                        <TextView
-                            android:id="@+id/swipe_post_message"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:text="Some message here..."
-                            android:textColor="@color/black_700"
-                            android:textSize="16sp" />
-
-                    </FrameLayout>
-
-                    <!-- *********  Multimedia Frame ******** -->
-                    <ca.uqac.lecitoyen.util.MultimediaView
-                        android:id="@+id/swipe_post_multimedia"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_marginBottom="8dp"
-                        android:layout_marginTop="8dp" />
-
                 </LinearLayout>
-
 
             </android.support.design.widget.CoordinatorLayout>
 
         </LinearLayout>
-
-        <!-- *********  Social interaction ********** -->
-        <include
-            android:layout_height="wrap_content"
-            android:layout_width="match_parent"
-            android:layout_marginStart="56dp"
-            android:layout_marginBottom="8dp"
-            android:layout_gravity="bottom"
-            layout="@layout/adapter_swipe_post_surface_social_icon_layout" />
 
     </FrameLayout>
 

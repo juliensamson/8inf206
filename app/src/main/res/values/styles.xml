@@ -5,6 +5,7 @@
         <item name="colorAccent">@color/primaryColor</item>
         <item name="android:textColorHint">@color/black_300</item>
         <item name="android:windowAnimationStyle">@style/CustomActivityAnimation</item>
+        <item name="android:colorEdgeEffect">@color/primaryColor</item>
     </style>
 
     <style name="CustomActivityAnimation" parent="@android:style/Animation.Activity">
@@ -113,6 +114,32 @@
         <item name="android:gravity">center_vertical</item>
         <item name="android:textSize">18sp</item>
         <item name="android:textColor">@color/black_600</item>
+    </style>
+
+    <!-- ************   Image View  ************ -->
+    <style name="ProfileImage">
+        <item name="android:layout_marginStart">16dp</item>
+        <item name="android:layout_marginTop">16dp</item>
+        <item name="android:layout_marginBottom">8dp</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:src">@color/black_100</item>
+        <item name="android:animation">@anim/fadein</item>
+    </style>
+
+    <style name="ProfileImage.Small">
+        <item name="android:layout_height">32dp</item>
+        <item name="android:layout_width">32dp</item>
+    </style>
+
+    <style name="ProfileImage.Normal">
+        <item name="android:layout_height">48dp</item>
+        <item name="android:layout_width">48dp</item>
+    </style>
+
+    <style name="ProfileImage.Large">
+        <item name="android:layout_height">96dp</item>
+        <item name="android:layout_width">96dp</item>
     </style>
 
     <style name="Divider">

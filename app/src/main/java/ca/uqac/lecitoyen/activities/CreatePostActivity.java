@@ -87,7 +87,6 @@ public class CreatePostActivity extends BaseActivity implements View.OnClickList
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_create_post);
-        Log.d(TAG, "Created");
 
         //  Initialize auth
         fbAuth = FirebaseAuth.getInstance();
@@ -178,15 +177,13 @@ public class CreatePostActivity extends BaseActivity implements View.OnClickList
     }
 
     private void setToolbar() {
-        mToolbar = findViewById(R.id.toolbar_post);
-        mToolbarTitle = findViewById(R.id.toolbar_post_title);
+        mToolbar = findViewById(R.id.toolbar_button);
 
         setSupportActionBar(mToolbar);
-        mToolbarTitle.setText("");
 
         try {
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-            getSupportActionBar().setHomeAsUpIndicator(R.drawable.ic_close_white_24dp);
+            getSupportActionBar().setHomeAsUpIndicator(R.drawable.ic_close_primary_24dp);
         } catch (NullPointerException npe) {
 
             Log.e(TAG, npe.getMessage());
@@ -202,7 +199,10 @@ public class CreatePostActivity extends BaseActivity implements View.OnClickList
             switch (requestCode) {
                 case GALLERY_REQUEST_CODE:
                     mImageUri = data.getData();
-                    mMultimediaView.setMultimediaImage(mImageUri);
+                    mMultimediaView
+                            .setEditable(true)
+                            .loadImages(mImageUri)
+                            .setFullHeight();
                     //mPictureLayout.setVisibility(View.VISIBLE);
                     //Glide.with(this).load(mImageUri).into(mPicture);
                     break;

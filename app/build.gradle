@@ -42,6 +42,8 @@ dependencies {
     //  Search bar
     implementation 'com.github.mancj:MaterialSearchBar:0.7.6'
 
+    implementation 'com.github.ybq:AndroidSpinKit:v1.0.0'
+
     //  Floating Action Button
     implementation 'com.github.clans:fab:1.6.4'
 
