@@ -26,6 +26,7 @@ import ca.uqac.lecitoyen.R;
 import ca.uqac.lecitoyen.fragments.userUI.CityfeedFragment;
 import ca.uqac.lecitoyen.fragments.userUI.MessageFragment;
 import ca.uqac.lecitoyen.fragments.userUI.ForumFragment;
+import ca.uqac.lecitoyen.fragments.userUI.UserProfileFragment;
 import ca.uqac.lecitoyen.models.UserStorage;
 import ca.uqac.lecitoyen.fragments.userUI.ProfilFragment;
 import ca.uqac.lecitoyen.fragments.userUI.SearchFragment;
@@ -47,11 +48,14 @@ public class MainUserActivity extends BaseActivity implements iHandleFragment {
     private CityfeedFragment cityfeedFragment;
     private MessageFragment messageFragment;
     private ProfilFragment profilFragment;
+    private UserProfileFragment userProfileFragment;
 
     private DatabaseManager dbManager;
     private DatabaseReference dbUsersData;
     private DatabaseReference dbUserProfilPicture;
     private DatabaseReference dbPosts;
+
+    private User mUserdata;
 
     public UserStorage mUserStorage;
     private ArrayList<Post> mPosts = new ArrayList<>();
@@ -93,6 +97,7 @@ public class MainUserActivity extends BaseActivity implements iHandleFragment {
         cityfeedFragment = new CityfeedFragment();
         messageFragment = new MessageFragment();
         profilFragment   = new ProfilFragment();
+
         doFragmentTransaction(forumFragment, getString(R.string.fragment_forum), false, "");
 
         //  Bottom navigation
@@ -131,6 +136,21 @@ public class MainUserActivity extends BaseActivity implements iHandleFragment {
     public void onBackPressed() {
         super.onBackPressed();
         moveTaskToBack(true);
+        /*if(currentFragmentTag.equals(userProfileFragment.getTag())) {
+
+            if(userProfileFragment.getArguments() != null) {
+                String uid = userProfileFragment.getArguments().getString("user_auth");
+                User userSelect = (User) userProfileFragment.getArguments().getSerializable("user_select");
+
+                if(!uid.equals(userSelect.getUid())) {
+                    inflateFragment(R.string.fragment_forum, "");
+                } else {
+                    moveTaskToBack(true);
+                }
+            }
+
+        } else {
+        }*/
     }
 
     @Override
@@ -141,6 +161,12 @@ public class MainUserActivity extends BaseActivity implements iHandleFragment {
     }
 
     private void updateUI() {
+
+        DatabaseManager dbManager = DatabaseManager.getInstance();
+        DatabaseReference dbUser = dbManager.getDatabaseUser(fbUser.getUid());
+
+        dbUser.addListenerForSingleValueEvent(getUserdata());
+
         dbPosts.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
@@ -182,10 +208,30 @@ public class MainUserActivity extends BaseActivity implements iHandleFragment {
         isFragmentInitialize = true;
     }
 
+    public void doUserProfilFragmentTransaction(Fragment fragment, boolean addToBackStack) {
+
+        String tag = fragment.getTag();
+        currentFragmentTag = tag;
+
+        FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
+
+        transaction.setCustomAnimations(R.anim.slide_in_left, R.anim.slide_out_right);
+
+        transaction.replace(R.id.user_container, fragment, tag);
+
+        if(addToBackStack) {
+            transaction.addToBackStack(tag);
+        }
+
+        transaction.commit();
+    }
+
     private void doFragmentTransaction(Fragment fragment, String tag, boolean addToBackStack, String message) {
         Log.d(TAG, "doFragmentTransaction");
 
         FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
+
+        transaction.setCustomAnimations(R.anim.slide_in_left, R.anim.slide_out_right);
 
         transaction.replace(R.id.user_container, fragment, tag);
 
@@ -249,8 +295,12 @@ public class MainUserActivity extends BaseActivity implements iHandleFragment {
                 //doFragmentTransaction(messageFragment, getString(R.string.fragment_messages));
                 break;
             case R.string.fragment_profil:
-                doFragmentTransaction(profilFragment, getString(R.string.fragment_profil), true, "");
-                //doFragmentTransaction(profilFragment, getString(R.string.fragment_profil));
+                if(mUserdata != null) {
+                    userProfileFragment = UserProfileFragment.newInstance(mUserdata.getUid(), mUserdata);
+                    doUserProfilFragmentTransaction(userProfileFragment, true);
+                } else {
+                    doFragmentTransaction(profilFragment, getString(R.string.fragment_profil), true, "");
+                }
                 break;
             default:
                 break;
@@ -291,6 +341,10 @@ public class MainUserActivity extends BaseActivity implements iHandleFragment {
         };
     }
 
+    public void setBottomNavigationItem(int pos) {
+        mBottomNavigation.setSelectedIndex(pos, true);
+    }
+
     //  TODO: - Make Key,Value a list, map, etc. in order to add more "extras" to the Bundle
     //        - Allow to sent the class User to get the info directly. and not call mAuth on setting. (make it faster)
     public void startActivityWithBundle(Class activity, String key, String value) {
@@ -303,6 +357,20 @@ public class MainUserActivity extends BaseActivity implements iHandleFragment {
         Intent intent = new Intent(this, activity);
         intent.putExtras(extras);
         startActivity(intent);
+    }
+
+    private ValueEventListener getUserdata() {
+        return new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                mUserdata = dataSnapshot.getValue(User.class);
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        };
     }
 
     public ArrayList<User> getUserList() {

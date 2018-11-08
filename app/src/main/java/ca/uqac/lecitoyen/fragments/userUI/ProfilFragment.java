@@ -32,6 +32,7 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.StorageReference;
 
+import java.io.IOException;
 import java.util.ArrayList;
 
 import ca.uqac.lecitoyen.activities.EditProfilActivity;
@@ -69,6 +70,8 @@ public class ProfilFragment extends BaseFragment implements View.OnClickListener
 
     private AppBarLayout appBarLayout;
 
+    private User mUserClick;
+
     private User mUserdata;
 
     //  Toolbar expanded false
@@ -91,13 +94,9 @@ public class ProfilFragment extends BaseFragment implements View.OnClickListener
     private int previousOffset;
     private Menu collapsedMenu;
 
-    public enum State {
-        EXPANDED,
-        COLLAPSED,
-        IDLE
-    }
 
-    private State mCurrentState = State.IDLE;
+    public ProfilFragment() {}
+
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -105,6 +104,24 @@ public class ProfilFragment extends BaseFragment implements View.OnClickListener
         this.mainUserActivity = (MainUserActivity) getActivity();
         this.dbManager = DatabaseManager.getInstance();
         this.fbAuth = mainUserActivity.getUserAuth();
+
+        if(getArguments() != null) {
+
+            //try {
+
+                mUserClick = (User) getArguments().getSerializable("user");
+
+
+                if(mUserClick != null) {
+                    Log.d(TAG, mUserClick.getName());
+                } else
+                    Log.e(TAG, "User clicked null");
+            //} catch (IOException io) {
+            //    Log.e(TAG, io.getMessage());
+           // }
+
+        }
+
     }
 
     @Override

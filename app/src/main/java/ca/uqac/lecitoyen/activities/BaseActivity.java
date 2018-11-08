@@ -110,6 +110,8 @@ public class BaseActivity extends AppCompatActivity {
         mToolbarByDefault.setVisibility(View.GONE);
     }
 
+
+
     protected void doFragmentTransaction(int containerId, Fragment fragment, String tag, boolean addToBackStack, String message) {
         Log.d(TAG, "doFragmentTransaction");
         FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();

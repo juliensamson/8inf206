@@ -2,9 +2,10 @@ package ca.uqac.lecitoyen.models;
 
 //TODO: Store user data locally
 
+import java.io.Serializable;
 import java.util.Map;
 
-public class User {
+public class User implements Serializable {
 
     //  Public info
     private String uid;
@@ -36,11 +37,11 @@ public class User {
     private String location;
 
     //  Social interaction
-    private Map<String, Post> upvotePosts;
+    /*private Map<String, Post> upvotePosts;
     private long upvoteCount;
 
     private Map<String, Post> repostPosts;
-    private long repostCount;
+    private long repostCount;*/
 
 
     //  Constructor
@@ -176,7 +177,7 @@ public class User {
         this.location = location;
     }
 
-    public Map<String, Post> getUpvotePosts() {
+    /*public Map<String, Post> getUpvotePosts() {
         return upvotePosts;
     }
 
@@ -206,5 +207,5 @@ public class User {
 
     public void setRepostCount(long repostCount) {
         this.repostCount = repostCount;
-    }
+    }*/
 }

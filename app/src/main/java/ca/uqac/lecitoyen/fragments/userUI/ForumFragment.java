@@ -157,6 +157,7 @@ public class ForumFragment extends BaseFragment implements View.OnClickListener 
         dbManager.getReference().addListenerForSingleValueEvent(initPostsList(user, postsList));
 
 
+
         mSwipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {

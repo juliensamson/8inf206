@@ -1,11 +1,14 @@
 package ca.uqac.lecitoyen.adapters;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.CoordinatorLayout;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -31,6 +34,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
+import ca.uqac.lecitoyen.Interface.iHandleFragment;
 import ca.uqac.lecitoyen.R;
 import ca.uqac.lecitoyen.activities.ExpandPostActivity;
 import ca.uqac.lecitoyen.activities.ExpandPostMediaActivity;
@@ -38,6 +42,8 @@ import ca.uqac.lecitoyen.activities.MainUserActivity;
 import ca.uqac.lecitoyen.buttons.RepostButton;
 import ca.uqac.lecitoyen.dialogs.DeletePostDialog;
 import ca.uqac.lecitoyen.dialogs.PostHistoryDialog;
+import ca.uqac.lecitoyen.fragments.userUI.ProfilFragment;
+import ca.uqac.lecitoyen.fragments.userUI.UserProfileFragment;
 import ca.uqac.lecitoyen.models.DatabaseManager;
 import ca.uqac.lecitoyen.models.Post;
 import ca.uqac.lecitoyen.models.User;
@@ -98,32 +104,20 @@ public class SwipePostAdapter extends RecyclerSwipeAdapter<SwipePostAdapter.View
 
             mainLayout = itemView.findViewById(R.id.swipe_post_main_layout);
 
-            //  Social button
-            //upvoteLayout = itemView.findViewById(R.id.publication_social_upvote_layout);
-            //repostLayout = itemView.findViewById(R.id.publication_social_repost_layout);
             commentLayout = itemView.findViewById(R.id.publication_social_comment_layout);
             shareLayout = itemView.findViewById(R.id.publication_social_share_layout);
 
-            //upvote = itemView.findViewById(R.id.publication_social_upvote);
-            //repost = itemView.findViewById(R.id.publication_social_repost);
             comment = itemView.findViewById(R.id.publication_social_comment);
             share = itemView.findViewById(R.id.publication_social_share);
 
-            //upvoteCount = itemView.findViewById(R.id.publication_social_upvote_count);
-            //repostCount = itemView.findViewById(R.id.publication_social_repost_count);
             commentCount = itemView.findViewById(R.id.publication_social_comment_count);
-
-
-            itemView.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                }
-            });
         }
     }
 
     private DatabaseManager dbManager;
     private Context mContext;
+    private MainUserActivity mUserActivity;
+    private iHandleFragment mHandleFragment;
 
     private UpvoteButton mUpvoteButton;
 
@@ -142,6 +136,18 @@ public class SwipePostAdapter extends RecyclerSwipeAdapter<SwipePostAdapter.View
         this.mContext = context;
         this.mPostList = posts;
 
+        if(user != null) {
+            this.mCurrentUserId = user.getUid();
+            this.mCurrentUser = new User(mCurrentUserId);
+        }
+    }
+
+    public SwipePostAdapter(MainUserActivity userActivity, User user, ArrayList<Post> posts) {
+        this.dbManager = DatabaseManager.getInstance();
+        this.mContext = userActivity;
+        this.mPostList = posts;
+        this.mUserActivity = userActivity;
+        this.mHandleFragment = userActivity;
         if(user != null) {
             this.mCurrentUserId = user.getUid();
             this.mCurrentUser = new User(mCurrentUserId);
@@ -174,6 +180,8 @@ public class SwipePostAdapter extends RecyclerSwipeAdapter<SwipePostAdapter.View
         setOnClickListener(holder);
         setOnDoubleClickListener(holder);
     }
+
+
 
     /*
      *
@@ -284,6 +292,14 @@ public class SwipePostAdapter extends RecyclerSwipeAdapter<SwipePostAdapter.View
     private void setOnClickListener(@NonNull final ViewHolder holder) {
 
         final Post holderPost = mPostList.get(holder.getAdapterPosition());
+
+        holder.profilPicture.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                UserProfileFragment fragment = UserProfileFragment.newInstance(mCurrentUserId, holderPost.getUser());
+                mUserActivity.doUserProfilFragmentTransaction(fragment, true);
+            }
+        });
 
         holder.multimediaView.setOnClickListener(new View.OnClickListener() {
             @Override
