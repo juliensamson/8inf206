@@ -44,6 +44,8 @@ dependencies {
 
     implementation 'com.github.ybq:AndroidSpinKit:v1.0.0'
 
+    implementation 'id.zelory:compressor:2.1.0'
+
     //  Floating Action Button
     implementation 'com.github.clans:fab:1.6.4'
 
@@ -75,6 +77,7 @@ dependencies {
     androidTestImplementation 'com.android.support.test:runner:1.0.2'
     androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.2'
 }
+
 
 
 

@@ -140,7 +140,7 @@ public class ProfilFragment extends BaseFragment implements View.OnClickListener
         mToolbarName = view.findViewById(R.id.toolbar_profil_name);
         mToolbarPostCount= view.findViewById(R.id.toolbar_profil_post_count);
         mBackgroundView = view.findViewById(R.id.toolbar_profil_collapsing_background);
-        mProfilPictureView = view.findViewById(R.id.toolbar_profil_collapsing_picture);
+        //mProfilPictureView = view.findViewById(R.id.toolbar_profil_collapsing_picture);
         mNameView = view.findViewById(R.id.toolbar_profil_collapsing_name);
         mUsernameView = view.findViewById(R.id.toolbar_profil_collapsing_username);
         mBiographyView = view.findViewById(R.id.toolbar_profil_collapsing_biography);

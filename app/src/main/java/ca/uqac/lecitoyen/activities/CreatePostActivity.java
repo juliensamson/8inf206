@@ -2,9 +2,11 @@ package ca.uqac.lecitoyen.activities;
 
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
+import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
@@ -31,11 +33,13 @@ import com.google.firebase.storage.OnProgressListener;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
-import ca.uqac.lecitoyen.activities.BaseActivity;
 import ca.uqac.lecitoyen.R;
 import ca.uqac.lecitoyen.models.DatabaseManager;
 import ca.uqac.lecitoyen.models.Image;
@@ -44,6 +48,7 @@ import ca.uqac.lecitoyen.models.PostHistory;
 import ca.uqac.lecitoyen.models.User;
 import ca.uqac.lecitoyen.util.MultimediaView;
 import de.hdodenhof.circleimageview.CircleImageView;
+import id.zelory.compressor.Compressor;
 import nl.changer.audiowife.AudioWife;
 
 public class CreatePostActivity extends BaseActivity implements View.OnClickListener {
@@ -304,6 +309,8 @@ public class CreatePostActivity extends BaseActivity implements View.OnClickList
                     updateImageStorage(stPosts, post.getImages().get(0).getImageId());
                 else
                     Log.e(TAG, "picture is null");
+            } else {
+                this.finish();
             }
             if (mPlayerLayout.getVisibility() != View.GONE && mAudioUri != null) {
 
@@ -314,6 +321,8 @@ public class CreatePostActivity extends BaseActivity implements View.OnClickList
                 } else {
                     Log.e(TAG, "audio is null");
                 }
+            } else {
+                this.finish();
             }
             //  Add data to fire base
             writePublicationToFirebase(post);
@@ -326,30 +335,44 @@ public class CreatePostActivity extends BaseActivity implements View.OnClickList
 
         showProgressDialog();
 
-        storageReference.child(imagesId)
-                .putFile(mImageUri)
-                .addOnProgressListener(new OnProgressListener<UploadTask.TaskSnapshot>() {
-                    @Override
-                    public void onProgress(UploadTask.TaskSnapshot taskSnapshot) {
-                        Log.d(TAG, "Byte transferred: " + taskSnapshot.getBytesTransferred());
+        try {
+            File file = new File(mImageUri.getPath());
+            Bitmap bitmap = MediaStore.Images.Media.getBitmap(this.getContentResolver(), mImageUri);
+            //Bitmap compressor = new Compressor(mContext).compressToBitmap(file);
+            ByteArrayOutputStream baos = new ByteArrayOutputStream();
+            bitmap.compress(Bitmap.CompressFormat.JPEG, 20, baos);
+            byte[] data = baos.toByteArray();
 
-                        //TODO: add byte transfer to ProgressDialog
-                    }
-                })
-                .addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
-                    @Override
-                    public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
-                        hideProgressDialog();
-                        onBackPressed();
-                        Log.d(TAG, "image uploaded");
-                    }
-                }).addOnFailureListener(new OnFailureListener() {
-            @Override
-            public void onFailure(@NonNull Exception e) {
-                Log.e(TAG, e.getMessage());
-                hideProgressDialog();
-            }
-        });
+
+            UploadTask uploadTask = storageReference.child(imagesId).putBytes(data);
+            uploadTask
+                    .addOnProgressListener(new OnProgressListener<UploadTask.TaskSnapshot>() {
+                        @Override
+                        public void onProgress(UploadTask.TaskSnapshot taskSnapshot) {
+                            Log.d(TAG, "Byte transferred: " + taskSnapshot.getBytesTransferred());
+
+                            //TODO: add byte transfer to ProgressDialog
+                        }
+                    })
+                    .addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+                        @Override
+                        public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                            hideProgressDialog();
+                            onBackPressed();
+                            Log.d(TAG, "image uploaded");
+                        }
+                    }).addOnFailureListener(new OnFailureListener() {
+                @Override
+                public void onFailure(@NonNull Exception e) {
+                    Log.e(TAG, e.getMessage());
+                    hideProgressDialog();
+                }
+            });
+
+        } catch (IOException e) {
+            Log.e(TAG, e.getMessage());
+        }
+
     }
 
     private void updateAudioStorage(StorageReference storageReference, String audioId) {

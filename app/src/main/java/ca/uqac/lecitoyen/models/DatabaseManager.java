@@ -3,6 +3,8 @@ package ca.uqac.lecitoyen.models;
 import android.support.annotation.NonNull;
 import android.util.Log;
 
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -211,9 +213,38 @@ public class DatabaseManager  {
      */
 
     public void deleteHolderPost(Post holderPost) {
+        if(holderPost.getImages() != null) {
+            getStoragePost(holderPost.getPostid())
+                    .child(holderPost.getImages().get(0).getImageId())
+                    .delete().addOnFailureListener(new OnFailureListener() {
+                @Override
+                public void onFailure(@NonNull Exception e) {
+                    Log.e(TAG, e.getMessage());
+                }
+            }).addOnSuccessListener(new OnSuccessListener<Void>() {
+                @Override
+                public void onSuccess(Void aVoid) {
+                    Log.d(TAG, "Deleted");
+                }
+            });
+        }
+        if(holderPost.getAudio() != null) {
+            getStoragePost(holderPost.getPostid())
+                    .child(holderPost.getAudio())
+                    .delete().addOnFailureListener(new OnFailureListener() {
+                @Override
+                public void onFailure(@NonNull Exception e) {
+                    Log.e(TAG, e.getMessage());
+                }
+            }).addOnSuccessListener(new OnSuccessListener<Void>() {
+                @Override
+                public void onSuccess(Void aVoid) {
+                    Log.d(TAG, "Deleted");
+                }
+            });
+        }
         getDatabasePost(holderPost.getPostid()).removeValue();
         getDatabaseUserPost(holderPost.getUser().getUid(), holderPost.getPostid()).removeValue();
-        getStoragePost(holderPost.getPostid()).delete();
         //Delete Repost & Like of user of post is deleted
     }
 

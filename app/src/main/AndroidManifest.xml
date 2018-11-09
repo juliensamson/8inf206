@@ -68,7 +68,7 @@
         <activity android:name=".activities.EditPostActivity" />
         <activity android:name=".activities.EditProfilActivity" />
         <activity android:name=".activities.ExpandPostMediaActivity" />
-        <activity android:name=".activities.ExpandPostActivity"></activity>
+        <activity android:name=".activities.ExpandPostActivity" />
     </application>
 
 </manifest>

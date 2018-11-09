@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="utf-8"?>
+<merge
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <android.support.design.widget.AppBarLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <android.support.v7.widget.Toolbar
+            android:id="@+id/custom_toolbar"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_marginEnd="@dimen/activity_horizontal_margin"
+            app:layout_scrollFlags="scroll|enterAlways|snap"
+            style="@style/LightToolbarTheme">
+
+            <FrameLayout
+                android:id="@+id/toolbar.view.with.image.right.layout"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:visibility="gone">
+
+                <TextView
+                    android:id="@+id/toolbar.view.with.image.right.title"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/fragment_forum"
+                    style="@style/LightToolbarTheme.Title"/>
+
+                <com.makeramen.roundedimageview.RoundedImageView
+                    android:id="@+id/toolbar.view.image.view.right"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_vertical|end"
+                    android:src="@drawable/ic_account_box_black_24dp"
+                    app:riv_corner_radius="20dp"
+                    style="@style/ProfileImage.Small"/>
+
+            </FrameLayout>
+
+            <LinearLayout
+                android:id="@+id/toolbar.view.with.image.left.layout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:visibility="visible">
+
+                <com.makeramen.roundedimageview.RoundedImageView
+                    android:id="@+id/toolbar.view.image.view.left"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:src="@drawable/ic_account_box_black_24dp"
+                    app:riv_corner_radius="20dp"
+                    style="@style/ProfileImage.Small"/>
+
+                <TextView
+                    android:id="@+id/toolbar.view.with.image.left.title"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="8dp"
+                    android:text="@string/fragment_forum"
+                    style="@style/LightToolbarTheme.Title"/>
+
+            </LinearLayout>
+
+        </android.support.v7.widget.Toolbar>
+
+    </android.support.design.widget.AppBarLayout>
+
+</merge>

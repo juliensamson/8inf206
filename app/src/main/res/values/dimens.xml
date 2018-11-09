@@ -19,6 +19,9 @@
 
 
     <!-- dimensions -->
+    <dimen name="profile_image_view_small">32dp</dimen>
+    <dimen name="profile_image_view_normal">48dp</dimen>
+    <dimen name="profile_image_view_large">96dp</dimen>
     <dimen name="image_width">96dp</dimen>
     <dimen name="image_final_width">32dp</dimen>
     <dimen name="spacing_normal">16dp</dimen>
