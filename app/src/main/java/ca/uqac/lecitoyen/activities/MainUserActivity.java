@@ -1,7 +1,9 @@
 package ca.uqac.lecitoyen.activities;
 
+import android.content.Context;
 import android.content.Intent;
 import android.graphics.Typeface;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
@@ -9,20 +11,31 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
-import android.view.Menu;
 import android.widget.TextView;
 
+import com.daimajia.swipe.adapters.RecyclerSwipeAdapter;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.storage.FileDownloadTask;
+import com.google.firebase.storage.OnProgressListener;
+import com.google.firebase.storage.StorageReference;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 
 import ca.uqac.lecitoyen.Interface.iHandleFragment;
 import ca.uqac.lecitoyen.R;
+import ca.uqac.lecitoyen.adapters.SwipePostAdapter;
 import ca.uqac.lecitoyen.fragments.userUI.CityfeedFragment;
 import ca.uqac.lecitoyen.fragments.userUI.MessageFragment;
 import ca.uqac.lecitoyen.fragments.userUI.ForumFragment;
@@ -38,9 +51,21 @@ import it.sephiroth.android.library.bottomnavigation.BottomNavigationFixedItemVi
 
 //TODO: Make the RecyclerView load automatically after making a post
 
-public class MainUserActivity extends BaseActivity implements iHandleFragment {
+public class MainUserActivity extends BaseActivity implements
+        iHandleFragment,
+        ForumFragment.OnFragmentInteractionListener,
+        UserProfileFragment.OnFragmentInteractionListener
+{
 
-    final private static String TAG = "MainUserActivity";
+    private final static String TAG = MainUserActivity.class.getSimpleName();
+
+    public final static int AUTH_USER = 10;
+    public final static int SELECT_USER = 20;
+
+    private FragmentManager mFragmentManager;
+
+    //private Handler mDelayedTransactionHandler = new Handler();
+    //private Runnable mRunnable = this;
 
     private iHandleFragment mHandleFragment;
     private ForumFragment forumFragment;
@@ -56,17 +81,20 @@ public class MainUserActivity extends BaseActivity implements iHandleFragment {
     private DatabaseReference dbPosts;
 
     private User mUserdata;
+    private User mUserAuth;
 
     public UserStorage mUserStorage;
-    private ArrayList<Post> mPosts = new ArrayList<>();
-    public ArrayList<User> mUserList = new ArrayList<>();
-    private ArrayList<UserStorage> listUserProfilPicture = new ArrayList<>();
+    private ArrayList<Post> mPostsList = new ArrayList<>();
+    private RecyclerSwipeAdapter mForumAdapter;
 
     private Toolbar mUserToolbar;
     private TextView mUserToolbarTitle;
 
     private String currentFragmentTag;
     private boolean isFragmentInitialize = false;
+
+    private Context mContext;
+    private MainUserActivity mUserActivity;
 
     //Firebase
     private FirebaseAuth fbAuth;
@@ -79,26 +107,26 @@ public class MainUserActivity extends BaseActivity implements iHandleFragment {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        showProgressDialog();
         setContentView(R.layout.activity_user);
-        Log.d(TAG, "Activity created");
+
+        this.mContext = this;
+        this.mUserActivity = this;
 
         //  Database
         dbManager = DatabaseManager.getInstance();
-
-        //Toolbar userToolbar = findViewById(R.id.toolbar_user);
-        //setSupportActionBar(userToolbar);
-
-        //  Initialize auth
+        mFragmentManager = getSupportFragmentManager();
         fbAuth = FirebaseAuth.getInstance();
 
+        //  Initialize auth
+
         //  Initialize fragment
-        forumFragment = new ForumFragment();
         searchFragment = new SearchFragment();
         cityfeedFragment = new CityfeedFragment();
         messageFragment = new MessageFragment();
         profilFragment   = new ProfilFragment();
 
-        doFragmentTransaction(forumFragment, getString(R.string.fragment_forum), false, "");
+        //doFragmentTransaction(forumFragment, getString(R.string.fragment_forum), false, "");
 
         //  Bottom navigation
         mBottomNavigation = findViewById(R.id.navigation);
@@ -110,75 +138,48 @@ public class MainUserActivity extends BaseActivity implements iHandleFragment {
     @Override
     protected void onStart() {
         super.onStart();
-
-        if(fbAuth != null)
-        {
+        if(fbAuth != null) {
             fbUser = fbAuth.getCurrentUser();
-
-            if(fbUser != null)
-            {
-                String uid = fbUser.getUid();
-                //  Reference to the user profil picture
-                dbUserProfilPicture = dbManager.getDatabaseUserProfilPicture(uid);
-                //  Reference to the list of users
-                dbUsersData = dbManager.getDatabaseUsers();
-                //  Reference to the list of publications
-                dbPosts = dbManager.getDatabasePosts();
-
-                updateUI();
-            }
-        } else {
-            Log.e(TAG, "auth is null");
+            loadFirebaseValueListener();
         }
     }
 
     @Override
     public void onBackPressed() {
         super.onBackPressed();
-        moveTaskToBack(true);
-        /*if(currentFragmentTag.equals(userProfileFragment.getTag())) {
-
-            if(userProfileFragment.getArguments() != null) {
-                String uid = userProfileFragment.getArguments().getString("user_auth");
-                User userSelect = (User) userProfileFragment.getArguments().getSerializable("user_select");
-
-                if(!uid.equals(userSelect.getUid())) {
-                    inflateFragment(R.string.fragment_forum, "");
-                } else {
-                    moveTaskToBack(true);
-                }
-            }
-
-        } else {
-        }*/
-    }
-
-    @Override
-    protected void onSaveInstanceState(Bundle outState) {
-        super.onSaveInstanceState(outState);
-        //FragmentManager manager = getSupportFragmentManager();
-        //manager.putFragment(outState, );
+        //moveTaskToBack(true);
     }
 
     private void updateUI() {
 
-        DatabaseManager dbManager = DatabaseManager.getInstance();
-        DatabaseReference dbUser = dbManager.getDatabaseUser(fbUser.getUid());
+        loadInitialFragment();
 
-        dbUser.addListenerForSingleValueEvent(getUserdata());
+    }
 
-        dbPosts.addListenerForSingleValueEvent(new ValueEventListener() {
+    private void loadFirebaseValueListener() {
+        fbAuth = FirebaseAuth.getInstance();
+        fbUser = fbAuth.getCurrentUser();
+
+        Log.d(TAG, fbUser.getUid());
+
+        dbManager.getReference().addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
 
-                for(DataSnapshot postSnapshot : dataSnapshot.getChildren()) {
+                /*      Get Userdata      */
 
-                    Post post = postSnapshot.getValue(Post.class);
+                mUserAuth = dataSnapshot
+                        .child("users")
+                        .child(fbUser.getUid())
+                        .getValue(User.class);
 
-                    if(post != null) {
-                        mPosts.add(post);
-                    }
-                }
+                /*      Get User Profile Image     */
+
+                //loadUriProfileImage();
+
+                /*      Get the lists of posts      */
+
+                loadPostsList(dataSnapshot);
 
             }
 
@@ -189,40 +190,107 @@ public class MainUserActivity extends BaseActivity implements iHandleFragment {
         });
     }
 
-    private void initFragment(FragmentTransaction transaction) {
-        forumFragment = new ForumFragment();
-        searchFragment = new SearchFragment();
-        cityfeedFragment = new CityfeedFragment();
-        messageFragment = new MessageFragment();
-        profilFragment   = new ProfilFragment();
+    private void loadFileProfileImage() {
+        StorageReference stProfileImage = dbManager.getStorageUserProfilPicture(
+                mUserAuth.getUid(),
+                mUserAuth.getPid());
 
-        transaction
-                .add(R.id.user_container, forumFragment, forumFragment.getTag())
-                .add(R.id.user_container, searchFragment, searchFragment.getTag())
-                .add(R.id.user_container, cityfeedFragment, cityfeedFragment.getTag())
-                .add(R.id.user_container, messageFragment, messageFragment.getTag())
-                .add(R.id.user_container, profilFragment, profilFragment.getTag());
+        try {
 
-        currentFragmentTag = forumFragment.getTag();
+            File localFile = File.createTempFile("user-profile-image", "jpg");
 
-        isFragmentInitialize = true;
-    }
+            stProfileImage.getFile(localFile).addOnFailureListener(new OnFailureListener() {
+                @Override
+                public void onFailure(@NonNull Exception e) {
+                    Log.e(TAG, e.getMessage());
+                }
+            }).addOnProgressListener(new OnProgressListener<FileDownloadTask.TaskSnapshot>() {
+                @Override
+                public void onProgress(FileDownloadTask.TaskSnapshot taskSnapshot) {
+                    taskSnapshot.getTotalByteCount();
+                }
+            }).addOnSuccessListener(new OnSuccessListener<FileDownloadTask.TaskSnapshot>() {
+                @Override
+                public void onSuccess(FileDownloadTask.TaskSnapshot taskSnapshot) {
 
-    public void doUserProfilFragmentTransaction(Fragment fragment, boolean addToBackStack) {
-
-        String tag = fragment.getTag();
-        currentFragmentTag = tag;
-
-        FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
-
-        transaction.setCustomAnimations(R.anim.slide_in_left, R.anim.slide_out_right);
-
-        transaction.replace(R.id.user_container, fragment, tag);
-
-        if(addToBackStack) {
-            transaction.addToBackStack(tag);
+                }
+            });
+        } catch (IOException e) {
+            Log.e(TAG, e.getMessage());
         }
 
+
+        /*stProfileImage.get.getDownloadUrl().addOnCompleteListener(new OnCompleteListener<Uri>() {
+            @Override
+            public void onComplete(@NonNull Task<Uri> task) {
+                task
+            }
+        }).addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception e) {
+
+            }
+        }).addOnSuccessListener(new OnSuccessListener<Uri>() {
+            @Override
+            public void onSuccess(Uri uri) {
+                uri.
+            }
+        });*/
+    }
+
+    private void loadPostsList(DataSnapshot dataSnapshot) {
+        Query dbPosts = dataSnapshot.getRef().child("posts").orderByChild("dateInverse");
+        dbPosts.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+
+                for(DataSnapshot postSnapshot : dataSnapshot.getChildren()) {
+                    mPostsList.add(postSnapshot.getValue(Post.class));
+                }
+
+                mForumAdapter = new SwipePostAdapter(mUserActivity, mUserAuth, mPostsList);
+
+                updateUI();
+
+                hideProgressDialog();
+
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+                Log.e(TAG, databaseError.getMessage());
+            }
+        });
+    }
+
+    private void loadInitialFragment() {
+        forumFragment = ForumFragment.newInstance(mUserAuth);
+        FragmentTransaction transaction = mFragmentManager.beginTransaction();
+        transaction.replace(R.id.user_container, forumFragment);
+        transaction.commit();
+    }
+
+    public void doUserProfileTransaction(Fragment fragment, int userType) {
+
+        FragmentTransaction transaction = mFragmentManager.beginTransaction();
+        switch (userType) {
+            case AUTH_USER:
+                transaction.setCustomAnimations(
+                        R.anim.enter_from_top,
+                        R.anim.exit_from_top,
+                        R.anim.enter_from_bottom,
+                        R.anim.exit_from_bottom);
+                break;
+            case SELECT_USER:
+                transaction.setCustomAnimations(
+                        R.anim.enter_from_left,
+                        R.anim.exit_from_left,
+                        R.anim.enter_from_right,
+                        R.anim.exit_from_right);
+                break;
+        }
+        transaction.addToBackStack(null);
+        transaction.replace(R.id.user_container, fragment, fragment.getTag());
         transaction.commit();
     }
 
@@ -231,7 +299,7 @@ public class MainUserActivity extends BaseActivity implements iHandleFragment {
 
         FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
 
-        transaction.setCustomAnimations(R.anim.slide_in_left, R.anim.slide_out_right);
+        //transaction.setCustomAnimations(R.anim.enter_from_left, R.anim.exit_from_right);
 
         transaction.replace(R.id.user_container, fragment, tag);
 
@@ -242,31 +310,6 @@ public class MainUserActivity extends BaseActivity implements iHandleFragment {
 
         currentFragmentTag = tag;
     }
-
-    private void doFragmentTransaction(Fragment nextFragment, String nextFragmentTag) {
-        Log.d(TAG, "doFragmentTransaction");
-
-        FragmentManager manager = getSupportFragmentManager();
-        FragmentTransaction transaction = manager.beginTransaction();
-        if(!isFragmentInitialize) {
-            initFragment(transaction);
-        }
-
-        Fragment currentFragment = manager.getPrimaryNavigationFragment();
-
-        if(!transaction.isEmpty()) {
-            transaction.replace(R.id.user_container, nextFragment, nextFragmentTag);
-            /*transaction
-                    .hide(currentFragment)
-                    .show(nextFragment)
-                    .commit();
-                    */
-
-            currentFragmentTag = nextFragmentTag;
-        }
-
-    }
-
 
     @Override
     public void setToolbarTitle(String fragmentTag) {
@@ -279,28 +322,20 @@ public class MainUserActivity extends BaseActivity implements iHandleFragment {
         switch (fragmentTagId)
         {
             case R.string.fragment_forum:
-                doFragmentTransaction(forumFragment, getString(R.string.fragment_forum), true, "");
+                doFragmentTransaction(forumFragment, getString(R.string.fragment_forum), false, "");
                 //doFragmentTransaction(forumFragment, getString(R.string.fragment_forum));
                 break;
             case R.string.fragment_search:
-                doFragmentTransaction(searchFragment, getString(R.string.fragment_search), true, "");
+                doFragmentTransaction(searchFragment, getString(R.string.fragment_search), false, "");
                 //doFragmentTransaction(searchFragment, getString(R.string.fragment_search));
                 break;
             case R.string.fragment_cityfeed:
-                doFragmentTransaction(cityfeedFragment, getString(R.string.fragment_cityfeed), true, "");
+                doFragmentTransaction(cityfeedFragment, getString(R.string.fragment_cityfeed), false, "");
                 //doFragmentTransaction(cityfeedFragment, getString(R.string.fragment_cityfeed));
                 break;
             case R.string.fragment_messages:
-                doFragmentTransaction(messageFragment, getString(R.string.fragment_messages), true, "");
+                doFragmentTransaction(messageFragment, getString(R.string.fragment_messages), false, "");
                 //doFragmentTransaction(messageFragment, getString(R.string.fragment_messages));
-                break;
-            case R.string.fragment_profil:
-                if(mUserdata != null) {
-                    userProfileFragment = UserProfileFragment.newInstance(mUserdata.getUid(), mUserdata);
-                    doUserProfilFragmentTransaction(userProfileFragment, true);
-                } else {
-                    doFragmentTransaction(profilFragment, getString(R.string.fragment_profil), true, "");
-                }
                 break;
             default:
                 break;
@@ -325,9 +360,6 @@ public class MainUserActivity extends BaseActivity implements iHandleFragment {
                         break;
                     case R.id.navigation_messages:
                         inflateFragment(R.string.fragment_messages, "");
-                        break;
-                    case R.id.navigation_profil:
-                        inflateFragment(R.string.fragment_profil, "");
                         break;
                 }
             }
@@ -373,16 +405,19 @@ public class MainUserActivity extends BaseActivity implements iHandleFragment {
         };
     }
 
-    public ArrayList<User> getUserList() {
-        return this.mUserList;
+    /**
+     *
+     *      Getter
+     *
+     */
+
+    public ArrayList<Post> getPostsList() {
+        return this.mPostsList;
     }
 
-    public ArrayList<Post> getPosts() { return this.mPosts;}
-
-    public ArrayList<UserStorage> getListUserProfilPicture() {
-        return this.listUserProfilPicture;
+    public RecyclerSwipeAdapter getForumAdapter() {
+        return this.mForumAdapter;
     }
-
 
     public FirebaseAuth getUserAuth() {
         return this.fbAuth;
@@ -390,5 +425,10 @@ public class MainUserActivity extends BaseActivity implements iHandleFragment {
 
     public UserStorage getUserStorage() {
         return this.mUserStorage;
+    }
+
+    @Override
+    public void onFragmentInteraction(String something) {
+        onBackPressed();
     }
 }

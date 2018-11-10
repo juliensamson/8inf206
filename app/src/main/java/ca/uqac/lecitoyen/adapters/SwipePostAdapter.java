@@ -33,6 +33,7 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.StorageReference;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
@@ -57,7 +58,7 @@ import ca.uqac.lecitoyen.util.Util;
 import de.hdodenhof.circleimageview.CircleImageView;
 
 
-public class SwipePostAdapter extends RecyclerSwipeAdapter<SwipePostAdapter.ViewHolder> {
+public class SwipePostAdapter extends RecyclerSwipeAdapter<SwipePostAdapter.ViewHolder> implements Serializable {
 
     private static String TAG = SwipePostAdapter.class.getSimpleName();
 
@@ -191,11 +192,11 @@ public class SwipePostAdapter extends RecyclerSwipeAdapter<SwipePostAdapter.View
             setHolderBottomLayout(holder);
             User user = holderPost.getUser();
 
-            StorageReference storage = dbManager.getStorageUserProfilPicture(user.getUid());
+            StorageReference storage = dbManager.getStorageUserProfilPicture(user.getUid(), user.getPid());
             StorageReference stPosts = dbManager.getStoragePost(holderPost.getPostid());
 
             if(user.getPid() != null && !user.getPid().isEmpty())                                   //User's profil picture
-                Glide.with(mContext).load(storage.child(user.getPid())).into(holder.profilPicture);
+                Glide.with(mContext).load(storage).into(holder.profilPicture);
 
             if(user.getName() != null && !user.getName().isEmpty())                                 //User's name
                 holder.name.setText(holderPost.getUser().getName());
@@ -308,7 +309,7 @@ public class SwipePostAdapter extends RecyclerSwipeAdapter<SwipePostAdapter.View
             @Override
             public void onClick(View view) {
                 UserProfileFragment fragment = UserProfileFragment.newInstance(mCurrentUserId, holderPost.getUser());
-                mUserActivity.doUserProfilFragmentTransaction(fragment, true);
+                mUserActivity.doUserProfileTransaction(fragment, MainUserActivity.SELECT_USER);
             }
         });
 

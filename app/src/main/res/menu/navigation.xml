@@ -27,9 +27,4 @@
         android:icon="@drawable/ic_mail_black_24dp"
         android:title="@string/fragment_messages" />
 
-    <item
-        android:id="@+id/navigation_profil"
-        android:icon="@drawable/ic_account_box_black_24dp"
-        android:title="@string/fragment_profil" />
-
 </menu>

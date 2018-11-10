@@ -141,7 +141,6 @@ public class UserEditProfilFragment extends BaseFragment implements View.OnClick
                 //  Get database & Storage reference
                 dbUserData = dbManager.getDatabaseUser(uid);
                 dbUserProfilPicture = dbManager.getDatabaseUserProfilPicture(uid);
-                stUserProfilPicture = dbManager.getStorageUserProfilPicture(uid);
 
                 updateUI();
             }

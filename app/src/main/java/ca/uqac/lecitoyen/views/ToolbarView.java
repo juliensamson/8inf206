@@ -23,8 +23,9 @@ import org.w3c.dom.Text;
 
 import ca.uqac.lecitoyen.R;
 import ca.uqac.lecitoyen.activities.BaseActivity;
+import de.hdodenhof.circleimageview.CircleImageView;
 
-public class ToolbarView extends AppBarLayout {
+public class ToolbarView extends AppBarLayout implements View.OnClickListener {
 
     private final static String TAG = ToolbarView.class.getSimpleName();
 
@@ -35,11 +36,11 @@ public class ToolbarView extends AppBarLayout {
 
     private FrameLayout mToolbarLayoutEnd;
     private TextView mToolbarTitleEnd;
-    private RoundedImageView mImageViewEnd;
+    private CircleImageView mImageViewEnd;
 
-    private LinearLayout mToolbarLayoutStart;
+    private FrameLayout mToolbarLayoutStart;
     private TextView mToolbarTitleStart;
-    private RoundedImageView mImageViewStart;
+    private CircleImageView mImageViewStart;
 
     private View rootView;
 
@@ -77,7 +78,7 @@ public class ToolbarView extends AppBarLayout {
             throw new IllegalArgumentException("Make sure the view is inflated");
 
         try {
-            Toolbar toolbar = rootView.findViewById(R.id.custom_toolbar);
+            Toolbar toolbar = findViewById(R.id.custom_toolbar);
             ((AppCompatActivity) activity).setSupportActionBar(toolbar);
 
             ((AppCompatActivity) activity).getSupportActionBar().setDisplayHomeAsUpEnabled(displayHome);
@@ -164,8 +165,8 @@ public class ToolbarView extends AppBarLayout {
 
         } else if(gravity == GRAVITY_END) {
 
-            mToolbarLayoutEnd.setVisibility(GONE);
-            mToolbarLayoutStart.setVisibility(VISIBLE);
+            mToolbarLayoutEnd.setVisibility(VISIBLE);
+            mToolbarLayoutStart.setVisibility(GONE);
 
         } else {
             Log.e(TAG, "Doesn't exist");
@@ -177,7 +178,7 @@ public class ToolbarView extends AppBarLayout {
         return this;
     }
 
-    public RoundedImageView hide() {
+    public CircleImageView hide() {
 
         if(mImageViewStart != null) {
             mImageViewStart.setVisibility(GONE);
@@ -195,17 +196,17 @@ public class ToolbarView extends AppBarLayout {
         return null;
     }
 
-    public RoundedImageView show() {
+    public CircleImageView show() {
 
         if(mImageViewStart != null) {
-            mImageViewStart.setVisibility(GONE);
+            mImageViewStart.setVisibility(VISIBLE);
             return mImageViewStart;
         } else {
             Log.e(TAG, "The views are not initialize");
         }
 
         if(mImageViewEnd != null) {
-            mImageViewEnd.setVisibility(GONE);
+            mImageViewEnd.setVisibility(VISIBLE);
             return  mImageViewEnd;
         } else {
             Log.e(TAG, "The views are not initialize");
@@ -213,4 +214,10 @@ public class ToolbarView extends AppBarLayout {
         return null;
     }
 
+    public void onImageClickListener(OnClickListener listener) {
+        mImageViewEnd.setOnClickListener(listener);
+    }
+    @Override
+    public void onClick(View view) {
+    }
 }

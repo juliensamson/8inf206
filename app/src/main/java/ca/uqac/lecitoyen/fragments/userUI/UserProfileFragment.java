@@ -2,15 +2,12 @@ package ca.uqac.lecitoyen.fragments.userUI;
 
 import android.content.Context;
 import android.content.Intent;
-import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.AppBarLayout;
 import android.support.design.widget.FloatingActionButton;
-import android.support.v4.app.Fragment;
 import android.support.v4.widget.SwipeRefreshLayout;
-import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
@@ -26,12 +23,10 @@ import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
 import com.daimajia.swipe.adapters.RecyclerSwipeAdapter;
-import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.StorageReference;
 
@@ -55,6 +50,8 @@ public class UserProfileFragment extends BaseFragment implements View.OnClickLis
     private static final String TAG = UserProfileFragment.class.getSimpleName();
     private static final String ARG_USER_AUTH = "user_auth";
     private static final String ARG_USER_SELECT = "user_select";
+
+    private OnFragmentInteractionListener mListener;
 
     private MainUserActivity mUserActivity;
     private iHandleFragment mHandleFragment;
@@ -90,10 +87,18 @@ public class UserProfileFragment extends BaseFragment implements View.OnClickLis
         // Required empty public constructor
     }
 
+    public static UserProfileFragment newInstance(User userSelect) {
+        UserProfileFragment fragment = new UserProfileFragment();
+        Bundle args = new Bundle();
+        args.putSerializable(ARG_USER_SELECT, userSelect);
+        fragment.setArguments(args);
+        return fragment;
+    }
+
     public static UserProfileFragment newInstance(String userAuthId, User userSelect) {
         UserProfileFragment fragment = new UserProfileFragment();
         Bundle args = new Bundle();
-        args.putString(ARG_USER_AUTH, userAuthId);
+        //args.putString(ARG_USER_AUTH, userAuthId);
         args.putSerializable(ARG_USER_SELECT, userSelect);
         fragment.setArguments(args);
         return fragment;
@@ -104,7 +109,7 @@ public class UserProfileFragment extends BaseFragment implements View.OnClickLis
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
             this.mUserActivity = (MainUserActivity) getActivity();
-            mUserAuthId = getArguments().getString(ARG_USER_AUTH);
+            //mUserAuthId = getArguments().getString(ARG_USER_AUTH);
             mUserSelect = (User) getArguments().getSerializable(ARG_USER_SELECT);
         } else {
             Log.e(TAG, "User select is null");
@@ -151,14 +156,14 @@ public class UserProfileFragment extends BaseFragment implements View.OnClickLis
         setHasOptionsMenu(true);
         if(mUserActivity.getSupportActionBar() != null) {
 
-            if (mUserAuthId.equals(mUserSelect.getUid())) {
-                mAddPostButton.setVisibility(View.VISIBLE);
-                mUserActivity.setBottomNavigationItem(4);
-                mUserActivity.getSupportActionBar().setDisplayHomeAsUpEnabled(false);
-            } else {
+            //if (mUserAuthId.equals(mUserSelect.getUid())) {
+                //mAddPostButton.setVisibility(View.VISIBLE);
+                //mUserActivity.setBottomNavigationItem(4);
+                //mUserActivity.getSupportActionBar().setDisplayHomeAsUpEnabled(false);
+            //} else {
                 mAddPostButton.setVisibility(View.GONE);
                 mUserActivity.getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-            }
+            //}
 
         }
 
@@ -166,10 +171,24 @@ public class UserProfileFragment extends BaseFragment implements View.OnClickLis
         return view;
     }
 
+    public void sendBack(String something) {
+
+        if(mListener != null) {
+            mListener.onFragmentInteraction(something);
+        }
+
+    }
+
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
         mHandleFragment = (MainUserActivity) getActivity();
+        if (context instanceof OnFragmentInteractionListener) {
+            mListener = (OnFragmentInteractionListener) context;
+        } else {
+            throw new RuntimeException(context.toString()
+                    + " must implement OnFragmentInteractionListener");
+        }
     }
 
     @Override
@@ -179,18 +198,77 @@ public class UserProfileFragment extends BaseFragment implements View.OnClickLis
     }
 
     @Override
+    public void onDetach() {
+        super.onDetach();
+        mHandleFragment = null;
+        mUserSelect = null;
+        mCollapsedMenu = null;
+        mSettingsMenuItem = null;
+        mEditMenuItem = null;
+    }
+
+    @Override
+    public void onClick(View view) {
+
+    }
+
+    private void updateUI() {
+
+        DatabaseManager dbManager = DatabaseManager.getInstance();
+        DatabaseReference dbUserPost = dbManager.getDatabaseUserPosts(mUserSelect.getUid());
+        StorageReference stUserProfilePicture =
+                dbManager.getStorageUserProfilPicture(mUserSelect.getUid(), mUserSelect.getPid());
+
+        ArrayList<Post> postsList = new ArrayList<>();
+
+        initUserdata(stUserProfilePicture);
+
+        dbUserPost.orderByChild("dateInverse").addListenerForSingleValueEvent(initPostsList(postsList));
+
+        mSwipeRefreshLayout.setOnRefreshListener(refreshListener(dbManager, postsList));
+
+    }
+
+    private void initUserdata(StorageReference stUserProfilPicture) {
+
+        if(mUserSelect.getPid() != null && !mUserSelect.getPid().isEmpty()) {
+            Glide.with(mUserActivity).load(stUserProfilPicture).into(mToolbarProfilPictureView);
+            Glide.with(mUserActivity).load(stUserProfilPicture).into(mProfilPictureView);
+        }
+
+        if (mUserSelect.getName() != null && !mUserSelect.getName().isEmpty()) {
+            mToolbarName.setText(mUserSelect.getName());
+            mNameView.setText(mUserSelect.getName());
+        }
+
+        if (mUserSelect.getUsername() != null && !mUserSelect.getUsername().isEmpty())
+            mUsernameView.setText(mUserSelect.getUsername());
+
+        if (mUserSelect.getBiography() != null && !mUserSelect.getBiography().isEmpty())
+            mBiographyView.setText(mUserSelect.getBiography());
+
+        mFollowerCount.setText(Util.setStringPlurial(
+                0,
+                getString(R.string.textview_follower)));
+        mFollowingCount.setText(Util.setStringPlurial(
+                0,
+                getString(R.string.textview_following)));
+        //  Following & Follower
+    }
+
+    @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         super.onCreateOptionsMenu(menu, inflater);
         Log.d(TAG, "onCreateOptionsMenu");
-        if (mUserAuthId.equals(mUserSelect.getUid())) {
-            inflater.inflate(R.menu.user_menu, menu);
-            if(mCollapsedMenu == null)
-                mCollapsedMenu = menu;
-            if(mSettingsMenuItem == null)
-                mSettingsMenuItem = mCollapsedMenu.findItem(R.id.menu_settings);
-            if(mEditMenuItem == null)
-                mEditMenuItem = mCollapsedMenu.findItem(R.id.menu_edit);
-        }
+        //if (mUserAuthId.equals(mUserSelect.getUid())) {
+        inflater.inflate(R.menu.user_menu, menu);
+        if(mCollapsedMenu == null)
+            mCollapsedMenu = menu;
+        if(mSettingsMenuItem == null)
+            mSettingsMenuItem = mCollapsedMenu.findItem(R.id.menu_settings);
+        if(mEditMenuItem == null)
+            mEditMenuItem = mCollapsedMenu.findItem(R.id.menu_edit);
+        // }
     }
 
     @Override
@@ -222,7 +300,9 @@ public class UserProfileFragment extends BaseFragment implements View.OnClickLis
         switch (item.getItemId())
         {
             case android.R.id.home:
-                mHandleFragment.inflateFragment(R.string.fragment_forum, "");
+
+                //mHandleFragment.inflateFragment(R.string.fragment_forum, "");
+                sendBack("allo");
                 return true;
             case R.id.menu_edit:
                 Log.w(TAG, "menu_edit clicked");
@@ -234,66 +314,6 @@ public class UserProfileFragment extends BaseFragment implements View.OnClickLis
                 return true;
         }
         return super.onOptionsItemSelected(item);
-    }
-
-
-
-    @Override
-    public void onDetach() {
-        super.onDetach();
-        mHandleFragment = null;
-        mUserSelect = null;
-        mCollapsedMenu = null;
-        mSettingsMenuItem = null;
-        mEditMenuItem = null;
-    }
-
-    @Override
-    public void onClick(View view) {
-
-    }
-
-    private void updateUI() {
-
-        DatabaseManager dbManager = DatabaseManager.getInstance();
-        DatabaseReference dbUserPost = dbManager.getDatabaseUserPosts(mUserSelect.getUid());
-        StorageReference stUserProfilePicture = dbManager.getStorageUserProfilPicture(mUserSelect.getUid());
-
-        ArrayList<Post> postsList = new ArrayList<>();
-
-        initUserdata(stUserProfilePicture);
-
-        dbUserPost.orderByChild("dateInverse").addListenerForSingleValueEvent(initPostsList(postsList));
-
-        mSwipeRefreshLayout.setOnRefreshListener(refreshListener(dbManager, postsList));
-
-    }
-
-    private void initUserdata(StorageReference stUserProfilPicture) {
-
-        if(mUserSelect.getPid() != null && !mUserSelect.getPid().isEmpty()) {
-            Glide.with(mUserActivity).load(stUserProfilPicture.child(mUserSelect.getPid())).into(mToolbarProfilPictureView);
-            Glide.with(mUserActivity).load(stUserProfilPicture.child(mUserSelect.getPid())).into(mProfilPictureView);
-        }
-
-        if (mUserSelect.getName() != null && !mUserSelect.getName().isEmpty()) {
-            mToolbarName.setText(mUserSelect.getName());
-            mNameView.setText(mUserSelect.getName());
-        }
-
-        if (mUserSelect.getUsername() != null && !mUserSelect.getUsername().isEmpty())
-            mUsernameView.setText(mUserSelect.getUsername());
-
-        if (mUserSelect.getBiography() != null && !mUserSelect.getBiography().isEmpty())
-            mBiographyView.setText(mUserSelect.getBiography());
-
-        mFollowerCount.setText(Util.setStringPlurial(
-                0,
-                getString(R.string.textview_follower)));
-        mFollowingCount.setText(Util.setStringPlurial(
-                0,
-                getString(R.string.textview_following)));
-        //  Following & Follower
     }
 
     private AppBarLayout.OnOffsetChangedListener onOffsetChangedListener(final View view) {
@@ -368,7 +388,7 @@ public class UserProfileFragment extends BaseFragment implements View.OnClickLis
 
     private ValueEventListener initPostsList(final ArrayList<Post> userPostsList) {
         Log.d(TAG, "readPublicationListOnce");
-        showProgressDialog();
+        //showProgressDialog();
         return new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
@@ -389,7 +409,7 @@ public class UserProfileFragment extends BaseFragment implements View.OnClickLis
                         mProfileRecyclerView.setAdapter(mProfileAdapter);
                     }
                 }
-                hideProgressDialog();
+                //hideProgressDialog();
             }
 
             @Override
@@ -432,6 +452,13 @@ public class UserProfileFragment extends BaseFragment implements View.OnClickLis
                 Log.e(TAG, databaseError.toString());
             }
         };
+    }
+
+
+    public interface OnFragmentInteractionListener {
+
+        void onFragmentInteraction(String something);
+
     }
 
 }

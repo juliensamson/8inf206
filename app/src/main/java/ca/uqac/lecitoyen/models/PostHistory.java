@@ -1,10 +1,12 @@
 package ca.uqac.lecitoyen.models;
 
+import java.io.Serializable;
+
 /**
  * Created by jul_samson on 18-10-04.
  */
 
-public class PostHistory {
+public class PostHistory implements Serializable{
 
     private int modifcationNumber;
 

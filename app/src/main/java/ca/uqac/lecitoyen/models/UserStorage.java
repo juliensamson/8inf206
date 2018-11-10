@@ -1,7 +1,9 @@
 package ca.uqac.lecitoyen.models;
 
 
-public class UserStorage {
+import java.io.Serializable;
+
+public class UserStorage implements Serializable{
 
     private String pid;
 

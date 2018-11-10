@@ -173,7 +173,6 @@ public class ProfilFragment extends BaseFragment implements View.OnClickListener
                 dbUserData = dbManager.getDatabaseUser(uid);
                 dbUserProfilPicture = dbManager.getDatabaseUserProfilPicture(uid);
                 dbUserPost = dbManager.getDatabaseUserPosts(uid);
-                stUserProfilPicture = dbManager.getStorageUserProfilPicture(uid);
                 updateUI();
             }
         } else {

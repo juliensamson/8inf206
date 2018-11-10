@@ -1,5 +1,8 @@
 package ca.uqac.lecitoyen.models;
 
+import android.os.Parcel;
+import android.os.Parcelable;
+
 import com.google.firebase.database.Exclude;
 
 import java.io.Serializable;
@@ -7,7 +10,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
-public class Post implements Serializable {
+public class Post implements Parcelable {
 
     //  Post information
     private String postid;
@@ -88,6 +91,28 @@ public class Post implements Serializable {
 
      */
 
+
+    protected Post(Parcel in) {
+        postid = in.readString();
+        message = in.readString();
+        audio = in.readString();
+        date = in.readLong();
+        dateInverse = in.readLong();
+        upvoteCount = in.readLong();
+        repostCount = in.readLong();
+    }
+
+    public static final Creator<Post> CREATOR = new Creator<Post>() {
+        @Override
+        public Post createFromParcel(Parcel in) {
+            return new Post(in);
+        }
+
+        @Override
+        public Post[] newArray(int size) {
+            return new Post[size];
+        }
+    };
 
     public String getPostid() {
         return postid;
@@ -210,4 +235,19 @@ public class Post implements Serializable {
         return result;
     }
 
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel parcel, int i) {
+        parcel.writeString(postid);
+        parcel.writeString(message);
+        parcel.writeString(audio);
+        parcel.writeLong(date);
+        parcel.writeLong(dateInverse);
+        parcel.writeLong(upvoteCount);
+        parcel.writeLong(repostCount);
+    }
 }
