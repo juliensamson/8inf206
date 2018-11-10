@@ -216,12 +216,10 @@ public class UserProfileFragment extends BaseFragment implements View.OnClickLis
 
         DatabaseManager dbManager = DatabaseManager.getInstance();
         DatabaseReference dbUserPost = dbManager.getDatabaseUserPosts(mUserSelect.getUid());
-        StorageReference stUserProfilePicture =
-                dbManager.getStorageUserProfilPicture(mUserSelect.getUid(), mUserSelect.getPid());
+
+        initUserdata(dbManager);
 
         ArrayList<Post> postsList = new ArrayList<>();
-
-        initUserdata(stUserProfilePicture);
 
         dbUserPost.orderByChild("dateInverse").addListenerForSingleValueEvent(initPostsList(postsList));
 
@@ -229,11 +227,17 @@ public class UserProfileFragment extends BaseFragment implements View.OnClickLis
 
     }
 
-    private void initUserdata(StorageReference stUserProfilPicture) {
+    private void initUserdata(DatabaseManager dbManager) {
 
         if(mUserSelect.getPid() != null && !mUserSelect.getPid().isEmpty()) {
-            Glide.with(mUserActivity).load(stUserProfilPicture).into(mToolbarProfilPictureView);
-            Glide.with(mUserActivity).load(stUserProfilPicture).into(mProfilPictureView);
+            StorageReference stUserProfilePicture =
+                    dbManager.getStorageUserProfilPicture(mUserSelect.getUid(), mUserSelect.getPid());
+
+            Glide.with(mUserActivity).load(stUserProfilePicture).into(mToolbarProfilPictureView);
+            Glide.with(mUserActivity).load(stUserProfilePicture).into(mProfilPictureView);
+        } else {
+            Glide.with(mUserActivity).load(R.color.black_200).into(mToolbarProfilPictureView);
+            Glide.with(mUserActivity).load(R.color.black_200).into(mProfilPictureView);
         }
 
         if (mUserSelect.getName() != null && !mUserSelect.getName().isEmpty()) {

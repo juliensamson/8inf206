@@ -107,10 +107,6 @@ public class ForumFragment extends BaseFragment implements View.OnClickListener 
         if (getArguments() != null) {
             mUserAuth = (User) getArguments().getSerializable(ARG_USER);
             //mPostsList = getArguments().getParcelableArrayList(ARG_POSTS);
-
-            Log.d(TAG, "List "
-                    + mPostsList.get(0).getPostid()
-                    + " " + mPostsList.get(0).getUser().getName());
             //mPostsList.clear();
             //mForumAdapter = mainUserActivity.getForumAdapter();
             //mPostsList = mainUserActivity.getPostsList();
@@ -271,7 +267,7 @@ public class ForumFragment extends BaseFragment implements View.OnClickListener 
             public void onRefresh() {
 
 
-                int postLastPostLoaded = mPostsList.size() - 1;
+                /*int postLastPostLoaded = mPostsList.size() - 1;
                 Post lastPostLoaded = mPostsList.get(postLastPostLoaded);
 
                 long currentTime = System.currentTimeMillis();
@@ -279,7 +275,7 @@ public class ForumFragment extends BaseFragment implements View.OnClickListener 
                 dbManager.getDatabasePosts()
                         .startAt(lastPostLoaded.getDate())
                         .addChildEventListener(childEventListener(mPostsList));
-
+                */
                 /*while (true) {
                     if(System.currentTimeMillis() >= currentTime + 5000) {
                         mSwipeRefreshLayout.setRefreshing(false);

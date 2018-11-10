@@ -7,13 +7,24 @@
     android:orientation="vertical"
     tools:context="ca.uqac.lecitoyen.fragments.userUI.SearchFragment">
 
-    <include
-        android:id="@+id/toolbar_search"
-        layout="@layout/toolbar_search"/>
-
-    <TextView
+    <android.support.design.widget.AppBarLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:text="@string/hello_blank_fragment" />
+        android:layout_height="wrap_content">
+
+        <ca.uqac.lecitoyen.views.ToolbarView
+            android:id="@+id/search_toolbar"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+        </ca.uqac.lecitoyen.views.ToolbarView>
+
+    </android.support.design.widget.AppBarLayout>
+
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/search_recycler_view"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+    </android.support.v7.widget.RecyclerView>
 
 </LinearLayout>

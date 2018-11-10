@@ -10,6 +10,7 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.widget.Toolbar;
+import android.util.AndroidRuntimeException;
 import android.util.Log;
 import android.widget.TextView;
 
@@ -72,18 +73,15 @@ public class MainUserActivity extends BaseActivity implements
     private SearchFragment searchFragment;
     private CityfeedFragment cityfeedFragment;
     private MessageFragment messageFragment;
-    private ProfilFragment profilFragment;
     private UserProfileFragment userProfileFragment;
 
     private DatabaseManager dbManager;
-    private DatabaseReference dbUsersData;
-    private DatabaseReference dbUserProfilPicture;
-    private DatabaseReference dbPosts;
 
-    private User mUserdata;
+
     private User mUserAuth;
 
     public UserStorage mUserStorage;
+    private ArrayList<User> mUsersList = new ArrayList<>();
     private ArrayList<Post> mPostsList = new ArrayList<>();
     private RecyclerSwipeAdapter mForumAdapter;
 
@@ -124,8 +122,6 @@ public class MainUserActivity extends BaseActivity implements
         searchFragment = new SearchFragment();
         cityfeedFragment = new CityfeedFragment();
         messageFragment = new MessageFragment();
-        profilFragment   = new ProfilFragment();
-
         //doFragmentTransaction(forumFragment, getString(R.string.fragment_forum), false, "");
 
         //  Bottom navigation
@@ -177,7 +173,11 @@ public class MainUserActivity extends BaseActivity implements
 
                 //loadUriProfileImage();
 
-                /*      Get the lists of posts      */
+                /*      Get the list of users      */
+
+                loadUsersList(dataSnapshot);
+
+                /*      Get the list of posts      */
 
                 loadPostsList(dataSnapshot);
 
@@ -238,6 +238,25 @@ public class MainUserActivity extends BaseActivity implements
         });*/
     }
 
+    private void loadUsersList(DataSnapshot dataSnapshot) {
+        Query dbPosts = dataSnapshot.getRef().child("users");
+        dbPosts.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+
+                for(DataSnapshot postSnapshot : dataSnapshot.getChildren()) {
+                    mUsersList.add(postSnapshot.getValue(User.class));
+                }
+                searchFragment = SearchFragment.newInstance(mUserAuth, mUsersList);
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+                Log.e(TAG, databaseError.getMessage());
+            }
+        });
+    }
+
     private void loadPostsList(DataSnapshot dataSnapshot) {
         Query dbPosts = dataSnapshot.getRef().child("posts").orderByChild("dateInverse");
         dbPosts.addListenerForSingleValueEvent(new ValueEventListener() {
@@ -269,6 +288,7 @@ public class MainUserActivity extends BaseActivity implements
         transaction.replace(R.id.user_container, forumFragment);
         transaction.commit();
     }
+
 
     public void doUserProfileTransaction(Fragment fragment, int userType) {
 
@@ -389,20 +409,6 @@ public class MainUserActivity extends BaseActivity implements
         Intent intent = new Intent(this, activity);
         intent.putExtras(extras);
         startActivity(intent);
-    }
-
-    private ValueEventListener getUserdata() {
-        return new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                mUserdata = dataSnapshot.getValue(User.class);
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
-
-            }
-        };
     }
 
     /**
