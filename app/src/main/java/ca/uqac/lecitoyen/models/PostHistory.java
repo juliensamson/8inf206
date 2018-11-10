@@ -1,12 +1,15 @@
 package ca.uqac.lecitoyen.models;
 
+import android.os.Parcel;
+import android.os.Parcelable;
+
 import java.io.Serializable;
 
 /**
  * Created by jul_samson on 18-10-04.
  */
 
-public class PostHistory implements Serializable{
+public class PostHistory implements Parcelable {
 
     private int modifcationNumber;
 
@@ -45,5 +48,15 @@ public class PostHistory implements Serializable{
 
     public void setModificationTimestamp(long modificationTimestamp) {
         this.modificationTimestamp = modificationTimestamp;
+    }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel parcel, int i) {
+
     }
 }

@@ -264,7 +264,7 @@ public class MainUserActivity extends BaseActivity implements
     }
 
     private void loadInitialFragment() {
-        forumFragment = ForumFragment.newInstance(mUserAuth);
+        forumFragment = ForumFragment.newInstance(mUserAuth, mPostsList);
         FragmentTransaction transaction = mFragmentManager.beginTransaction();
         transaction.replace(R.id.user_container, forumFragment);
         transaction.commit();

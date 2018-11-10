@@ -87,11 +87,11 @@ public class ForumFragment extends BaseFragment implements View.OnClickListener 
         // Required empty public constructor
     }
 
-    public static ForumFragment newInstance(User userAuth) {
+    public static ForumFragment newInstance(User userAuth, ArrayList<Post> posts) {
         ForumFragment fragment = new ForumFragment();
         Bundle args = new Bundle();
         args.putSerializable(ARG_USER, userAuth);
-        //args.putParcelableArrayList(ARG_POSTS, posts);
+        args.putParcelableArrayList(ARG_POSTS, posts);
         fragment.setArguments(args);
         return fragment;
     }
@@ -106,10 +106,14 @@ public class ForumFragment extends BaseFragment implements View.OnClickListener 
 
         if (getArguments() != null) {
             mUserAuth = (User) getArguments().getSerializable(ARG_USER);
-            //mPostsList = (ArrayList<Post>) getArguments().getSerializable(ARG_POSTS);
-            mPostsList.clear();
+            //mPostsList = getArguments().getParcelableArrayList(ARG_POSTS);
+
+            Log.d(TAG, "List "
+                    + mPostsList.get(0).getPostid()
+                    + " " + mPostsList.get(0).getUser().getName());
+            //mPostsList.clear();
             //mForumAdapter = mainUserActivity.getForumAdapter();
-            mPostsList = mainUserActivity.getPostsList();
+            //mPostsList = mainUserActivity.getPostsList();
         } else {
             if(savedInstanceState != null) {
                 mUserAuth = (User) savedInstanceState.getSerializable(ARG_USER);
@@ -124,7 +128,18 @@ public class ForumFragment extends BaseFragment implements View.OnClickListener 
         View view = inflater.inflate(R.layout.fragment_forum, container, false);
 
         mForumToolbar = view.findViewById(R.id.forum_toolbar);
-        mForumToolbar
+        mForumToolbar.create(
+                mainUserActivity,
+                ToolbarView.GRAVITY_END,
+                getResources().getString(R.string.fragment_forum),
+                dbManager.getStorageUserProfilPicture(mUserAuth.getUid(), mUserAuth.getPid())
+        );
+        /*mForumToolbar
+                .with(mainUserActivity)
+                .setTitle(getTag())
+                .setImageGravity(ToolbarView.GRAVITY_END)
+                .setImageView(dbManager.getStorageUserProfilPicture(mUserAuth.getUid(), mUserAuth.getPid()));
+        /*mForumToolbar
                 .setImageGravity(ToolbarView.GRAVITY_END)
                 .setTitle(getTag())
                 .setImageView(dbManager.getStorageUserProfilPicture(mUserAuth.getUid(), mUserAuth.getPid()))
@@ -133,7 +148,7 @@ public class ForumFragment extends BaseFragment implements View.OnClickListener 
                 this,
                 false,
                 R.drawable.ic_close_primary_24dp
-        );
+        );*/
         //  Views
         mSwipeRefreshLayout = view.findViewById(R.id.forum_refresh_layout);
         mForumRecyclerView = view.findViewById(R.id.newsfeed_recycler_view);
@@ -148,11 +163,11 @@ public class ForumFragment extends BaseFragment implements View.OnClickListener 
 
         Log.e(TAG, "Adapter " + mainUserActivity.getForumAdapter().toString());
 
-        if(mainUserActivity.getForumAdapter() != null) {
+        //if(mainUserActivity.getForumAdapter() != null) {
             mForumAdapter = mainUserActivity.getForumAdapter();
             mForumRecyclerView.setAdapter(mForumAdapter);
-        } else
-            mForumRecyclerView.setAdapter(new SwipePostAdapter(mainUserActivity, mUserAuth, mPostsList));
+        //} else
+        //    mForumRecyclerView.setAdapter(new SwipePostAdapter(mainUserActivity, mUserAuth, mPostsList));
 
         mForumToolbar.onImageClickListener(new View.OnClickListener() {
             @Override

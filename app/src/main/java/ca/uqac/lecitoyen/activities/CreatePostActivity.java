@@ -134,7 +134,6 @@ public class CreatePostActivity extends BaseActivity implements View.OnClickList
                 dbReference = dbManager.getReference();
                 dbUserdata = dbManager.getDatabaseUser(uid);
                 dbPosts = dbManager.getDatabasePosts();
-                stUserProfilPicture = dbManager.getStorageUserProfilPicture(uid);
 
                 //  read user data
                 dbUserdata.addValueEventListener(readUserdata());

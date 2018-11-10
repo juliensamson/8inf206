@@ -2,10 +2,13 @@ package ca.uqac.lecitoyen.models;
 
 //TODO: Store user data locally
 
+import android.os.Parcel;
+import android.os.Parcelable;
+
 import java.io.Serializable;
 import java.util.Map;
 
-public class User implements Serializable {
+public class User implements Serializable, Parcelable {
 
     //  Public info
     private String uid;
@@ -72,6 +75,34 @@ public class User implements Serializable {
             Getter & Setter
 
      */
+
+    protected User(Parcel in) {
+        uid = in.readString();
+        pid = in.readString();
+        name = in.readString();
+        username = in.readString();
+        biography = in.readString();
+        email = in.readString();
+        phone = in.readString();
+        verify = in.readByte() != 0;
+        gender = in.readString();
+        creationTimestamp = in.readLong();
+        lastSigninTimestamp = in.readLong();
+        provider = in.readString();
+        location = in.readString();
+    }
+
+    public static final Creator<User> CREATOR = new Creator<User>() {
+        @Override
+        public User createFromParcel(Parcel in) {
+            return new User(in);
+        }
+
+        @Override
+        public User[] newArray(int size) {
+            return new User[size];
+        }
+    };
 
     public String getUid() {
         return uid;
@@ -175,6 +206,28 @@ public class User implements Serializable {
 
     public void setLocation(String location) {
         this.location = location;
+    }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel parcel, int i) {
+        parcel.writeString(uid);
+        parcel.writeString(pid);
+        parcel.writeString(name);
+        parcel.writeString(username);
+        parcel.writeString(biography);
+        parcel.writeString(email);
+        parcel.writeString(phone);
+        parcel.writeByte((byte) (verify ? 1 : 0));
+        parcel.writeString(gender);
+        parcel.writeLong(creationTimestamp);
+        parcel.writeLong(lastSigninTimestamp);
+        parcel.writeString(provider);
+        parcel.writeString(location);
     }
 
     /*public Map<String, Post> getUpvotePosts() {

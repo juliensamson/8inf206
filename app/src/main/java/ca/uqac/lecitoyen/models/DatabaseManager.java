@@ -200,10 +200,11 @@ public class DatabaseManager  {
                 .child(postId);
     }
 
-    public StorageReference getStorageUserProfilPicture(String uid) {
+    public StorageReference getStorageUserProfilPicture(String uid, String pid) {
         return FirebaseStorage.getInstance().getReference()
                 .child(CHILD_USER_PROFIL_PICTURE)
-                .child(uid);
+                .child(uid)
+                .child(pid);
     }
 
     /*

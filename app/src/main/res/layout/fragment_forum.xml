@@ -6,10 +6,17 @@
     android:layout_height="match_parent"
     tools:context=".fragments.userUI.ForumFragment">
 
-    <ca.uqac.lecitoyen.views.ToolbarView
-        android:id="@+id/forum_toolbar"
+    <android.support.design.widget.AppBarLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content" />
+        android:layout_height="wrap_content">
+
+        <ca.uqac.lecitoyen.views.ToolbarView
+            android:id="@+id/forum_toolbar"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:layout_scrollFlags="scroll|enterAlways|snap"/>
+
+    </android.support.design.widget.AppBarLayout>
 
 
     <android.support.v4.widget.SwipeRefreshLayout

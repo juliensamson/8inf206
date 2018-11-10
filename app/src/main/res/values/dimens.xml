@@ -17,6 +17,8 @@
     <dimen name="edit_text_size_setting">16sp</dimen>
     <dimen name="fab_margin">16dp</dimen>
 
+    <!-- Duration -->
+    <integer name="anim_profile_transaction">1000</integer>
 
     <!-- dimensions -->
     <dimen name="profile_image_view_small">32dp</dimen>

@@ -10,6 +10,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.AttributeSet;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.View;
 import android.widget.FrameLayout;
 import android.widget.LinearLayout;
@@ -25,7 +26,7 @@ import ca.uqac.lecitoyen.R;
 import ca.uqac.lecitoyen.activities.BaseActivity;
 import de.hdodenhof.circleimageview.CircleImageView;
 
-public class ToolbarView extends AppBarLayout implements View.OnClickListener {
+public class ToolbarView extends FrameLayout {
 
     private final static String TAG = ToolbarView.class.getSimpleName();
 
@@ -34,13 +35,9 @@ public class ToolbarView extends AppBarLayout implements View.OnClickListener {
 
     private Context mContext;
 
-    private FrameLayout mToolbarLayoutEnd;
-    private TextView mToolbarTitleEnd;
-    private CircleImageView mImageViewEnd;
-
-    private FrameLayout mToolbarLayoutStart;
-    private TextView mToolbarTitleStart;
-    private CircleImageView mImageViewStart;
+    private FrameLayout mToolbarLayout;
+    private TextView mToolbarTitle;
+    private CircleImageView mImageView;
 
     private View rootView;
 
@@ -54,20 +51,15 @@ public class ToolbarView extends AppBarLayout implements View.OnClickListener {
         inflate(context);
     }
 
-    private View inflate(Context context) {
+    private void inflate(Context context) {
         rootView  = inflate(context, R.layout.custom_toolbar_view, this);
 
         this.mContext = context;
 
-        this.mToolbarLayoutEnd = rootView.findViewById(R.id.toolbar_view_with_image_right_layout);
-        this.mToolbarTitleEnd  = rootView.findViewById(R.id.toolbar_view_with_image_right_title);
-        this.mImageViewEnd     = rootView.findViewById(R.id.toolbar_view_image_view_right);
+        this.mToolbarLayout = rootView.findViewById(R.id.toolbar_view_with_image_layout);
+        this.mToolbarTitle  = rootView.findViewById(R.id.toolbar_view_with_image_title);
+        this.mImageView     = rootView.findViewById(R.id.toolbar_view_image_view);
 
-        this.mToolbarLayoutStart = rootView.findViewById(R.id.toolbar_view_with_image_left_layout);
-        this.mToolbarTitleStart  = rootView.findViewById(R.id.toolbar_view_with_image_left_title);
-        this.mImageViewStart     = rootView.findViewById(R.id.toolbar_view_image_view_left);
-
-        return rootView;
     }
 
     public void createToolbarWithImageView(Activity activity, boolean displayHome, int returnHomeIcon) {
@@ -89,7 +81,42 @@ public class ToolbarView extends AppBarLayout implements View.OnClickListener {
         }
     }
 
-    public void createToolbarWithImageView(Activity parent, Fragment fragment, boolean displayHome, int returnHomeIcon) {
+    public ToolbarView create(Activity parent, int style, String title, StorageReference image) {
+
+        if(rootView == null)
+            throw new IllegalArgumentException("Make sure the view is inflated");
+
+        setTitle(title);
+
+        setImage(image);
+
+        Toolbar toolbar = findViewById(R.id.custom_toolbar);
+        ((AppCompatActivity)parent).setSupportActionBar(toolbar);
+
+        LayoutParams paramsImageView = (LayoutParams) mImageView.getLayoutParams();
+        switch (style) {
+
+            case GRAVITY_START:
+                paramsImageView.gravity = Gravity.START;
+                paramsImageView.setMarginStart(0);
+                mImageView.setLayoutParams(paramsImageView);
+                break;
+            case GRAVITY_END:
+                paramsImageView.gravity = Gravity.END;
+                mImageView.setLayoutParams(paramsImageView);
+
+                LayoutParams paramsTitle = (LayoutParams) mToolbarTitle.getLayoutParams();
+                paramsTitle.setMarginStart(0);
+                mToolbarTitle.setLayoutParams(paramsTitle);
+                break;
+
+        }
+
+        return this;
+    }
+
+
+    public ToolbarView createToolbarWithImageView(Activity parent, Fragment fragment, boolean displayHome, int returnHomeIcon) {
 
         //View rootView = inflate(activity);
 
@@ -104,18 +131,14 @@ public class ToolbarView extends AppBarLayout implements View.OnClickListener {
         } catch (NullPointerException npe) {
             Log.e(TAG, npe.getMessage());
         }
+
+        return this;
     }
 
     public ToolbarView setTitle(String title) {
 
-        if(mToolbarTitleStart != null){
-            mToolbarTitleStart.setText(title);
-        } else {
-            Log.e(TAG, "The views are not initialize");
-        }
-
-        if(mToolbarTitleEnd != null){
-            mToolbarTitleEnd.setText(title);
+        if(mToolbarTitle != null){
+            mToolbarTitle.setText(title);
         } else {
             Log.e(TAG, "The views are not initialize");
         }
@@ -123,16 +146,10 @@ public class ToolbarView extends AppBarLayout implements View.OnClickListener {
         return this;
     }
 
-    public ToolbarView setImageView(Uri uri) {
+    public ToolbarView setImage(Uri uri) {
 
-        if(mImageViewStart != null) {
-            Glide.with(mContext).load(uri).into(mImageViewStart);
-        } else {
-            Log.e(TAG, "The views are not initialize");
-        }
-
-        if(mImageViewEnd != null) {
-            Glide.with(mContext).load(uri).into(mImageViewEnd);
+        if(mImageView != null) {
+            Glide.with(mContext).load(uri).into(mImageView);
         } else {
             Log.e(TAG, "The views are not initialize");
         }
@@ -140,84 +157,40 @@ public class ToolbarView extends AppBarLayout implements View.OnClickListener {
         return this;
     }
 
-    public ToolbarView setImageView(StorageReference st) {
+    public ToolbarView setImage(StorageReference st) {
 
-        if(mImageViewStart != null) {
-            Glide.with(mContext).load(st).into(mImageViewStart);
+        if(mImageView != null) {
+            Glide.with(mContext).load(st).into(mImageView);
         } else {
             Log.e(TAG, "The views are not initialize");
         }
-
-        if(mImageViewEnd != null) {
-            Glide.with(mContext).load(st).into(mImageViewEnd);
-        } else {
-            Log.e(TAG, "The views are not initialize");
-        }
-        return this;
-    }
-
-    public ToolbarView setImageGravity(int gravity) {
-
-        if(gravity == GRAVITY_START) {
-
-            mToolbarLayoutStart.setVisibility(VISIBLE);
-            mToolbarLayoutEnd.setVisibility(GONE);
-
-        } else if(gravity == GRAVITY_END) {
-
-            mToolbarLayoutEnd.setVisibility(VISIBLE);
-            mToolbarLayoutStart.setVisibility(GONE);
-
-        } else {
-            Log.e(TAG, "Doesn't exist");
-        }
-        //params.height = mPicture.getMinimumHeight();
-        //mPicture.setLayoutParams(params);
-        //Log.d(TAG, "Height " + params.height);
 
         return this;
     }
 
-    public CircleImageView hide() {
 
-        if(mImageViewStart != null) {
-            mImageViewStart.setVisibility(GONE);
-            return mImageViewStart;
+    public void hide() {
+
+        if(mImageView != null) {
+            mImageView.setVisibility(GONE);
         } else {
             Log.e(TAG, "The views are not initialize");
         }
 
-        if(mImageViewEnd != null) {
-            mImageViewEnd.setVisibility(GONE);
-            return  mImageViewEnd;
-        } else {
-            Log.e(TAG, "The views are not initialize");
-        }
-        return null;
     }
 
-    public CircleImageView show() {
+    public void show() {
 
-        if(mImageViewStart != null) {
-            mImageViewStart.setVisibility(VISIBLE);
-            return mImageViewStart;
+        if(mImageView != null) {
+            mImageView.setVisibility(VISIBLE);
         } else {
             Log.e(TAG, "The views are not initialize");
         }
 
-        if(mImageViewEnd != null) {
-            mImageViewEnd.setVisibility(VISIBLE);
-            return  mImageViewEnd;
-        } else {
-            Log.e(TAG, "The views are not initialize");
-        }
-        return null;
     }
 
     public void onImageClickListener(OnClickListener listener) {
-        mImageViewEnd.setOnClickListener(listener);
+        mImageView.setOnClickListener(listener);
     }
-    @Override
-    public void onClick(View view) {
-    }
+
 }

@@ -5,69 +5,37 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <android.support.design.widget.AppBarLayout
+    <android.support.v7.widget.Toolbar
+        android:id="@+id/custom_toolbar"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="?attr/actionBarSize"
+        style="@style/LightToolbarTheme">
 
-        <android.support.v7.widget.Toolbar
-            android:id="@+id/custom_toolbar"
+        <FrameLayout
+            android:id="@+id/toolbar.view.with.image.layout"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_marginEnd="@dimen/activity_horizontal_margin"
-            app:layout_scrollFlags="scroll|enterAlways|snap"
-            style="@style/LightToolbarTheme">
+            android:visibility="visible">
 
-            <FrameLayout
-                android:id="@+id/toolbar.view.with.image.right.layout"
-                android:layout_width="match_parent"
+            <de.hdodenhof.circleimageview.CircleImageView
+                android:id="@+id/toolbar.view.image.view"
                 android:layout_height="match_parent"
-                android:visibility="gone">
+                android:layout_gravity="center_vertical|start"
+                android:layout_marginEnd="@dimen/activity_horizontal_margin"
+                app:civ_border_color="@color/primaryColor"
+                app:civ_border_width="2dp"
+                style="@style/ProfileImage.Small"/>
 
-                <TextView
-                    android:id="@+id/toolbar.view.with.image.right.title"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="@string/fragment_forum"
-                    style="@style/LightToolbarTheme.Title"/>
+            <TextView
+                android:id="@+id/toolbar.view.with.image.title"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_marginStart="48dp"
+                android:text="@string/fragment_forum"
+                style="@style/LightToolbarTheme.Title"/>
 
-                <com.makeramen.roundedimageview.RoundedImageView
-                    android:id="@+id/toolbar.view.image.view.right"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center_vertical|end"
-                    android:src="@drawable/ic_account_box_black_24dp"
-                    app:riv_corner_radius="20dp"
-                    style="@style/ProfileImage.Small"/>
+        </FrameLayout>
 
-            </FrameLayout>
-
-            <LinearLayout
-                android:id="@+id/toolbar.view.with.image.left.layout"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:visibility="visible">
-
-                <com.makeramen.roundedimageview.RoundedImageView
-                    android:id="@+id/toolbar.view.image.view.left"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:src="@drawable/ic_account_box_black_24dp"
-                    app:riv_corner_radius="20dp"
-                    style="@style/ProfileImage.Small"/>
-
-                <TextView
-                    android:id="@+id/toolbar.view.with.image.left.title"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_margin="8dp"
-                    android:text="@string/fragment_forum"
-                    style="@style/LightToolbarTheme.Title"/>
-
-            </LinearLayout>
-
-        </android.support.v7.widget.Toolbar>
-
-    </android.support.design.widget.AppBarLayout>
+    </android.support.v7.widget.Toolbar>
 
 </merge>

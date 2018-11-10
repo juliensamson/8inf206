@@ -150,11 +150,11 @@ public class ExpandPostActivity extends BaseActivity implements View.OnClickList
 
                     User user = post.getUser();
 
-                    StorageReference stProfilPicture = dbManager.getStorageUserProfilPicture(user.getUid());
+                    StorageReference stProfilPicture = dbManager.getStorageUserProfilPicture(user.getUid(), user.getPid());
                     StorageReference stPost = dbManager.getStoragePost(mPostId);
 
                     if(user.getPid() != null && !user.getPid().isEmpty())                                   //User's profil picture
-                        Glide.with(mContext).load(stProfilPicture.child(user.getPid())).into(mProfilImageView);
+                        Glide.with(mContext).load(stProfilPicture).into(mProfilImageView);
 
                     if(user.getName() != null && !user.getName().isEmpty())                                 //User's name
                         mNameTextView.setText(user.getName());
