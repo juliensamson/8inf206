@@ -47,6 +47,7 @@ import ca.uqac.lecitoyen.models.Post;
 import ca.uqac.lecitoyen.models.PostHistory;
 import ca.uqac.lecitoyen.models.User;
 import ca.uqac.lecitoyen.util.MultimediaView;
+import ca.uqac.lecitoyen.views.ToolbarView;
 import de.hdodenhof.circleimageview.CircleImageView;
 import id.zelory.compressor.Compressor;
 import nl.changer.audiowife.AudioWife;
@@ -62,6 +63,7 @@ public class CreatePostActivity extends BaseActivity implements View.OnClickList
 
     private Context mContext;
 
+    private ToolbarView mPostToolbar;
     private Toolbar mToolbar;
     private TextView mToolbarTitle;
     private TextView mToolbarButton;
@@ -77,6 +79,7 @@ public class CreatePostActivity extends BaseActivity implements View.OnClickList
     private Uri mImageUri;
     private Uri mAudioUri;
     private User mUserdata;
+    private User mUserAuth;
 
     //  Firebase Authentification
     private FirebaseAuth fbAuth;
@@ -93,6 +96,15 @@ public class CreatePostActivity extends BaseActivity implements View.OnClickList
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_create_post);
 
+        Intent intent = getIntent();
+        Bundle bundle = intent.getBundleExtra("bundle");
+        if(bundle != null) {
+            mUserAuth = bundle.getParcelable("user");
+            Log.e(TAG, mUserAuth.getName());
+        }
+
+
+
         //  Initialize auth
         fbAuth = FirebaseAuth.getInstance();
 
@@ -103,7 +115,7 @@ public class CreatePostActivity extends BaseActivity implements View.OnClickList
         dbManager = DatabaseManager.getInstance();
 
         //  View
-        setToolbar();
+        mPostToolbar = findViewById(R.id.create_post_toolbar);
         mPublicationView = findViewById(R.id.post_message);
         mCircleImageView = findViewById(R.id.post_profil_picture);
         mMultimediaView = findViewById(R.id.create_post_multimedia);
@@ -111,7 +123,7 @@ public class CreatePostActivity extends BaseActivity implements View.OnClickList
         mPlayerLayout = findViewById(R.id.create_post_audioplayer);
 
         //  Button
-        findViewById(R.id.toolbar_post_publish).setOnClickListener(this);
+        mPostToolbar.onButtonClickListener(this);
         findViewById(R.id.create_post_picture_gallery).setOnClickListener(this);
         findViewById(R.id.create_post_picture_camera).setOnClickListener(this);
         findViewById(R.id.create_post_music).setOnClickListener(this);
@@ -124,23 +136,7 @@ public class CreatePostActivity extends BaseActivity implements View.OnClickList
     @Override
     public void onStart() {
         super.onStart();
-        if (fbAuth != null) {
-
-            fbUser = fbAuth.getCurrentUser();
-
-            if (fbUser != null) {
-                String uid = fbUser.getUid();
-                //  Get database & storage reference
-                dbReference = dbManager.getReference();
-                dbUserdata = dbManager.getDatabaseUser(uid);
-                dbPosts = dbManager.getDatabasePosts();
-
-                //  read user data
-                dbUserdata.addValueEventListener(readUserdata());
-            }
-        } else {
-            Log.e(TAG, "auth is null");
-        }
+        updateUI();
     }
 
     @Override
@@ -162,7 +158,7 @@ public class CreatePostActivity extends BaseActivity implements View.OnClickList
     @Override
     public void onClick(View view) {
         switch (view.getId()) {
-            case R.id.toolbar_post_publish:
+            case R.id.toolbar_view_button:
                 updateDB();
                 break;
             case R.id.create_post_picture_camera:
@@ -180,19 +176,17 @@ public class CreatePostActivity extends BaseActivity implements View.OnClickList
         }
     }
 
-    private void setToolbar() {
-        mToolbar = findViewById(R.id.toolbar_button);
+    private void updateUI() {
 
-        setSupportActionBar(mToolbar);
+        mPostToolbar.buttonToolbar(this, "Publier");
 
-        try {
-            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-            getSupportActionBar().setHomeAsUpIndicator(R.drawable.ic_close_primary_24dp);
-        } catch (NullPointerException npe) {
-
-            Log.e(TAG, npe.getMessage());
-
+        if(mUserAuth.getPid() != null) {
+            StorageReference image = dbManager.getStorageUserProfilPicture(mUserAuth.getUid(), mUserAuth.getPid());
+            Glide.with(this).load(image).into(mCircleImageView);
+        } else {
+            Glide.with(this).load(R.color.black_200).into(mCircleImageView);
         }
+
     }
 
     @Override
@@ -402,27 +396,6 @@ public class CreatePostActivity extends BaseActivity implements View.OnClickList
                 });
     }
 
-
-
-    private ValueEventListener readUserdata() {
-        return new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                mUserdata = dataSnapshot.getValue(User.class);
-
-                if(mUserdata != null) {
-                    if (mUserdata.getPid() != null && !mUserdata.getPid().isEmpty())
-                        Glide.with(mContext).load(stUserProfilPicture.child(mUserdata.getPid())).into(mCircleImageView);
-
-                }
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
-                Log.e(TAG, databaseError.getMessage());
-            }
-        };
-    }
 
     private void setPostKey(Post post) {
 

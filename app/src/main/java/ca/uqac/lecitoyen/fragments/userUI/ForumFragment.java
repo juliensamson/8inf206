@@ -124,7 +124,7 @@ public class ForumFragment extends BaseFragment implements View.OnClickListener 
         View view = inflater.inflate(R.layout.fragment_forum, container, false);
 
         mForumToolbar = view.findViewById(R.id.forum_toolbar);
-        mForumToolbar.create(
+        mForumToolbar.defaultToolbar(
                 mainUserActivity,
                 ToolbarView.GRAVITY_END,
                 getResources().getString(R.string.fragment_forum),
@@ -247,7 +247,13 @@ public class ForumFragment extends BaseFragment implements View.OnClickListener 
         switch (view.getId())
         {
             case R.id.newsfeed_add_message:
-                startActivity(new Intent(getContext(), CreatePostActivity.class));
+                Bundle args = new Bundle();
+                args.putParcelable("user", mUserAuth);
+
+                Intent intent = new Intent(mainUserActivity, CreatePostActivity.class);
+                intent.putExtra("bundle", args);
+
+                startActivity(intent);
                 break;
             default:
                 break;

@@ -7,7 +7,7 @@
         android:id="@+id/multimedia_main_layout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@drawable/shape_corner"
+        android:background="@drawable/edit_text_search"
         android:visibility="visible">
 
         <com.makeramen.roundedimageview.RoundedImageView

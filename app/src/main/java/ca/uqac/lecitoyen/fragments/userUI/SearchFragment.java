@@ -5,13 +5,15 @@ import android.content.Context;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-
-import com.daimajia.swipe.adapters.RecyclerSwipeAdapter;
-import com.mancj.materialsearchbar.MaterialSearchBar;
 
 import java.util.ArrayList;
 
@@ -44,7 +46,6 @@ public class SearchFragment extends BaseFragment implements View.OnClickListener
     private RecyclerView mSearchRecyclerView;
     //private RecyclerView.Adapter mNewsfeedAdapter;
     private RecyclerView.Adapter mSearchAdapter;
-    private MaterialSearchBar mSearchBar;
 
     //  Data Structure
     private User mUserAuth;
@@ -85,9 +86,8 @@ public class SearchFragment extends BaseFragment implements View.OnClickListener
         View view = inflater.inflate(R.layout.fragment_search, container, false);
 
         mSearchToolbar = view.findViewById(R.id.search_toolbar);
-        mSearchToolbar.create(
+        mSearchToolbar.searchToolbar(
                 activity,
-                ToolbarView.GRAVITY_START,
                 getResources().getString(R.string.fragment_search),
                 dbManager.getStorageUserProfilPicture(mUserAuth.getUid(), mUserAuth.getPid())
         );
@@ -101,7 +101,6 @@ public class SearchFragment extends BaseFragment implements View.OnClickListener
                 }
             }
         });
-
 
 
         mSearchRecyclerView = view.findViewById(R.id.search_recycler_view);
@@ -137,6 +136,26 @@ public class SearchFragment extends BaseFragment implements View.OnClickListener
     public void onAttach(Context context) {
         super.onAttach(context);
         mHandleFragment = (MainUserActivity) getActivity();
+    }
+
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        super.onCreateOptionsMenu(menu, inflater);
+        inflater.inflate(R.menu.search_menu, menu);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+
+        switch (item.getItemId())
+        {
+            case android.R.id.home:
+                return true;
+            case R.id.action_search:
+                return true;
+
+        }
+        return super.onOptionsItemSelected(item);
     }
 
     @Override

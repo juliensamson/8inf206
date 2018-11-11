@@ -245,7 +245,7 @@ public class MultimediaView extends FrameLayout {
             mBottomLayout.setBackground(getResources().getDrawable(R.drawable.shape_corner_bottom));
         } else {
             //mPicture.setVisibility(GONE);
-            mBottomLayout.setBackground(getResources().getDrawable(R.drawable.shape_corner));
+            mBottomLayout.setBackground(getResources().getDrawable(R.drawable.edit_text_search));
         }
 
         if(!title.isEmpty()) {

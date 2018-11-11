@@ -10,9 +10,9 @@
 
     <style name="CustomActivityAnimation" parent="@android:style/Animation.Activity">
         <item name="android:activityOpenEnterAnimation">@anim/enter_from_right</item>
-        <item name="android:activityOpenExitAnimation">@anim/exit_from_left</item>
+        <item name="android:activityOpenExitAnimation">@anim/exit_from_right</item>
         <item name="android:activityCloseEnterAnimation">@anim/enter_from_left</item>
-        <item name="android:activityCloseExitAnimation">@anim/exit_from_right</item>
+        <item name="android:activityCloseExitAnimation">@anim/exit_from_left</item>
     </style>
 
     <!-- ******** Light Toolbar ******** -->
@@ -64,7 +64,7 @@
 
     <!-- *********  TEXTVIEW STYLE  ********* -->
     <style name="TextView">
-        <item name="android:text">TextView placeholder</item>
+        <item name="android:text">Placeholder</item>
         <item name="android:layout_width">wrap_content</item>
         <item name="android:layout_height">wrap_content</item>
         <item name="android:textColor">@color/black_700</item>
@@ -87,6 +87,21 @@
         <item name="android:textColor">@color/black_400</item>
     </style>
 
+    <style name="TextView.Large">
+        <item name="android:textSize">18sp</item>
+    </style>
+
+    <style name="WhiteTextView">
+        <item name="android:text">Placeholder</item>
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:textColor">@color/white_50</item>
+    </style>
+
+    <style name="WhiteTextView.Large">
+        <item name="android:textSize">18sp</item>
+    </style>
+
     <style name="TextView.Italic">
         <item name="android:textSize">16sp</item>
         <item name="android:textStyle">italic</item>
@@ -96,10 +111,6 @@
         <item name="android:layout_marginBottom">8dp</item>
     </style>
 
-    <style name="TextView.Large">
-        <item name="android:layout_marginBottom">8dp</item>
-        <item name="android:textSize">18sp</item>
-    </style>
     <style name="TextView.ExtraLarge">
         <item name="android:layout_marginBottom">8dp</item>
         <item name="android:textSize">26sp</item>

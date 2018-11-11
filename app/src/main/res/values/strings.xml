@@ -46,6 +46,7 @@
     <string name="fragment_forum">Forum</string>
     <string name="fragment_newsfeed_public_profil">Profil publique</string>
     <string name="fragment_search">Rechercher</string>
+    <string name="fragment_do_search">Rechercher</string>
     <string name="fragment_cityfeed">Ville</string>
     <string name="fragment_cityfeed_news">Nouvelles</string>
     <string name="fragment_cityfeed_services">Services aux citoyens</string>

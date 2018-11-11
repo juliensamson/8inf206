@@ -38,6 +38,7 @@ import ca.uqac.lecitoyen.Interface.iHandleFragment;
 import ca.uqac.lecitoyen.R;
 import ca.uqac.lecitoyen.adapters.SwipePostAdapter;
 import ca.uqac.lecitoyen.fragments.userUI.CityfeedFragment;
+import ca.uqac.lecitoyen.fragments.userUI.DoSearchFragment;
 import ca.uqac.lecitoyen.fragments.userUI.MessageFragment;
 import ca.uqac.lecitoyen.fragments.userUI.ForumFragment;
 import ca.uqac.lecitoyen.fragments.userUI.UserProfileFragment;
@@ -71,6 +72,7 @@ public class MainUserActivity extends BaseActivity implements
     private iHandleFragment mHandleFragment;
     private ForumFragment forumFragment;
     private SearchFragment searchFragment;
+    private DoSearchFragment doSearchFragment;
     private CityfeedFragment cityfeedFragment;
     private MessageFragment messageFragment;
     private UserProfileFragment userProfileFragment;
@@ -129,15 +131,16 @@ public class MainUserActivity extends BaseActivity implements
         mBottomNavigation.setDefaultSelectedIndex(0);
         mBottomNavigation.setDefaultTypeface(Typeface.DEFAULT_BOLD);
         mBottomNavigation.setOnMenuItemClickListener(loadBottonNavigation());
+
+        if(fbAuth != null) {
+            fbUser = fbAuth.getCurrentUser();
+            loadFirebaseValueListener();
+        }
     }
 
     @Override
     protected void onStart() {
         super.onStart();
-        if(fbAuth != null) {
-            fbUser = fbAuth.getCurrentUser();
-            loadFirebaseValueListener();
-        }
     }
 
     @Override
@@ -348,6 +351,9 @@ public class MainUserActivity extends BaseActivity implements
             case R.string.fragment_search:
                 doFragmentTransaction(searchFragment, getString(R.string.fragment_search), false, "");
                 //doFragmentTransaction(searchFragment, getString(R.string.fragment_search));
+                break;
+            case R.string.fragment_do_search:
+                doFragmentTransaction(doSearchFragment, getString(R.string.fragment_search), true, "");
                 break;
             case R.string.fragment_cityfeed:
                 doFragmentTransaction(cityfeedFragment, getString(R.string.fragment_cityfeed), false, "");
