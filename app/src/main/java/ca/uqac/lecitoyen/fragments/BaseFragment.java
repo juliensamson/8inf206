@@ -16,7 +16,11 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
+
+import com.bumptech.glide.Glide;
+import com.google.firebase.storage.StorageReference;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -24,7 +28,9 @@ import java.util.Locale;
 
 import ca.uqac.lecitoyen.Interface.iHandleFragment;
 import ca.uqac.lecitoyen.R;
+import ca.uqac.lecitoyen.models.DatabaseManager;
 import ca.uqac.lecitoyen.models.Post;
+import ca.uqac.lecitoyen.models.User;
 
 public abstract class BaseFragment extends Fragment {
 
@@ -125,6 +131,60 @@ public abstract class BaseFragment extends Fragment {
         Intent intent = new Intent(currActivityContext, nextActivity);
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
         startActivity(intent);
+    }
+
+    protected void setTextView(TextView textView, String text) {
+
+        if (textView != null) {
+
+            if(!text.isEmpty())
+                textView.setText(text);
+            else
+                textView.setBackgroundColor(getResources().getColor(R.color.black_200));
+
+        } else {
+
+            Log.e(TAG, "The text view widget is null");
+
+        }
+
+    }
+
+    protected void setProfileImageView(ImageView imageView, User user) {
+
+        if(imageView != null) {
+
+            if(user.getPid() != null && !user.getPid().isEmpty()) {
+
+                StorageReference st = DatabaseManager
+                        .getInstance()
+                        .getStorageUserProfilPicture(user.getUid(), user.getPid());
+                Glide.with(this).load(st).into(imageView);
+
+            } else
+                Glide.with(this).load(R.color.black_200).into(imageView);
+
+        } else {
+
+            Log.e(TAG, "The image view widget is null");
+            // set place id if it doesn't work
+        }
+    }
+
+    protected void setImageView(ImageView imageView, StorageReference st) {
+
+        if(imageView != null) {
+
+            if(st != null)
+                Glide.with(this).load(st).into(imageView);
+            else
+                Glide.with(this).load(R.color.black_200).into(imageView);
+
+        } else {
+
+            Log.e(TAG, "The image view widget is null");
+            // set place id if it doesn't work
+        }
     }
 
 }

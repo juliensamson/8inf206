@@ -98,8 +98,20 @@
         <item name="android:textColor">@color/white_50</item>
     </style>
 
+    <style name="WhiteTextView.Small">
+        <item name="android:textSize">14sp</item>
+    </style>
+
+    <style name="WhiteTextView.Normal">
+        <item name="android:textSize">16sp</item>
+    </style>
+
     <style name="WhiteTextView.Large">
         <item name="android:textSize">18sp</item>
+    </style>
+
+    <style name="WhiteTextView.Large.Bold">
+        <item name="android:textStyle">bold</item>
     </style>
 
     <style name="TextView.Italic">
@@ -112,7 +124,6 @@
     </style>
 
     <style name="TextView.ExtraLarge">
-        <item name="android:layout_marginBottom">8dp</item>
         <item name="android:textSize">26sp</item>
     </style>
 

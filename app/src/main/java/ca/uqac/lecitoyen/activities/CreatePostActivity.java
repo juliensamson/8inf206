@@ -178,13 +178,30 @@ public class CreatePostActivity extends BaseActivity implements View.OnClickList
 
     private void updateUI() {
 
-        mPostToolbar.buttonToolbar(this, "Publier");
+        try {
 
-        if(mUserAuth.getPid() != null) {
-            StorageReference image = dbManager.getStorageUserProfilPicture(mUserAuth.getUid(), mUserAuth.getPid());
-            Glide.with(this).load(image).into(mCircleImageView);
-        } else {
-            Glide.with(this).load(R.color.black_200).into(mCircleImageView);
+            /*if(mPostToolbar == null)
+                throw new NullPointerException("Toolbar instance is null");
+
+            if(mUserAuth == null)
+                throw new NullPointerException("User instance is null");
+
+            if(mUserAuth.getPid() == null || mUserAuth.getPid().isEmpty()) {
+                Glide.with(this).load(R.color.black_200).into(mCircleImageView);
+                throw new NullPointerException("User pid cannot be null");
+            }*/
+
+            mPostToolbar.buttonToolbar(this, "Publier");
+
+            setImageView(mCircleImageView, dbManager.getStorageUserProfilPicture(mUserAuth.getUid(), mUserAuth.getPid()));
+
+            //Glide.with(this)
+            //        .load(dbManager.getStorageUserProfilPicture(mUserAuth.getUid(), mUserAuth.getPid()))
+            //        .into(mCircleImageView);
+
+        } catch (NullPointerException e) {
+            e.printStackTrace();
+            Log.e(TAG, e.getMessage());
         }
 
     }

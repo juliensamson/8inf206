@@ -86,12 +86,20 @@ public final class Util {
         return toolBarHeight;
     }
 
+    public static int getScreenSize(Context context) {
+        int[] attrs = new int[] {R.attr.actionBarSize};
+        TypedArray ta = context.obtainStyledAttributes(attrs);
+        int toolBarHeight = ta.getDimensionPixelSize(0, -1);
+        ta.recycle();
+        return toolBarHeight;
+    }
+
     public static String setStringPlurial(int size, String word) {
 
         if (size == 0 || size == 1 )
-            return Integer.toString(size) + Constants.SPACE + word;
+            return Integer.toString(size) + Constants.SPACE + " " + word + " ";
         else
-            return Integer.toString(size) + Constants.SPACE + word + Constants.PLURIAL;
+            return Integer.toString(size) + Constants.SPACE + " " + word + Constants.PLURIAL + " ";
 
     }
 

@@ -13,7 +13,11 @@ import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
+import android.widget.ImageView;
 import android.widget.TextView;
+
+import com.bumptech.glide.Glide;
+import com.google.firebase.storage.StorageReference;
 
 import ca.uqac.lecitoyen.R;
 
@@ -131,9 +135,24 @@ public class BaseActivity extends AppCompatActivity {
         startActivity(intent);
     }
 
-    @Override
-    public void onStop() {
-        super.onStop();
-        //hideProgressDialog();
+    protected void setNameTextView(TextView textView, String name) {
+
     }
+
+    protected void setImageView(ImageView imageView, StorageReference st) {
+
+        if(imageView != null) {
+
+            if(st != null)
+                Glide.with(this).load(st).into(imageView);
+            else
+                Glide.with(this).load(R.color.black_200).into(imageView);
+
+        } else {
+
+            Log.e(TAG, "The image view widget is null");
+            // set place id if it doesn't work
+        }
+    }
+
 }

@@ -229,18 +229,17 @@ public class UserProfileFragment extends BaseFragment implements View.OnClickLis
 
     private void initUserdata(DatabaseManager dbManager) {
 
-        if(mUserSelect.getPid() != null && !mUserSelect.getPid().isEmpty()) {
-            StorageReference stUserProfilePicture =
-                    dbManager.getStorageUserProfilPicture(mUserSelect.getUid(), mUserSelect.getPid());
+        setProfileImageView(mProfilPictureView, mUserSelect);
+        setProfileImageView(mToolbarProfilPictureView, mUserSelect);
 
-            Glide.with(mUserActivity).load(stUserProfilePicture).into(mToolbarProfilPictureView);
-            Glide.with(mUserActivity).load(stUserProfilePicture).into(mProfilPictureView);
-        } else {
-            Glide.with(mUserActivity).load(R.color.black_200).into(mToolbarProfilPictureView);
-            Glide.with(mUserActivity).load(R.color.black_200).into(mProfilPictureView);
-        }
+        setTextView(mToolbarName, mUserSelect.getName());
+        setTextView(mNameView, mUserSelect.getName());
+        setTextView(mUsernameView, mUserSelect.getUsername());
+        setTextView(mBiographyView, mUserSelect.getBiography());
+        setTextView(mFollowerCount, Util.setStringPlurial(0, getString(R.string.textview_follower)));
+        setTextView(mFollowingCount, Util.setStringPlurial(0, getString(R.string.textview_following)));
 
-        if (mUserSelect.getName() != null && !mUserSelect.getName().isEmpty()) {
+        /*if (mUserSelect.getName() != null && !mUserSelect.getName().isEmpty()) {
             mToolbarName.setText(mUserSelect.getName());
             mNameView.setText(mUserSelect.getName());
         }
@@ -249,14 +248,14 @@ public class UserProfileFragment extends BaseFragment implements View.OnClickLis
             mUsernameView.setText(mUserSelect.getUsername());
 
         if (mUserSelect.getBiography() != null && !mUserSelect.getBiography().isEmpty())
-            mBiographyView.setText(mUserSelect.getBiography());
+            mBiographyView.setText(mUserSelect.getBiography());*
 
         mFollowerCount.setText(Util.setStringPlurial(
                 0,
                 getString(R.string.textview_follower)));
         mFollowingCount.setText(Util.setStringPlurial(
                 0,
-                getString(R.string.textview_following)));
+                getString(R.string.textview_following)));*/
         //  Following & Follower
     }
 

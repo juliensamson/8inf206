@@ -5,25 +5,22 @@ import android.content.Context;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.text.Editable;
-import android.text.TextWatcher;
 import android.util.Log;
 import android.view.LayoutInflater;
-import android.view.Menu;
-import android.view.MenuInflater;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 
+import java.sql.Array;
 import java.util.ArrayList;
 
 import ca.uqac.lecitoyen.activities.MainUserActivity;
 import ca.uqac.lecitoyen.Interface.iHandleFragment;
 import ca.uqac.lecitoyen.R;
+import ca.uqac.lecitoyen.adapters.VerticalEventAdapter;
 import ca.uqac.lecitoyen.adapters.SearchUserAdapter;
 import ca.uqac.lecitoyen.fragments.BaseFragment;
 import ca.uqac.lecitoyen.models.DatabaseManager;
-import ca.uqac.lecitoyen.models.Post;
+import ca.uqac.lecitoyen.models.Event;
 import ca.uqac.lecitoyen.models.User;
 import ca.uqac.lecitoyen.views.ToolbarView;
 
@@ -43,12 +40,15 @@ public class SearchFragment extends BaseFragment implements View.OnClickListener
 
     //  Views
     private ToolbarView mSearchToolbar;
-    private RecyclerView mSearchRecyclerView;
+    private RecyclerView mSearchRecyclerView, mEventByDateRecyclerView, mEventRecyclerView;
     //private RecyclerView.Adapter mNewsfeedAdapter;
-    private RecyclerView.Adapter mSearchAdapter;
+    private RecyclerView.Adapter mSearchAdapter, mEventByDateAdapter, mEventAdapter;
+
 
     //  Data Structure
     private User mUserAuth;
+    private ArrayList<RecyclerView.Adapter> mEventsByDate = new ArrayList<>();
+    private ArrayList<Event> mEventsList = new ArrayList<>();
     private ArrayList<User> mUsersList = new ArrayList<>();
 
 
@@ -56,6 +56,7 @@ public class SearchFragment extends BaseFragment implements View.OnClickListener
         // Required empty public constructor
     }
 
+    //TODO: Add Even arrayList
     public static SearchFragment newInstance(User userAuth, ArrayList<User> users) {
         SearchFragment fragment = new SearchFragment();
         Bundle args = new Bundle();
@@ -71,10 +72,14 @@ public class SearchFragment extends BaseFragment implements View.OnClickListener
         this.activity = (MainUserActivity) getActivity();
         this.dbManager = DatabaseManager.getInstance();
 
+        long day = 1000 * 3600 * 24;
+        //For test
+
         if (getArguments() != null) {
             mUserAuth = getArguments().getParcelable(ARG_USERAUTH);
             mUsersList = getArguments().getParcelableArrayList(ARG_USERS);
             mSearchAdapter = new SearchUserAdapter(activity, mUsersList);
+            //mEventAdapter = new HorizontalEventAdapter(activity, mEventsList);
         } else {
             Log.e(TAG, "Arguments are null");
         }
@@ -102,11 +107,22 @@ public class SearchFragment extends BaseFragment implements View.OnClickListener
             }
         });
 
+        testAdapter(view);
 
-        mSearchRecyclerView = view.findViewById(R.id.search_recycler_view);
-        LinearLayoutManager llm = new LinearLayoutManager(activity);
-        mSearchRecyclerView.setLayoutManager(llm);
-        mSearchRecyclerView.setAdapter(mSearchAdapter);
+        //LinearLayoutManager llm = new LinearLayoutManager(activity, LinearLayoutManager.HORIZONTAL, false);
+       // SnapHelper snapHelper = new LinearSnapHelper();
+        //mSearchRecyclerView = view.findViewById(R.id.search_recycler_view);
+        //mSearchRecyclerView.setLayoutManager(llm);
+        //mSearchRecyclerView.setAdapter(mSearchAdapter);
+
+        //mEventRecyclerView = view.findViewById(R.id.search_event_recycler_view);
+        //snapHelper.attachToRecyclerView(mEventRecyclerView);
+        //mEventRecyclerView.setNestedScrollingEnabled(false);
+        //mEventRecyclerView.setLayoutManager(llm);
+
+
+
+        //mEventRecyclerView.setAdapter(mEventAdapter);
 
         //  Search bar
         /*mSearchBar = view.findViewById(R.id.search_bar);
@@ -138,28 +154,47 @@ public class SearchFragment extends BaseFragment implements View.OnClickListener
         mHandleFragment = (MainUserActivity) getActivity();
     }
 
-    @Override
-    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-        super.onCreateOptionsMenu(menu, inflater);
-        inflater.inflate(R.menu.search_menu, menu);
-    }
 
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-
-        switch (item.getItemId())
-        {
-            case android.R.id.home:
-                return true;
-            case R.id.action_search:
-                return true;
-
-        }
-        return super.onOptionsItemSelected(item);
-    }
 
     @Override
     public void onClick(View view) {
+
+    }
+
+    private void testAdapter(View view) {
+        long day = 1000 * 3600 * 24;
+        //For test
+        ArrayList<ArrayList<Event>> mCompleteEventList = new ArrayList<>();
+        ArrayList<Event> mBydateEventList = new ArrayList<>();
+        for(int j = 0; j < 5; j++) {
+
+
+            for (int i = 0; i < 5; i++) {
+                Event event = new Event();
+                event.setTitle("Event " + i);
+                event.setEventDate(System.currentTimeMillis());
+                event.setLocation("Place du royaume, Chicoutimi");
+                event.setPrice(i * 2);
+                mBydateEventList.add(event);
+            }
+            mCompleteEventList.add(mBydateEventList);
+        }
+
+        LinearLayoutManager llm = new LinearLayoutManager(activity);
+        mEventByDateRecyclerView = view.findViewById(R.id.search_event_by_date_recycler_view);
+        mEventByDateRecyclerView.setHasFixedSize(false);
+        mEventByDateRecyclerView.setLayoutManager(llm);
+        mEventByDateRecyclerView.setNestedScrollingEnabled(false);
+
+        mEventByDateAdapter = new VerticalEventAdapter(activity, mCompleteEventList);
+        mEventByDateRecyclerView.setAdapter(mEventByDateAdapter);
+
+
+        //mEventRecyclerView = view.findViewById(R.id.search_event_recycler_view);
+        //snapHelper.attachToRecyclerView(mEventRecyclerView);
+        //mEventRecyclerView.setNestedScrollingEnabled(false);
+        //mEventRecyclerView.setLayoutManager(llm);
+
 
     }
 
