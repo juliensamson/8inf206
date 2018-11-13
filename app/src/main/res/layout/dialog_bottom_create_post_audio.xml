@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.design.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <android.support.design.widget.AppBarLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <ca.uqac.lecitoyen.views.ToolbarView
+            android:id="@+id/create_post_toolbar"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:layout_scrollFlags="scroll|enterAlways|snap">
+
+        </ca.uqac.lecitoyen.views.ToolbarView>
+
+    </android.support.design.widget.AppBarLayout>
+
+    <android.support.v4.widget.NestedScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical">
+
+            <!-- ****** TITRE ******* -->
+
+            <FrameLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:padding="@dimen/activity_horizontal_margin">
+
+                <EditText
+                    android:id="@+id/create_post_audio_title"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="48dp"
+                    android:hint="Titre de la chanson"
+                    android:padding="8dp"
+                    android:background="@color/transparent"/>
+
+            </FrameLayout>
+
+            <View style="@style/Divider" />
+
+            <!-- ****** AUDIO ******* -->
+
+            <FrameLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:padding="@dimen/activity_horizontal_margin">
+
+                <ImageView style="@style/ProfileImage.Small"
+                    android:src="@drawable/ic_music_note_primary_24dp" />
+
+                <EditText
+                    android:id="@+id/create_post_audio_add_audio"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="48dp"
+                    android:focusable="false"
+                    android:hint="Ajouter un fichier audio"
+                    android:padding="8dp"
+                    android:background="@color/transparent"/>
+
+                <FrameLayout
+                    android:id="@+id/create_post_audio_player"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content" />
+
+            </FrameLayout>
+
+            <View style="@style/Divider" />
+
+            <!-- ****** ALBUM PHOTO ******* -->
+
+            <FrameLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:padding="@dimen/activity_horizontal_margin">
+
+                <ImageView style="@style/ProfileImage.Small"
+                    android:src="@drawable/ic_camera_alt_primary_24dp" />
+
+                <EditText
+                    android:id="@+id/create_post_audio_add_image"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="48dp"
+                    android:focusable="false"
+                    android:hint="Ajouter un image au fichier audio"
+                    android:padding="8dp"
+                    android:background="@color/transparent"/>
+
+                <ca.uqac.lecitoyen.util.MultimediaView
+                    android:id="@+id/create_post_audio_image"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content" />
+
+            </FrameLayout>
+
+            <View style="@style/Divider" />
+
+        </LinearLayout>
+
+    </android.support.v4.widget.NestedScrollView>
+
+</android.support.design.widget.CoordinatorLayout>

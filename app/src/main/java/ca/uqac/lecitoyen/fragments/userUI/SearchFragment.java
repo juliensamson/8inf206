@@ -175,7 +175,7 @@ public class SearchFragment extends BaseFragment implements View.OnClickListener
         switch (view.getId()) {
 
             case R.id.search_add_event:
-                CreateDialog createDialog = new CreateDialog(this);
+                CreateDialog createDialog = new CreateDialog(this, mUserAuth);
                 createDialog.createEventView().show();
                // mHandleFragment.inflateFragment(R.string.fragment_create_event, "");
                 break;

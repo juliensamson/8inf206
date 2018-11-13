@@ -14,6 +14,9 @@ import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 
+import java.util.HashMap;
+import java.util.Map;
+
 
 public class DatabaseManager  {
 
@@ -214,7 +217,7 @@ public class DatabaseManager  {
      */
 
     public void deleteHolderPost(Post holderPost) {
-        if(holderPost.getImages() != null) {
+        if(holderPost.getImages() != null && !holderPost.getImages().isEmpty()) {
             getStoragePost(holderPost.getPostid())
                     .child(holderPost.getImages().get(0).getImageId())
                     .delete().addOnFailureListener(new OnFailureListener() {
@@ -229,7 +232,7 @@ public class DatabaseManager  {
                 }
             });
         }
-        if(holderPost.getAudio() != null) {
+        if(holderPost.getAudio() != null && !holderPost.getAudio().isEmpty()) {
             getStoragePost(holderPost.getPostid())
                     .child(holderPost.getAudio())
                     .delete().addOnFailureListener(new OnFailureListener() {
@@ -517,5 +520,17 @@ public class DatabaseManager  {
             String key = db.child("users").push().getKey();
             db.child("users").child(key).setValue(userdata);
         }
+    }
+
+    public void writePostToFirebase(Post post) {
+        Log.d(TAG, "writePost");
+        Map<String, Object> postValues = post.toMap();
+
+        //  write on firebase
+        Map<String, Object> childUpdates = new HashMap<>();
+        childUpdates.put("/posts/" + post.getPostid(), postValues);
+        childUpdates.put("/user-posts/" + post.getUser().getUid() + "/" + post.getPostid(), postValues);
+
+        getReference().updateChildren(childUpdates);
     }
 }

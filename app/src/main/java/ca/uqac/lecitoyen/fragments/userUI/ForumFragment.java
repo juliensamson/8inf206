@@ -3,7 +3,9 @@ package ca.uqac.lecitoyen.fragments.userUI;
 
 import android.content.Context;
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
+import android.os.Environment;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.widget.NestedScrollView;
@@ -17,6 +19,8 @@ import android.view.ViewGroup;
 import android.widget.ProgressBar;
 
 import com.daimajia.swipe.adapters.RecyclerSwipeAdapter;
+import com.github.clans.fab.FloatingActionButton;
+import com.github.clans.fab.FloatingActionMenu;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.ChildEventListener;
@@ -50,6 +54,7 @@ public class ForumFragment extends BaseFragment implements View.OnClickListener 
     private final static String TAG = ForumFragment.class.getSimpleName();
 
     private static final int GALLERY_REQUEST_CODE = 2;
+    private static final int AUDIO_REQUEST_CODE = 3;
 
     private final static String ARG_USER = "user";
     private final static String ARG_POSTS = "posts";
@@ -72,6 +77,7 @@ public class ForumFragment extends BaseFragment implements View.OnClickListener 
     private Query mPostsQuery;
 
     private ToolbarView mForumToolbar;
+    private FloatingActionMenu mAddPostMenu;
     private NestedScrollView mNestedScrollView;
     private RecyclerView mForumRecyclerView;
     //private RecyclerView.Adapter mNewsfeedAdapter;
@@ -138,6 +144,7 @@ public class ForumFragment extends BaseFragment implements View.OnClickListener 
         );
 
         //  Views
+        mAddPostMenu = view.findViewById(R.id.forum_add_menu);
         mSwipeRefreshLayout = view.findViewById(R.id.forum_refresh_layout);
         mForumRecyclerView = view.findViewById(R.id.newsfeed_recycler_view);
         mForumRecyclerView.setNestedScrollingEnabled(false);
@@ -166,6 +173,44 @@ public class ForumFragment extends BaseFragment implements View.OnClickListener 
             }
         });
 
+
+        int postLastPostLoaded = mPostsList.size() - 1;
+        Post mostRecentPost = mPostsList.get(0);
+
+        Log.e(TAG, "LastPost " + mostRecentPost.getMessage());
+        Log.e(TAG, "LastPost " + mostRecentPost.getDate());
+        long startAt = mostRecentPost.getDateInverse() - 1000;
+        dbManager.getDatabasePosts().orderByChild("dateInverse").endAt(startAt).addChildEventListener(new ChildEventListener() {
+            @Override
+            public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+                mPostsList.add(0, dataSnapshot.getValue(Post.class));
+                mForumAdapter.notifyItemInserted(0);
+                Log.e(TAG, "Post add " + dataSnapshot.getValue(Post.class).getMessage());
+                //mForumAdapter.notifyItemInserted(mForumAdapter.getItemCount() + 1);
+                //mForumAdapter.notifyDataSetChanged();
+            }
+
+            @Override
+            public void onChildChanged(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+                Log.e(TAG, "Post change " + dataSnapshot.getValue(Post.class).getMessage());
+            }
+
+            @Override
+            public void onChildRemoved(@NonNull DataSnapshot dataSnapshot) {
+                Log.e(TAG, "Post remove " + dataSnapshot.getValue(Post.class).getMessage());
+            }
+
+            @Override
+            public void onChildMoved(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+                Log.e(TAG, "Post move " + dataSnapshot.getValue(Post.class).getMessage());
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
+
         return view;
     }
 
@@ -182,11 +227,17 @@ public class ForumFragment extends BaseFragment implements View.OnClickListener 
                 dbUsersData = dbManager.getDatabaseUsers();
                 DatabaseReference dbRef = dbManager.getReference();
                 DatabaseReference dbPosts = dbManager.getDatabasePosts();
-                updateUI(fbUser, dbRef);
+                //updateUI(fbUser, dbRef);
              }
         } else {
             Log.e(TAG, "auth is null");
         }
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        Log.d(TAG, "onResume");
     }
 
     @Override
@@ -238,24 +289,19 @@ public class ForumFragment extends BaseFragment implements View.OnClickListener 
         if (resultCode == RESULT_OK) {
             switch (requestCode) {
                 case GALLERY_REQUEST_CODE:
-                    CreateDialog createDialog = new CreateDialog(this);
-                    createDialog.createPostView(data.getData()).show();
+                    CreateDialog imageDialog = new CreateDialog(this, mUserAuth);
+                    imageDialog.createPostView(CreateDialog.IMAGE_POST_TYPE, data.getData()).show();
                     //mPictureLayout.setVisibility(View.VISIBLE);
                     //Glide.with(this).load(mImageUri).into(mPicture);
                     break;
-                /*case CAMERA_REQUEST_CODE:    //TODO: Make this work somehow
+                //case CAMERA_REQUEST_CODE:    //TODO: Make this work somehow
                     //checkInternalStorage();
                     //updateStorage(imageUri);
+                //    break;
+                case AUDIO_REQUEST_CODE:
+                    CreateDialog audioDialog = new CreateDialog(this, mUserAuth);
+                    audioDialog.createPostView(CreateDialog.AUDIO_POST_TYPE, data.getData()).show();
                     break;
-                //case AUDIO_REQUEST_CODE:
-                    mAudioUri = data.getData();
-                    AudioWife.getInstance().init(mContext, mAudioUri)
-                            .useDefaultUi(mPlayerLayout, getLayoutInflater());
-                    Log.d(TAG, "Audio request code");
-                    //showAudioSetup(mAudioUri);
-                    break;
-                case DELETE_REQUEST_CODE:
-                    break;*/
                 default:
                     break;
             }
@@ -269,18 +315,15 @@ public class ForumFragment extends BaseFragment implements View.OnClickListener 
         switch (view.getId())
         {
             case R.id.forum_add_post:
-                CreateDialog createDialog = new CreateDialog(this);
-                createDialog.createPostView(null).show();
-                /*Bundle args = new Bundle();
-                args.putParcelable("user", mUserAuth);
-
-                Intent intent = new Intent(mainUserActivity, CreateAndEditActivity.class);
-                intent.putExtra("bundle", args);
-
-                startActivity(intent);*/
+                CreateDialog createDialog = new CreateDialog(this, mUserAuth, mForumAdapter, mPostsList);
+                createDialog.createPostView(CreateDialog.MESSAGE_POST_TYPE, null).show();
+                mAddPostMenu.close(false);
                 break;
             case R.id.forum_add_images:
                 openGallery();
+                break;
+            case R.id.forum_add_audio:
+                openStorage();
                 break;
             default:
                 break;
@@ -295,20 +338,28 @@ public class ForumFragment extends BaseFragment implements View.OnClickListener 
         //if(mForumRecyclerView.getAdapter() == null)
        //     dbManager.getReference().addListenerForSingleValueEvent(initPostsList(user, postsList));
 
+
+
         mSwipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
 
+                try {
+                    Log.e(TAG, "Posts size: " + mPostsList.size());
+                    int postLastPostLoaded = mPostsList.size() - 1;
+                    Post lastPostLoaded = mPostsList.get(postLastPostLoaded);
+                    Log.e(TAG, "Posts size: " + lastPostLoaded.getDate());
 
-                /*int postLastPostLoaded = mPostsList.size() - 1;
-                Post lastPostLoaded = mPostsList.get(postLastPostLoaded);
+                    long currentTime = System.currentTimeMillis();
 
-                long currentTime = System.currentTimeMillis();
-
-                dbManager.getDatabasePosts()
-                        .startAt(lastPostLoaded.getDate())
-                        .addChildEventListener(childEventListener(mPostsList));
-                */
+                    dbManager.getDatabasePosts()
+                            .startAt(lastPostLoaded.getDate())
+                            .addChildEventListener(childEventListener(mPostsList));
+                    //dbManager.getDatabasePosts()
+                    //        .addChildEventListener(childEventListener(mPostsList));
+                } catch (ArrayIndexOutOfBoundsException e) {
+                    Log.e(TAG, e.getMessage());
+                }
                 /*while (true) {
                     if(System.currentTimeMillis() >= currentTime + 5000) {
                         mSwipeRefreshLayout.setRefreshing(false);
@@ -325,66 +376,13 @@ public class ForumFragment extends BaseFragment implements View.OnClickListener 
             }
         });
     }
-/*
-    private ValueEventListener initPostsList(final FirebaseUser fbUser, final ArrayList<Post> postsList) {
-        Log.d(TAG, "readPublicationListOnce");
-        //showProgressDialog();
-        return new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
 
-                //  Get the current user data
-                DataSnapshot userSnapshot = dataSnapshot.child("users").child(fbUser.getUid());
-                mUser =  userSnapshot.getValue(User.class);
-
-                StorageReference st = dbManager.getStorageUserProfilPicture(mUser.getUid());
-                mForumToolbar.setImageView(st.child(mUser.getPid()));
-
-                //  List all the posts in order of dateInverse & set Adapater
-                Query dbPosts = dataSnapshot.getRef().child("posts").orderByChild("dateInverse");
-                dbPosts.addListenerForSingleValueEvent(new ValueEventListener() {
-                    @Override
-                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-
-                        final long[] pendingLoadCount = { dataSnapshot.getChildrenCount() };
-
-                        for(DataSnapshot postSnapshot : dataSnapshot.getChildren()) {
-                            Post post = postSnapshot.getValue(Post.class);
-                            if(post != null) {
-                                postsList.add(post);
-                                pendingLoadCount[0] = pendingLoadCount[0] - 1;
-                            }
-                        }
-                        if(mUser != null) {
-                            mForumAdapter = new SwipePostAdapter(mainUserActivity, mUser, postsList);
-                            mForumRecyclerView.setAdapter(mForumAdapter);
-                        }
-                        if (pendingLoadCount[0] == 0) {
-                            //make custum dialog bar with progresss
-                        }
-                        //hideProgressDialog();
-                    }
-
-                    @Override
-                    public void onCancelled(@NonNull DatabaseError databaseError) {
-                        Log.e(TAG, databaseError.getMessage());
-                    }
-                });
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
-                Log.e(TAG, databaseError.getMessage());
-                hideProgressDialog();
-            }
-        };
-    }
-*/
     private ChildEventListener childEventListener(final ArrayList<Post> postsList) {
         return new ChildEventListener() {
             @Override
             public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
                 Log.d(TAG, "Added " + dataSnapshot.toString());
+                mPostsList.add(dataSnapshot.getValue(Post.class));
                 mForumAdapter.notifyDataSetChanged();
                 mSwipeRefreshLayout.setRefreshing(false);
             }
@@ -398,6 +396,7 @@ public class ForumFragment extends BaseFragment implements View.OnClickListener 
             @Override
             public void onChildRemoved(@NonNull DataSnapshot dataSnapshot) {
                 Log.d(TAG, "Removed " + dataSnapshot.toString());
+               // mForumAdapter.notifyDataSetChanged();
                 mSwipeRefreshLayout.setRefreshing(false);
             }
 
@@ -420,6 +419,47 @@ public class ForumFragment extends BaseFragment implements View.OnClickListener 
             openGalleryIntent.setType("image/*");
             startActivityForResult(openGalleryIntent, GALLERY_REQUEST_CODE);
         }
+    }
+
+    private void openStorage() {
+
+        if (isExternalStorageWritable()) {
+
+            if (isExternalStorageReadable()) {
+
+                Intent openStorage = new Intent(Intent.ACTION_GET_CONTENT);
+                Uri uri = Uri.parse(Environment.getExternalStorageDirectory().getPath());
+                openStorage.setDataAndType(uri, "audio/*");
+                if (openStorage.resolveActivity(mainUserActivity.getPackageManager()) != null) {
+                    //startActivity(Intent.createChooser(openStorage, "Open folder"));
+                    startActivityForResult(openStorage, AUDIO_REQUEST_CODE);
+                }
+            } else {
+                Log.e(TAG, "Storage not readable");
+            }
+        } else {
+            Log.e(TAG, "Storage not writable");
+        }
+        //String path = Environment.getExternalStorageDirectory() + File.separator;
+    }
+
+    /* Checks if external storage is available for read and write */
+    public boolean isExternalStorageWritable() {
+        String state = Environment.getExternalStorageState();
+        if (Environment.MEDIA_MOUNTED.equals(state)) {
+            return true;
+        }
+        return false;
+    }
+
+    /* Checks if external storage is available to at least read */
+    public boolean isExternalStorageReadable() {
+        String state = Environment.getExternalStorageState();
+        if (Environment.MEDIA_MOUNTED.equals(state) ||
+                Environment.MEDIA_MOUNTED_READ_ONLY.equals(state)) {
+            return true;
+        }
+        return false;
     }
 
     public interface OnFragmentInteractionListener {

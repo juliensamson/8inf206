@@ -46,7 +46,7 @@
                     android:layout_marginBottom="@dimen/activity_vertical_margin">
 
                     <EditText
-                        android:id="@+id/post_message"
+                        android:id="@+id/create_post_message"
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
                         android:layout_gravity="center_vertical"
@@ -56,11 +56,6 @@
                         android:padding="4dp" />
 
                 </FrameLayout>
-
-                <FrameLayout
-                    android:id="@+id/create_post_audioplayer"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content" />
 
                 <ca.uqac.lecitoyen.util.MultimediaView
                     android:id="@+id/create_post_multimedia"

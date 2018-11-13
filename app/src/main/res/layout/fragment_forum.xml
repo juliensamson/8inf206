@@ -41,6 +41,7 @@
     </android.support.v4.widget.SwipeRefreshLayout>
 
     <com.github.clans.fab.FloatingActionMenu
+        android:id="@+id/forum_add_menu"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="bottom|end"

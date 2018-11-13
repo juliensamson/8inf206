@@ -211,6 +211,7 @@ public class SwipePostAdapter extends RecyclerSwipeAdapter<SwipePostAdapter.View
             if(holderPost.getHistories().size() > 1)                                                  //Show if post modified
                 holder.modify.setVisibility(View.VISIBLE);
 
+
             if(holderPost.getImages() != null) {
                 if (!holderPost.getImages().get(0).getImageId().isEmpty()){
                     holder.multimediaView
@@ -222,12 +223,10 @@ public class SwipePostAdapter extends RecyclerSwipeAdapter<SwipePostAdapter.View
                      //       .child(holderPost.getImages().get(0).getImageId()));
                 } else
                     Log.e(TAG, "nothing");
-            }else
-                Log.e(TAG, "image null");
-
+            }
+            
             if(holderPost.getAudio() != null) {
                 if (!holderPost.getAudio().isEmpty()) {
-                    Log.d(TAG, holderPost.getAudio());
                     holder.multimediaView.loadAudio(holderPost.getAudio());
                 }
             }
@@ -376,10 +375,11 @@ public class SwipePostAdapter extends RecyclerSwipeAdapter<SwipePostAdapter.View
                 deletePostDialog.delete(new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialogInterface, int i) {
+                        Log.e(TAG, holder.getAdapterPosition() + " " + holderPost.getMessage());
                         dbManager.deleteHolderPost(holderPost);
                         mPostList.remove(holder.getAdapterPosition());
                         notifyItemRemoved(holder.getAdapterPosition());
-                        notifyItemRangeChanged(holder.getAdapterPosition(), mPostList.size());
+                        //notifyItemRangeChanged(holder.getAdapterPosition(), mPostList.size());
                         dialogInterface.dismiss();
                     }
                 }).cancel(new DialogInterface.OnClickListener() {
@@ -465,160 +465,5 @@ public class SwipePostAdapter extends RecyclerSwipeAdapter<SwipePostAdapter.View
             }
         };
     }
-
-    private ValueEventListener readPostUpdate(@NonNull final ViewHolder holder) {
-
-        final Post holderPost = mPostList.get(holder.getAdapterPosition());
-
-        return new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-
-                //TODO: Ajouter à utilisatueur et faire Repost
-
-                holder.upvoteButton.setUpvoteOnClickListener(
-                        holder.upvoteButton,
-                        mCurrentUser,
-                        holderPost
-                );
-
-                /*//  Get upvote users
-                final DataSnapshot upvoteUsersSnapshot = dataSnapshot.child("upvoteUsers");
-
-                final Map<String, User> upvoteUsers = new HashMap<>();
-                final Map<String, User> repostUsers = new HashMap<>();
-                for(DataSnapshot userSnapshot: upvoteUsersSnapshot.getChildren()) {
-                    User user = userSnapshot.getValue(User.class);
-                    if(user != null) {
-                        upvoteUsers.put(user.getUid(), user);
-                        repostUsers.put(user.getUid(), user);
-                    }
-                }
-                holder.upvoteButton.setOnClickListener(setUpvoteOnClickListener(holder, holderPost, upvoteUsers));
-                //holder.upvoteLayout.setOnClickListener(setUpvoteOnClickListener(holder, holderPost, upvoteUsers));
-                holder.repostButton.setOnClickListener(setRepostOnClickListener(holder, holderPost, repostUsers));
-                */
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
-
-            }
-        };
-
-    }
-
-    private View.OnClickListener setUpvoteOnClickListener(@NonNull final ViewHolder holder,
-                                                          final Post holderPost, final Map<String, User> users) {
-        return new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-
-                if(!holder.upvoteButton.isButtonOn()) {
-                    /*
-                      Update data structure
-                      - Add current user to the list
-                      - Update Upvote count with the new size of Users
-                      - Update Upvote users with the new users
-                    */
-
-                    users.put(mCurrentUserId, mCurrentUser);
-                    holderPost.setUpvoteUsers(users);
-                    holderPost.setUpvoteCount(users.size());
-
-                    //  Update firebase
-                    dbManager.writeUpvoteToPost(
-                            mCurrentUser,
-                            holderPost
-                    );
-                    //notifyItemRemoved(holder.getAdapterPosition());
-                    //notifyItemRangeChanged(holder.getAdapterPosition(), mPostList.size());
-                    //notifyDataSetChanged();
-                    //notifyItemChanged(holder.getAdapterPosition());
-                    //dbManager.writeUpvoteToUser(mCurrentUser);
-
-                    //  Update UI
-                    holder.upvoteButton.setButtonOn();
-                    //etUpvoteButtonOn(holder);
-                } else {
-                    /*
-                      Update data structure
-                      - Remove current user from the list
-                      - Update Upvote count with the new size of Users
-                      - Update Upvote users with the new users
-                    */
-                    users.remove(mCurrentUserId);
-                    holderPost.setUpvoteCount(users.size());
-                    holderPost.setUpvoteUsers(users);
-
-                    //  Update firebase
-                    dbManager.removeUpvoteFromPost(
-                            mCurrentUser,
-                            holderPost
-                    );
-
-                    //Upddate UI of button
-                    holder.upvoteButton.setButtonOff();
-                }
-                //  Update UI Count
-                holder.upvoteButton.setButtonCount(holderPost.getUpvoteCount());
-                //holder.upvoteCount.setText(String.valueOf(holderPost.getUpvoteCount()));
-            }
-        };
-    }
-
-    private View.OnClickListener setRepostOnClickListener(@NonNull final ViewHolder holder,
-                                                          final Post holderPost, final Map<String, User> users) {
-        return new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                if(!holder.repostButton.isButtonOn()) {
-                    /*
-                      Update data structure
-                      - Add current user to the list
-                      - Update Repost count with the new size of Users
-                      - Update Repost users with the new users
-                    */
-
-                    users.put(mCurrentUserId, mCurrentUser);
-                    holderPost.setRepostUsers(users);
-                    holderPost.setRepostCount(users.size());
-
-                    //  Update firebase
-                    dbManager.writeRepostToPost(
-                            mCurrentUser,
-                            holderPost
-                    );
-
-                    //  Update UI
-                    holder.repostButton.setButtonOn();
-                } else {
-                    /*
-                      Update data structure
-                      - Remove current user from the list
-                      - Update Repost count with the new size of Users
-                      - Update Repost users with the new users
-                    */
-                    users.remove(mCurrentUserId);
-                    holderPost.setRepostCount(users.size());
-                    holderPost.setRepostUsers(users);
-
-                    //  Update firebase
-                    dbManager.removeRepostFromPost(
-                            mCurrentUser,
-                            holderPost
-                    );
-
-                    //Upddate UI of button
-                    holder.repostButton.setButtonOff();
-                }
-                //  Update UI Count
-                holder.repostButton.setButtonCount(holderPost.getRepostCount());
-            }
-        };
-    }
-
-
-
 
 }

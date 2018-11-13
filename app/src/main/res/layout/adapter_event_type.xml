@@ -1,34 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
-    android:layout_margin="8dp"
     android:orientation="vertical">
 
-    <FrameLayout
+    <ca.uqac.lecitoyen.buttons.EventTypeButton
+        android:id="@+id/adapter_event_type_button"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center"
-        android:layout_marginStart="@dimen/activity_horizontal_margin"
-        android:layout_marginEnd="@dimen/activity_horizontal_margin"
-        android:layout_marginTop="@dimen/activity_vertical_margin"
-        android:layout_marginBottom="8dp">
-
-        <TextView
-            style="@style/ProfileImage.Large"
-            android:background="@drawable/button_event_type" />
-
-        <ImageView
-            android:layout_width="32dp"
-            android:layout_height="32dp"
-            android:layout_gravity="center"
-            app:srcCompat="@drawable/ic_music_note_black_24dp"/>
-
-    </FrameLayout>
-
-    <TextView
-        style="@style/TextView.Normal.Bold" />
+        android:layout_height="wrap_content" />
 
 </LinearLayout>

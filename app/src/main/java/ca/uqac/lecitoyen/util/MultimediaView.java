@@ -163,28 +163,23 @@ public class MultimediaView extends FrameLayout {
     }
 
     public MultimediaView setFullHeight() {
-        Log.d(TAG, "full size");
         mPicture.requestLayout();
         LayoutParams params = (LayoutParams) mPicture.getLayoutParams();
         params.height = mPicture.getMaxHeight();
         mPicture.setLayoutParams(params);
-        Log.d(TAG, "Height " + params.height);
 
         return this;
     }
 
     public MultimediaView setMinimumHeight() {
-        Log.d(TAG, "small size");
         LayoutParams params = (LayoutParams) mPicture.getLayoutParams();
         params.height = mPicture.getMinimumHeight();
         mPicture.setLayoutParams(params);
-        Log.d(TAG, "Height " + params.height);
 
         return this;
     }
 
     public MultimediaView setCustumHeight(int pixelHeight) {
-        Log.d(TAG, "small size");
         LayoutParams params = (LayoutParams) mPicture.getLayoutParams();
         params.height = pixelHeight;
         mPicture.setLayoutParams(params);

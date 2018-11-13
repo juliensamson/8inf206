@@ -116,13 +116,11 @@ public class RepostButton extends FrameLayout implements iToggleButton {
         mCurrentUser = currUser;
         mPostClicked = post;
 
-        Log.e(TAG, mPostClicked.getPostid());
-
         db.getDatabasePostRepostUsers(mPostClicked.getPostid())
                 .addValueEventListener(new ValueEventListener() {
                     @Override
                     public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                        Log.e(TAG, "onDataChange");
+
                         final Map<String, User> users = getRepostUsers(dataSnapshot);
 
                         repostButton.setOnClickListener(repostOnClickListener(repostButton, users));

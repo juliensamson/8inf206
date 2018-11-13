@@ -20,15 +20,11 @@ import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.bumptech.glide.Glide;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.OnProgressListener;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
@@ -49,12 +45,11 @@ import ca.uqac.lecitoyen.models.User;
 import ca.uqac.lecitoyen.util.MultimediaView;
 import ca.uqac.lecitoyen.views.ToolbarView;
 import de.hdodenhof.circleimageview.CircleImageView;
-import id.zelory.compressor.Compressor;
 import nl.changer.audiowife.AudioWife;
 
-public class CreatePostActivity extends BaseActivity implements View.OnClickListener {
+public class CreateAndEditActivity extends BaseActivity implements View.OnClickListener {
 
-    private static String TAG = "CreatePostActivity";
+    private static String TAG = "CreateAndEditActivity";
 
     private static final int CAMERA_REQUEST_CODE = 1;
     private static final int GALLERY_REQUEST_CODE = 2;
@@ -94,7 +89,7 @@ public class CreatePostActivity extends BaseActivity implements View.OnClickList
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_create_post);
+        setContentView(R.layout.activity_create_and_edit);
 
         Intent intent = getIntent();
         Bundle bundle = intent.getBundleExtra("bundle");
@@ -253,6 +248,7 @@ public class CreatePostActivity extends BaseActivity implements View.OnClickList
     private void openStorage() {
 
         if (isExternalStorageWritable()) {
+
             if (isExternalStorageReadable()) {
 
                 Intent openStorage = new Intent(Intent.ACTION_GET_CONTENT);

@@ -34,7 +34,7 @@
             android:name=".activities.MainUserActivity"
             android:label="@string/title_activity_user" />
         <activity
-            android:name=".activities.CreatePostActivity"
+            android:name=".activities.CreateAndEditActivity"
             android:windowSoftInputMode="adjustResize" />
 
         <!-- USER SETTING ACTIVITY -->
