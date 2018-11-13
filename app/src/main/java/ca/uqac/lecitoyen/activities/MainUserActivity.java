@@ -38,6 +38,7 @@ import ca.uqac.lecitoyen.Interface.iHandleFragment;
 import ca.uqac.lecitoyen.R;
 import ca.uqac.lecitoyen.adapters.SwipePostAdapter;
 import ca.uqac.lecitoyen.fragments.userUI.CityfeedFragment;
+import ca.uqac.lecitoyen.fragments.userUI.CreateEventFragment;
 import ca.uqac.lecitoyen.fragments.userUI.DoSearchFragment;
 import ca.uqac.lecitoyen.fragments.userUI.MessageFragment;
 import ca.uqac.lecitoyen.fragments.userUI.ForumFragment;
@@ -51,12 +52,11 @@ import ca.uqac.lecitoyen.models.User;
 import it.sephiroth.android.library.bottomnavigation.BottomNavigation;
 import it.sephiroth.android.library.bottomnavigation.BottomNavigationFixedItemView;
 
-//TODO: Make the RecyclerView load automatically after making a post
-
 public class MainUserActivity extends BaseActivity implements
         iHandleFragment,
         ForumFragment.OnFragmentInteractionListener,
-        UserProfileFragment.OnFragmentInteractionListener
+        UserProfileFragment.OnFragmentInteractionListener,
+        CreateEventFragment.OnFragmentInteractionListener
 {
 
     private final static String TAG = MainUserActivity.class.getSimpleName();
@@ -352,8 +352,11 @@ public class MainUserActivity extends BaseActivity implements
                 doFragmentTransaction(searchFragment, getString(R.string.fragment_search), false, "");
                 //doFragmentTransaction(searchFragment, getString(R.string.fragment_search));
                 break;
+            case R.string.fragment_create_event:
+                CreateEventFragment createEventFragment = CreateEventFragment.newInstance(mUserAuth);
+                doFragmentTransaction(createEventFragment, getString(R.string.fragment_create_event), true, "");
             case R.string.fragment_do_search:
-                doFragmentTransaction(doSearchFragment, getString(R.string.fragment_search), true, "");
+                //doFragmentTransaction(doSearchFragment, getString(R.string.fragment_search), true, "");
                 break;
             case R.string.fragment_cityfeed:
                 doFragmentTransaction(cityfeedFragment, getString(R.string.fragment_cityfeed), false, "");
@@ -441,6 +444,12 @@ public class MainUserActivity extends BaseActivity implements
 
     @Override
     public void onFragmentInteraction(String something) {
+        onBackPressed();
+    }
+
+
+    @Override
+    public void onFragmentInteraction() {
         onBackPressed();
     }
 }

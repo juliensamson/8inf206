@@ -1,0 +1,239 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.design.widget.CoordinatorLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <android.support.design.widget.AppBarLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <ca.uqac.lecitoyen.views.ToolbarView
+            android:id="@+id/create_event_toolbar"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:layout_scrollFlags="scroll|enterAlways|snap">
+
+        </ca.uqac.lecitoyen.views.ToolbarView>
+
+    </android.support.design.widget.AppBarLayout>
+
+    <android.support.v4.widget.NestedScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical">
+
+            <!-- ****** TITRE ******* -->
+
+            <FrameLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:padding="@dimen/activity_horizontal_margin">
+
+                <EditText
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="48dp"
+                    android:hint="Titre de l'événement"
+                    android:padding="8dp"
+                    android:background="@color/transparent"/>
+
+            </FrameLayout>
+
+            <View style="@style/Divider" />
+
+            <!-- ****** PHOTO ******* -->
+
+            <FrameLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:padding="@dimen/activity_horizontal_margin">
+
+                <ImageView style="@style/ProfileImage.Small"
+                    android:src="@drawable/ic_camera_alt_primary_24dp" />
+
+                <EditText
+                    android:id="@+id/create_event_add_image"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="48dp"
+                    android:focusable="false"
+                    android:hint="Ajouter un photo"
+                    android:padding="8dp"
+                    android:background="@color/transparent"/>
+
+                <ca.uqac.lecitoyen.util.MultimediaView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content" />
+
+            </FrameLayout>
+
+            <View style="@style/Divider" />
+
+            <!-- ****** DATE ******* -->
+
+            <FrameLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:padding="@dimen/activity_horizontal_margin">
+
+                <ImageView style="@style/ProfileImage.Small"
+                    android:src="@drawable/ic_event_primary_24dp" />
+
+                <EditText
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="48dp"
+                    android:hint="date de début"
+                    android:padding="8dp"
+                    android:background="@color/transparent"/>
+
+            </FrameLayout>
+
+            <FrameLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:padding="@dimen/activity_horizontal_margin">
+
+                <EditText
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="48dp"
+                    android:hint="date de fin"
+                    android:padding="8dp"
+                    android:background="@color/transparent"/>
+
+            </FrameLayout>
+
+            <View style="@style/Divider" />
+
+            <!-- ****** LOCATION ******* -->
+
+            <FrameLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:padding="@dimen/activity_horizontal_margin">
+
+                <ImageView style="@style/ProfileImage.Small"
+                    android:src="@drawable/ic_add_location_primary_24dp" />
+
+                <EditText
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="48dp"
+                    android:hint="Ajouter un emplacement"
+                    android:padding="8dp"
+                    android:background="@color/transparent"/>
+
+            </FrameLayout>
+
+            <View style="@style/Divider" />
+
+            <!-- ****** EVENT TYPE ******* -->
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="113dp"
+                android:layout_weight="2"
+                android:orientation="horizontal">
+
+                <FrameLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:padding="@dimen/activity_horizontal_margin">
+
+                    <ImageView
+                        style="@style/ProfileImage.Small"
+                        android:src="@drawable/ic_event_note_primary_24dp" />
+
+                    <EditText
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="48dp"
+                        android:background="@color/transparent"
+                        android:hint="Type"
+                        android:padding="8dp" />
+
+                </FrameLayout>
+
+                <FrameLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:padding="@dimen/activity_horizontal_margin">
+
+                    <ImageView
+                        style="@style/ProfileImage.Small"
+                        android:src="@drawable/ic_monetization_on_primary_24dp" />
+
+                    <EditText
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="48dp"
+                        android:background="@color/transparent"
+                        android:hint="Prix"
+                        android:padding="8dp" />
+
+                </FrameLayout>
+
+            </LinearLayout>
+
+            <View style="@style/Divider" />
+
+            <!-- ****** EVENT DETAIL ******* -->
+
+            <FrameLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:padding="@dimen/activity_horizontal_margin">
+
+                <ImageView style="@style/ProfileImage.Small"
+                    android:src="@drawable/ic_assignment_primary_24dp" />
+
+                <EditText
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="48dp"
+                    android:hint="Ajouter des détails"
+                    android:padding="8dp"
+                    android:background="@color/transparent"/>
+
+            </FrameLayout>
+
+            <View style="@style/Divider" />
+
+            <!-- ****** INVITE ******* -->
+
+            <FrameLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:padding="@dimen/activity_horizontal_margin">
+
+                <ImageView style="@style/ProfileImage.Small"
+                    android:src="@drawable/ic_group_add_primary_24dp" />
+
+                <EditText
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="48dp"
+                    android:hint="Enovyer des invites"
+                    android:padding="8dp"
+                    android:background="@color/transparent"/>
+
+            </FrameLayout>
+
+            <View style="@style/Divider" />
+
+
+        </LinearLayout>
+
+    </android.support.v4.widget.NestedScrollView>
+
+</android.support.design.widget.CoordinatorLayout>

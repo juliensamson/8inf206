@@ -11,12 +11,27 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.ToggleButton;
 
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.ValueEventListener;
+
+import java.util.HashMap;
+import java.util.Map;
+
 import ca.uqac.lecitoyen.Interface.iToggleButton;
 import ca.uqac.lecitoyen.R;
+import ca.uqac.lecitoyen.models.DatabaseManager;
+import ca.uqac.lecitoyen.models.Post;
+import ca.uqac.lecitoyen.models.User;
 
 public class RepostButton extends FrameLayout implements iToggleButton {
 
     private static final String TAG = RepostButton.class.getSimpleName();
+
+    private DatabaseManager db;
+    private User mCurrentUser;
+    private Post mPostClicked;
+
     private LinearLayout mRepostOn;
     private LinearLayout mRepostOff;
     private TextView mRepostCountOn;
@@ -40,6 +55,9 @@ public class RepostButton extends FrameLayout implements iToggleButton {
     }
 
     private void create(Context context) {
+
+        db = DatabaseManager.getInstance();
+
         View rootView = inflate(context, R.layout.button_repost, this);
 
         mRepostOn  = rootView.findViewById(R.id.button_repost_layout_on);
@@ -91,6 +109,81 @@ public class RepostButton extends FrameLayout implements iToggleButton {
     @Override
     public boolean isButtonOn() {
         return isRepostOn;
+    }
+
+    public void setRepostOnClickListener(final RepostButton repostButton, User currUser, Post post) {
+
+        mCurrentUser = currUser;
+        mPostClicked = post;
+
+        Log.e(TAG, mPostClicked.getPostid());
+
+        db.getDatabasePostRepostUsers(mPostClicked.getPostid())
+                .addValueEventListener(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                        Log.e(TAG, "onDataChange");
+                        final Map<String, User> users = getRepostUsers(dataSnapshot);
+
+                        repostButton.setOnClickListener(repostOnClickListener(repostButton, users));
+
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError databaseError) {
+                        Log.e(TAG, databaseError.getMessage());
+                    }
+                });
+    }
+
+
+    private Map<String, User> getRepostUsers(DataSnapshot usersSnapshot) {
+        final Map<String, User> users = new HashMap<>();
+        for(DataSnapshot userSnapshot: usersSnapshot.getChildren()) {
+
+            User user = userSnapshot.getValue(User.class);
+
+            if(user != null)
+                users.put(user.getUid(), user);
+
+        }
+        return users;
+    }
+
+    private View.OnClickListener repostOnClickListener(final RepostButton repostButton, final Map<String, User> users) {
+        return new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+                if(!repostButton.isButtonOn()) {
+                    /*      Update data structure       */
+                    users.put(mCurrentUser.getUid(), mCurrentUser);
+                    mPostClicked.setRepostUsers(users);
+                    mPostClicked.setRepostCount(users.size());
+
+                    /*      Update firebase with new data structure       */
+                    db.writeRepostToPost(mCurrentUser, mPostClicked);
+
+                    /*      Update UI       */
+                    repostButton.setButtonOn();
+                } else {
+                    /*      Update data structure       */
+                    users.remove(mCurrentUser.getUid());
+                    mPostClicked.setRepostCount(users.size());
+                    mPostClicked.setRepostUsers(users);
+
+                    /*      Update firebase with new data structure       */
+                    db.removeRepostFromPost(mCurrentUser, mPostClicked);
+
+                    /*      Update UI       */
+                    repostButton.setButtonOff();
+                }
+
+                /*      Update UI Count       */
+                repostButton.setButtonCount(mPostClicked.getRepostCount());
+
+            }
+        };
     }
 
 }

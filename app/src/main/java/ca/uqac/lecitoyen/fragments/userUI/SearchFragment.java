@@ -3,21 +3,26 @@ package ca.uqac.lecitoyen.fragments.userUI;
 
 import android.content.Context;
 import android.os.Bundle;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import java.sql.Array;
 import java.util.ArrayList;
 
 import ca.uqac.lecitoyen.activities.MainUserActivity;
 import ca.uqac.lecitoyen.Interface.iHandleFragment;
 import ca.uqac.lecitoyen.R;
+import ca.uqac.lecitoyen.adapters.HorizontalEventTypeAdapter;
 import ca.uqac.lecitoyen.adapters.VerticalEventAdapter;
 import ca.uqac.lecitoyen.adapters.SearchUserAdapter;
+import ca.uqac.lecitoyen.buttons.ToggleButton;
+import ca.uqac.lecitoyen.dialogs.CreateDialog;
 import ca.uqac.lecitoyen.fragments.BaseFragment;
 import ca.uqac.lecitoyen.models.DatabaseManager;
 import ca.uqac.lecitoyen.models.Event;
@@ -40,6 +45,7 @@ public class SearchFragment extends BaseFragment implements View.OnClickListener
 
     //  Views
     private ToolbarView mSearchToolbar;
+    private FloatingActionButton mAddEventButton;
     private RecyclerView mSearchRecyclerView, mEventByDateRecyclerView, mEventRecyclerView;
     //private RecyclerView.Adapter mNewsfeedAdapter;
     private RecyclerView.Adapter mSearchAdapter, mEventByDateAdapter, mEventAdapter;
@@ -107,6 +113,8 @@ public class SearchFragment extends BaseFragment implements View.OnClickListener
             }
         });
 
+        view.findViewById(R.id.search_add_event).setOnClickListener(this);
+
         testAdapter(view);
 
         //LinearLayoutManager llm = new LinearLayoutManager(activity, LinearLayoutManager.HORIZONTAL, false);
@@ -149,6 +157,12 @@ public class SearchFragment extends BaseFragment implements View.OnClickListener
     }
 
     @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        super.onCreateOptionsMenu(menu, inflater);
+        //inflater.inflate(R.menu.user_menu, menu);
+    }
+
+    @Override
     public void onAttach(Context context) {
         super.onAttach(context);
         mHandleFragment = (MainUserActivity) getActivity();
@@ -158,10 +172,37 @@ public class SearchFragment extends BaseFragment implements View.OnClickListener
 
     @Override
     public void onClick(View view) {
+        switch (view.getId()) {
 
+            case R.id.search_add_event:
+                CreateDialog createDialog = new CreateDialog(this);
+                createDialog.createEventView().show();
+               // mHandleFragment.inflateFragment(R.string.fragment_create_event, "");
+                break;
+
+        }
     }
 
     private void testAdapter(View view) {
+
+        ArrayList<ToggleButton> toggleButtons = new ArrayList<>();
+        for (int i = 0; i < 10; i++) {
+            ToggleButton button = new ToggleButton(activity);
+            button.create(ToggleButton.CIRCLE_BUTTON);
+            button.setTitle("Type " + i);
+            button.setCircleButtonColor(R.color.primaryColor);
+            toggleButtons.add(button);
+        }
+        LinearLayoutManager hllm = new LinearLayoutManager(activity, LinearLayoutManager.HORIZONTAL, false);
+        RecyclerView recyclerView = view.findViewById(R.id.search_event_type_recycler_view);
+        recyclerView.setLayoutManager(hllm);
+
+        RecyclerView.Adapter typeAdapter = new HorizontalEventTypeAdapter(activity, toggleButtons);
+        recyclerView.setAdapter(typeAdapter);
+
+
+
+
         long day = 1000 * 3600 * 24;
         //For test
         ArrayList<ArrayList<Event>> mCompleteEventList = new ArrayList<>();

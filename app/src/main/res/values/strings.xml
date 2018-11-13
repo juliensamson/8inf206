@@ -46,6 +46,7 @@
     <string name="fragment_forum">Forum</string>
     <string name="fragment_newsfeed_public_profil">Profil publique</string>
     <string name="fragment_search">Rechercher</string>
+    <string name="fragment_create_event">Créer un événement</string>
     <string name="fragment_do_search">Rechercher</string>
     <string name="fragment_cityfeed">Ville</string>
     <string name="fragment_cityfeed_news">Nouvelles</string>
@@ -191,7 +192,9 @@
 
 
     <string name="ca_uqac_fab_behavior">ca.uqac.lecitoyen.helpers.ScrollingFabBehavior</string>
+    <string name="ca_uqac_fab_menu_behavior">ca.uqac.lecitoyen.helpers.ScrollingFabMenuBehavior</string>
     <string name="ca_uqac_profil_image_behavior">ca.uqac.lecitoyen.helpers.ProfilPcitureBehavior</string>
+
 
     <!-- Example General settings -->
     <string name="activity_settings_title">Paramètres</string>

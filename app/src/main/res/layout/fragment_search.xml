@@ -38,6 +38,8 @@
                 android:layout_height="wrap_content"
                 android:orientation="horizontal" />
 
+            <View style="@style/Divider" />
+
             <android.support.v7.widget.RecyclerView
                 android:id="@+id/search_event_by_date_recycler_view"
                 android:layout_width="match_parent"

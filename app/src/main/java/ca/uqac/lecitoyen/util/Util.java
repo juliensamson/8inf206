@@ -1,5 +1,6 @@
 package ca.uqac.lecitoyen.util;
 
+import android.app.Activity;
 import android.app.Application;
 import android.app.ProgressDialog;
 import android.content.Context;
@@ -7,6 +8,7 @@ import android.content.res.TypedArray;
 import android.os.Build;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.Toolbar;
+import android.util.DisplayMetrics;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -92,6 +94,13 @@ public final class Util {
         int toolBarHeight = ta.getDimensionPixelSize(0, -1);
         ta.recycle();
         return toolBarHeight;
+    }
+
+    public static int getScreenHeightPixel(Activity activity) {
+        DisplayMetrics metrics = new DisplayMetrics();
+        activity.getWindowManager().getDefaultDisplay().getMetrics(metrics);
+
+        return metrics.heightPixels;
     }
 
     public static String setStringPlurial(int size, String word) {

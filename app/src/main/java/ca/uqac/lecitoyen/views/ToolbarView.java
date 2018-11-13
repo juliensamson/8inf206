@@ -13,6 +13,7 @@ import android.text.TextWatcher;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.Gravity;
+import android.view.Menu;
 import android.view.View;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
@@ -27,9 +28,10 @@ import com.google.firebase.storage.StorageReference;
 
 import ca.uqac.lecitoyen.R;
 import ca.uqac.lecitoyen.activities.BaseActivity;
+import ca.uqac.lecitoyen.fragments.BaseFragment;
 import de.hdodenhof.circleimageview.CircleImageView;
 
-public class ToolbarView extends FrameLayout {
+public class ToolbarView extends FrameLayout  {
 
     private final static String TAG = ToolbarView.class.getSimpleName();
 
@@ -42,7 +44,7 @@ public class ToolbarView extends FrameLayout {
     private TextView mToolbarTitle, mToolbarButton;
     private CircleImageView mToolbarImage;
 
-    private ImageView mReturn;
+    private ImageView mToolbarClose, mReturn;
     private EditText mSearchEditText;
     private SearchView mSearchBar;
 
@@ -68,6 +70,7 @@ public class ToolbarView extends FrameLayout {
         this.mToolbarButton = rootView.findViewById(R.id.toolbar_view_button);
         this.mToolbarImage     = rootView.findViewById(R.id.toolbar_view_image_view);
         this.mSearchEditText = rootView.findViewById(R.id.toolbar_view_text_view);
+        this.mToolbarClose = rootView.findViewById(R.id.toolbar_view_close);
         this.mReturn = rootView.findViewById(R.id.toolbar_view_return);
 
         hideAllViews();
@@ -126,20 +129,61 @@ public class ToolbarView extends FrameLayout {
 
     }
 
-    public void buttonToolbar(Activity parent, String text) {
+    public void simpleToolbar(Activity parent, String title) {
 
         if(rootView == null)
             throw new IllegalArgumentException("Make sure the view is inflated");
 
-        setToolbarTitle(null);
+        setToolbarTitle(title);
         setToolbarImage((Uri) null);
-        setToolbarButton(text);
+        setToolbarButton(null);
 
         try {
             Toolbar toolbar = findViewById(R.id.custom_toolbar);
             ((AppCompatActivity)parent).setSupportActionBar(toolbar);
             ((AppCompatActivity) parent).getSupportActionBar().setDisplayHomeAsUpEnabled(true);
             ((AppCompatActivity) parent).getSupportActionBar().setHomeAsUpIndicator(R.drawable.ic_close_primary_24dp);
+            Fragment fragment =  new Fragment();
+            fragment.setHasOptionsMenu(true);
+        } catch (NullPointerException npe) {
+            Log.e(TAG, npe.getMessage());
+        }
+
+    }
+
+    public void buttonToolbar(Activity activity, String title) {
+
+        if(rootView == null)
+            throw new IllegalArgumentException("Make sure the view is inflated");
+
+        setToolbarTitle(null);
+        setToolbarImage((Uri) null);
+        setToolbarButton(title);
+
+        try {
+            Toolbar toolbar = findViewById(R.id.custom_toolbar);
+            ((AppCompatActivity) activity).setSupportActionBar(toolbar);
+            ((AppCompatActivity) activity).getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+            ((AppCompatActivity) activity).getSupportActionBar().setHomeAsUpIndicator(R.drawable.ic_close_primary_24dp);
+        } catch (NullPointerException npe) {
+            Log.e(TAG, npe.getMessage());
+        }
+
+    }
+
+    public void buttonToolbar(Fragment fragment, String title) {
+
+        if(rootView == null)
+            throw new IllegalArgumentException("Make sure the view is inflated");
+
+        setToolbarTitle(null);
+        setToolbarImage((Uri) null);
+        setToolbarButton(title);
+        showToolbarClose();
+
+        try {
+            Toolbar toolbar = findViewById(R.id.custom_toolbar);
+            ((AppCompatActivity) fragment.getActivity()).setSupportActionBar(toolbar);
         } catch (NullPointerException npe) {
             Log.e(TAG, npe.getMessage());
         }
@@ -292,6 +336,10 @@ public class ToolbarView extends FrameLayout {
         mToolbarButton.setOnClickListener(listener);
     }
 
+    public void onCloseClickListener(OnClickListener listener) {
+        mToolbarClose.setOnClickListener(listener);
+    }
+
     public void onSearchViewClick(OnClickListener listener) {
         mSearchEditText.setOnClickListener(listener);
     }
@@ -312,6 +360,7 @@ public class ToolbarView extends FrameLayout {
         hideToolbarTitle();
         hideToolbarButton();
         hideToolbarImage();
+        hideToolbarClose();
     }
 
     private void showToolbarTitle() {
@@ -337,6 +386,10 @@ public class ToolbarView extends FrameLayout {
     private void hideToolbarImage() {
         mToolbarImage.setVisibility(GONE);
     }
+
+    private void showToolbarClose() { mToolbarClose.setVisibility(VISIBLE); }
+
+    private void hideToolbarClose() { mToolbarClose.setVisibility(GONE); }
 
 
 }

@@ -137,6 +137,7 @@ public class ExpandPostActivity extends BaseActivity implements View.OnClickList
             Log.e(TAG, "post is null");
         }
 
+
     }
 
     private ValueEventListener initExpandPost(final DatabaseManager dbManager) {

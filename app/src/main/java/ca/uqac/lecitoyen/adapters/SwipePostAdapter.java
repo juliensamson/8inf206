@@ -166,8 +166,6 @@ public class SwipePostAdapter extends RecyclerSwipeAdapter<SwipePostAdapter.View
         dbPost.addListenerForSingleValueEvent(setUserSocialInteraction(holder));
 
 
-        dbPost.addValueEventListener(readPostUpdate(holder));
-
         setOnSwipeListener(holder);
         setOnClickListener(holder);
         setOnDoubleClickListener(holder);
@@ -304,6 +302,18 @@ public class SwipePostAdapter extends RecyclerSwipeAdapter<SwipePostAdapter.View
                 mContext.startActivity(intent);
             }
         });
+
+        holder.upvoteButton.setUpvoteOnClickListener(
+                holder.upvoteButton,
+                mCurrentUser,
+                mPostList.get(holder.getAdapterPosition())
+        );
+        holder.repostButton.setRepostOnClickListener(
+                holder.repostButton,
+                mCurrentUser,
+                mPostList.get(holder.getAdapterPosition())
+        );
+
 
         holder.profilPicture.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -466,7 +476,13 @@ public class SwipePostAdapter extends RecyclerSwipeAdapter<SwipePostAdapter.View
 
                 //TODO: Ajouter à utilisatueur et faire Repost
 
-                //  Get upvote users
+                holder.upvoteButton.setUpvoteOnClickListener(
+                        holder.upvoteButton,
+                        mCurrentUser,
+                        holderPost
+                );
+
+                /*//  Get upvote users
                 final DataSnapshot upvoteUsersSnapshot = dataSnapshot.child("upvoteUsers");
 
                 final Map<String, User> upvoteUsers = new HashMap<>();
@@ -481,6 +497,7 @@ public class SwipePostAdapter extends RecyclerSwipeAdapter<SwipePostAdapter.View
                 holder.upvoteButton.setOnClickListener(setUpvoteOnClickListener(holder, holderPost, upvoteUsers));
                 //holder.upvoteLayout.setOnClickListener(setUpvoteOnClickListener(holder, holderPost, upvoteUsers));
                 holder.repostButton.setOnClickListener(setRepostOnClickListener(holder, holderPost, repostUsers));
+                */
             }
 
             @Override

@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.design.widget.CoordinatorLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <!-- ****** CAMERA ******* -->
+
+        <FrameLayout
+            android:id="@+id/dialog_bottom_camera"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:padding="@dimen/activity_horizontal_margin"
+            android:clickable="true"
+            android:focusable="true"
+            android:background="?attr/selectableItemBackground">
+
+            <ImageView style="@style/ProfileImage.Small"
+                android:src="@drawable/ic_camera_alt_primary_24dp" />
+
+            <TextView
+                android:layout_marginStart="48dp"
+                android:layout_gravity="center_vertical"
+                android:text="Prendre une photo"
+                style="@style/TextView.Normal" />
+
+        </FrameLayout>
+
+        <!-- ****** GALLERY ******* -->
+
+        <FrameLayout
+            android:id="@+id/dialog_bottom_gallery"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:padding="@dimen/activity_horizontal_margin"
+            android:clickable="true"
+            android:focusable="true"
+            android:background="?attr/selectableItemBackground">
+
+            <ImageView style="@style/ProfileImage.Small"
+                android:src="@drawable/ic_image_black_24dp" />
+
+            <TextView
+                android:layout_marginStart="48dp"
+                android:layout_gravity="center_vertical"
+                android:text="Importer une image"
+                style="@style/TextView.Normal" />
+
+        </FrameLayout>
+
+        <FrameLayout
+            android:id="@+id/dialog_bottom_see_more"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:padding="@dimen/activity_horizontal_margin"
+            android:clickable="true"
+            android:focusable="true"
+            android:background="?attr/selectableItemBackground">
+
+            <ImageView style="@style/ProfileImage.Small"
+                android:src="@drawable/ic_photo_library_black_24dp" />
+
+            <TextView
+                android:layout_marginStart="48dp"
+                android:layout_gravity="center_vertical"
+                android:text="Image de l'application"
+                style="@style/TextView.Normal" />
+
+        </FrameLayout>
+
+        <FrameLayout
+            android:id="@+id/dialog_bottom_delete"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:padding="@dimen/activity_horizontal_margin"
+            android:clickable="true"
+            android:focusable="true"
+            android:background="?attr/selectableItemBackground">
+
+            <ImageView style="@style/ProfileImage.Small"
+                android:src="@drawable/ic_delete_forever_black_24dp" />
+
+            <TextView
+                android:layout_marginStart="48dp"
+                android:layout_gravity="center_vertical"
+                android:text="Supprimer une photo"
+                style="@style/TextView.Normal" />
+
+        </FrameLayout>
+
+    </LinearLayout>
+
+</android.support.design.widget.CoordinatorLayout>

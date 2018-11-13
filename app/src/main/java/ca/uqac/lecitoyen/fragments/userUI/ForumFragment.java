@@ -24,28 +24,32 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.Query;
-import com.google.firebase.database.ValueEventListener;
-import com.google.firebase.storage.StorageReference;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
-import ca.uqac.lecitoyen.activities.CreatePostActivity;
+import ca.uqac.lecitoyen.activities.CreateAndEditActivity;
 import ca.uqac.lecitoyen.Interface.iHandleFragment;
 import ca.uqac.lecitoyen.R;
-import ca.uqac.lecitoyen.adapters.SwipePostAdapter;
 import ca.uqac.lecitoyen.activities.MainUserActivity;
+import ca.uqac.lecitoyen.adapters.SwipePostAdapter;
+import ca.uqac.lecitoyen.dialogs.CreateDialog;
 import ca.uqac.lecitoyen.fragments.BaseFragment;
-import ca.uqac.lecitoyen.helpers.RecyclerTouchListener;
 import ca.uqac.lecitoyen.models.DatabaseManager;
 import ca.uqac.lecitoyen.models.Post;
 import ca.uqac.lecitoyen.models.User;
 import ca.uqac.lecitoyen.views.ToolbarView;
+import nl.changer.audiowife.AudioWife;
+
+import static android.app.Activity.RESULT_CANCELED;
+import static android.app.Activity.RESULT_OK;
 
 public class ForumFragment extends BaseFragment implements View.OnClickListener {
 
     private final static String TAG = ForumFragment.class.getSimpleName();
+
+    private static final int GALLERY_REQUEST_CODE = 2;
 
     private final static String ARG_USER = "user";
     private final static String ARG_POSTS = "posts";
@@ -106,7 +110,8 @@ public class ForumFragment extends BaseFragment implements View.OnClickListener 
 
         if (getArguments() != null) {
             mUserAuth = (User) getArguments().getSerializable(ARG_USER);
-            //mPostsList = getArguments().getParcelableArrayList(ARG_POSTS);
+            mPostsList = getArguments().getParcelableArrayList(ARG_POSTS);
+            mForumAdapter = new SwipePostAdapter(mainUserActivity, mUserAuth, mPostsList);
             //mPostsList.clear();
             //mForumAdapter = mainUserActivity.getForumAdapter();
             //mPostsList = mainUserActivity.getPostsList();
@@ -123,6 +128,7 @@ public class ForumFragment extends BaseFragment implements View.OnClickListener 
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_forum, container, false);
 
+        //  Toolbar
         mForumToolbar = view.findViewById(R.id.forum_toolbar);
         mForumToolbar.defaultToolbar(
                 mainUserActivity,
@@ -130,28 +136,16 @@ public class ForumFragment extends BaseFragment implements View.OnClickListener 
                 getResources().getString(R.string.fragment_forum),
                 dbManager.getStorageUserProfilPicture(mUserAuth.getUid(), mUserAuth.getPid())
         );
-        /*mForumToolbar
-                .with(mainUserActivity)
-                .setTitle(getTag())
-                .setImageGravity(ToolbarView.GRAVITY_END)
-                .setImageView(dbManager.getStorageUserProfilPicture(mUserAuth.getUid(), mUserAuth.getPid()));
-        /*mForumToolbar
-                .setImageGravity(ToolbarView.GRAVITY_END)
-                .setTitle(getTag())
-                .setImageView(dbManager.getStorageUserProfilPicture(mUserAuth.getUid(), mUserAuth.getPid()))
-                .createToolbarWithImageView(
-                mainUserActivity,
-                this,
-                false,
-                R.drawable.ic_close_primary_24dp
-        );*/
+
         //  Views
         mSwipeRefreshLayout = view.findViewById(R.id.forum_refresh_layout);
         mForumRecyclerView = view.findViewById(R.id.newsfeed_recycler_view);
         mForumRecyclerView.setNestedScrollingEnabled(false);
 
         //  Button
-        view.findViewById(R.id.newsfeed_add_message).setOnClickListener(this);
+        view.findViewById(R.id.forum_add_post).setOnClickListener(this);
+        view.findViewById(R.id.forum_add_images).setOnClickListener(this);
+        view.findViewById(R.id.forum_add_audio).setOnClickListener(this);
 
         //  Set recycler view
         mLayoutManager = new LinearLayoutManager(mainUserActivity);
@@ -159,11 +153,8 @@ public class ForumFragment extends BaseFragment implements View.OnClickListener 
 
         Log.e(TAG, "Adapter " + mainUserActivity.getForumAdapter().toString());
 
-        //if(mainUserActivity.getForumAdapter() != null) {
-            mForumAdapter = mainUserActivity.getForumAdapter();
+        if(mForumAdapter != null)
             mForumRecyclerView.setAdapter(mForumAdapter);
-        //} else
-        //    mForumRecyclerView.setAdapter(new SwipePostAdapter(mainUserActivity, mUserAuth, mPostsList));
 
         mForumToolbar.onImageClickListener(new View.OnClickListener() {
             @Override
@@ -243,17 +234,53 @@ public class ForumFragment extends BaseFragment implements View.OnClickListener 
     }
 
     @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (resultCode == RESULT_OK) {
+            switch (requestCode) {
+                case GALLERY_REQUEST_CODE:
+                    CreateDialog createDialog = new CreateDialog(this);
+                    createDialog.createPostView(data.getData()).show();
+                    //mPictureLayout.setVisibility(View.VISIBLE);
+                    //Glide.with(this).load(mImageUri).into(mPicture);
+                    break;
+                /*case CAMERA_REQUEST_CODE:    //TODO: Make this work somehow
+                    //checkInternalStorage();
+                    //updateStorage(imageUri);
+                    break;
+                //case AUDIO_REQUEST_CODE:
+                    mAudioUri = data.getData();
+                    AudioWife.getInstance().init(mContext, mAudioUri)
+                            .useDefaultUi(mPlayerLayout, getLayoutInflater());
+                    Log.d(TAG, "Audio request code");
+                    //showAudioSetup(mAudioUri);
+                    break;
+                case DELETE_REQUEST_CODE:
+                    break;*/
+                default:
+                    break;
+            }
+        } else if (requestCode == RESULT_CANCELED) {
+            Log.e(TAG, "Some error occured");
+        }
+    }
+
+    @Override
     public void onClick(View view) {
         switch (view.getId())
         {
-            case R.id.newsfeed_add_message:
-                Bundle args = new Bundle();
+            case R.id.forum_add_post:
+                CreateDialog createDialog = new CreateDialog(this);
+                createDialog.createPostView(null).show();
+                /*Bundle args = new Bundle();
                 args.putParcelable("user", mUserAuth);
 
-                Intent intent = new Intent(mainUserActivity, CreatePostActivity.class);
+                Intent intent = new Intent(mainUserActivity, CreateAndEditActivity.class);
                 intent.putExtra("bundle", args);
 
-                startActivity(intent);
+                startActivity(intent);*/
+                break;
+            case R.id.forum_add_images:
+                openGallery();
                 break;
             default:
                 break;
@@ -385,6 +412,14 @@ public class ForumFragment extends BaseFragment implements View.OnClickListener 
                 Log.e(TAG, databaseError.toString());
             }
         };
+    }
+
+    private void openGallery() {
+        Intent openGalleryIntent = new Intent(Intent.ACTION_PICK);
+        if (openGalleryIntent.resolveActivity(mainUserActivity.getPackageManager()) != null) {
+            openGalleryIntent.setType("image/*");
+            startActivityForResult(openGalleryIntent, GALLERY_REQUEST_CODE);
+        }
     }
 
     public interface OnFragmentInteractionListener {
