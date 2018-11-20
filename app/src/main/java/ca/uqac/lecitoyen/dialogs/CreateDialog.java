@@ -8,6 +8,7 @@ import android.content.Intent;
 import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Environment;
 import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -44,6 +45,7 @@ import java.util.ArrayList;
 
 import ca.uqac.lecitoyen.R;
 import ca.uqac.lecitoyen.fragments.userUI.ForumFragment;
+import ca.uqac.lecitoyen.models.Audio;
 import ca.uqac.lecitoyen.models.DatabaseManager;
 import ca.uqac.lecitoyen.models.Image;
 import ca.uqac.lecitoyen.models.Post;
@@ -88,19 +90,20 @@ public class CreateDialog extends BottomSheetDialogFragment implements View.OnCl
     private View mRootView;
 
     private Bitmap mBitmapImage;
+    private Uri mAudioUri;
 
     //  Views
     private ToolbarView mToolbar;
     private TextView mRemoveLayout;
     private EditText mMessage;
     private EditText mImageTitle, mImageGenre, mAddImageEditText;
-    private EditText mAudioTitle;
+    private EditText mAudioTitle, mAudioGenre, mAddAudioEditText, mAddAudioImage;
     private LinearLayout mImageLayout, mAudioLayout;
     private FloatingActionMenu mAddLayoutMenu;
     private FloatingActionButton mAddImageButton;
 
     private FrameLayout mPlayerView;
-    private MultimediaView mImageView;
+    private MultimediaView mImageView, mAudioImageView;
 
     private DatabaseManager dbManager;
     private int  mPostType;
@@ -162,6 +165,7 @@ public class CreateDialog extends BottomSheetDialogFragment implements View.OnCl
         //  Audio Layout Views
         mAudioTitle = rootView.findViewById(R.id.create_post_audio_title);
         mPlayerView = rootView.findViewById(R.id.create_post_audio_player);
+        mAudioImageView = rootView.findViewById(R.id.create_post_audio_image);
         //if(postType == AUDIO_POST_TYPE && uri != null) {
             //mRemoveLayout.setVisibility(View.VISIBLE);
             //mAudioLayout.setVisibility(View.VISIBLE);
@@ -172,7 +176,13 @@ public class CreateDialog extends BottomSheetDialogFragment implements View.OnCl
         rootView.findViewById(R.id.create_post_remove_layout).setOnClickListener(this);
         rootView.findViewById(R.id.create_post_add_image_layout).setOnClickListener(this);
         rootView.findViewById(R.id.create_post_add_audio_layout).setOnClickListener(this);
+
         rootView.findViewById(R.id.create_post_add_image).setOnClickListener(this);
+        rootView.findViewById(R.id.create_post_image_add_genre).setOnClickListener(this);
+
+        rootView.findViewById(R.id.create_post_audio_add_audio).setOnClickListener(this);
+        rootView.findViewById(R.id.create_post_audio_add_image).setOnClickListener(this);
+        rootView.findViewById(R.id.create_post_audio_add_genre).setOnClickListener(this);
 
         //RecyclerView mImagesRecyclerView = messageView.findViewById(R.id.create_post_images);
         //LinearLayoutManager llm = new LinearLayoutManager(mActivity, LinearLayoutManager.HORIZONTAL, false);
@@ -185,7 +195,6 @@ public class CreateDialog extends BottomSheetDialogFragment implements View.OnCl
     @Override
     public void onStart() {
         super.onStart();
-        updateUI();
     }
 
     /**
@@ -219,6 +228,14 @@ public class CreateDialog extends BottomSheetDialogFragment implements View.OnCl
             case R.id.create_post_add_image:
                 showImageSelection();
                 break;
+            case R.id.create_post_audio_add_audio:
+                openDeviceStorage();
+                break;
+            case R.id.create_post_audio_add_image:
+                showImageSelection();
+                break;
+            case R.id.create_post_audio_add_genre:
+                break;
         }
     }
 
@@ -243,8 +260,8 @@ public class CreateDialog extends BottomSheetDialogFragment implements View.OnCl
                     setImageUri(data.getData());
                     break;
                 case Constants.REQUEST_AUDIO_CODE:
-                    //CreateDialog audioDialog = new CreateDialog(this, mUserAuth);
-                    //audioDialog.createPostView(CreateDialog.AUDIO_POST_TYPE, data.getData()).show();
+                    Log.d(TAG, "resquest Audio");
+                    setAudioUri(data.getData());
                     break;
                 default:
                     break;
@@ -262,20 +279,23 @@ public class CreateDialog extends BottomSheetDialogFragment implements View.OnCl
      *
      */
 
-    private void updateUI() {
-
-    }
-
     private void setImageUri(Uri uri) {
-        File file = new File(uri.getPath());
 
         try {
 
             mBitmapImage = MediaStore.Images.Media.getBitmap(mActivity.getContentResolver(), uri);
-            mImageView.with(mActivity)
-                    .setEditable(true)
-                    .setFrameSize()
-                    .loadImages(mBitmapImage, "");
+
+            if(mImageLayout.getVisibility() == View.VISIBLE) {
+                mImageView.with(mActivity)
+                        .setEditable(true)
+                        .setFrameSize()
+                        .loadImages(mBitmapImage, "");
+            } else if (mAudioLayout.getVisibility() == View.VISIBLE){
+                mAudioImageView.with(mActivity)
+                        .setEditable(true)
+                        .setFrameSize()
+                        .loadImages(mBitmapImage, "");
+            }
 
         } catch (IOException e) {
             Log.e(TAG, e.getMessage());
@@ -284,7 +304,19 @@ public class CreateDialog extends BottomSheetDialogFragment implements View.OnCl
 
     private void setImageBitmap(Bitmap bitmap) {
         mBitmapImage = bitmap;
-        mImageView.setEditable(true).loadImages(mBitmapImage, "");
+
+        if(mImageLayout.getVisibility() == View.VISIBLE) {
+            mImageView.setEditable(true).loadImages(mBitmapImage, "");
+        } else if (mAudioLayout.getVisibility() == View.VISIBLE){
+            mAudioImageView.setEditable(true).loadImages(mBitmapImage, "");
+        }
+
+    }
+
+    private void setAudioUri(Uri uri) {
+        mAudioUri = uri;
+        AudioWife.getInstance().init(mActivity, mAudioUri)
+                .useDefaultUi(mPlayerView, mActivity.getLayoutInflater());
     }
 
     private void hideAllMediaLayout() {
@@ -326,6 +358,28 @@ public class CreateDialog extends BottomSheetDialogFragment implements View.OnCl
         }).show();
     }
 
+    private void openDeviceStorage() {
+
+        if (isExternalStorageWritable()) {
+
+            if (isExternalStorageReadable()) {
+
+                Intent openStorage = new Intent(Intent.ACTION_GET_CONTENT);
+                Uri uri = Uri.parse(Environment.getExternalStorageDirectory().getPath());
+                openStorage.setDataAndType(uri, "audio/*");
+                if (openStorage.resolveActivity(mActivity.getPackageManager()) != null) {
+                    //startActivity(Intent.createChooser(openStorage, "Open folder"));
+                    startActivityForResult(openStorage, Constants.REQUEST_AUDIO_CODE);
+                }
+            } else {
+                Log.e(TAG, "Storage not readable");
+            }
+        } else {
+            Log.e(TAG, "Storage not writable");
+        }
+        //String path = Environment.getExternalStorageDirectory() + File.separator;
+    }
+
     private void updateDB() {
 
         Log.d(TAG, "updateDB");
@@ -359,32 +413,8 @@ public class CreateDialog extends BottomSheetDialogFragment implements View.OnCl
             post.setHistories(postHistoryList);
 
             updateImages(post);
-            //  Create storage reference if there is an image added to the post
-            /*if (mMultimediaView.getVisibility() != View.GONE && mImageUri != null) {
+            updateAudio(post);
 
-                postImageList.add(new Image("image" + post.getPostid() + "1000"));
-                post.setImages(postImageList);
-
-                if (post.getImages() != null && !post.getImages().isEmpty())
-                    updateImageStorage(stPosts, post.getImages().get(0).getImageId());
-                else
-                    Log.e(TAG, "picture is null");
-            } else {
-                this.finish();
-            }
-            if (mPlayerLayout.getVisibility() != View.GONE && mAudioUri != null) {
-
-                post.setAudio("audio" + post.getPostid() + "1000");
-
-                if (post.getAudio() != null && !post.getAudio().isEmpty()) {
-                    updateAudioStorage(stPosts, post.getAudio());
-                } else {
-                    Log.e(TAG, "audio is null");
-                }
-            } else {
-                this.finish();
-            }*/
-            //  Add data to fire base
             dbManager.writePostToFirebase(post);
             dismiss();
 
@@ -456,6 +486,77 @@ public class CreateDialog extends BottomSheetDialogFragment implements View.OnCl
         }
     }
 
+    private void updateAudio(Post post) {
+
+        if (mPlayerView.getVisibility() != View.GONE) {
+
+            //  Set audio data structure
+
+            Audio audio = new Audio();
+
+            audio.setAid("audio" + post.getPostid() + Util.getRandomNumber());
+            audio.setCreatorid(post.getUser().getUid());
+            if(!mAudioTitle.getText().toString().isEmpty())
+                audio.setTitle(mImageTitle.getText().toString());
+            else
+                audio.setTitle("");
+
+            if(mAudioImageView.getVisibility() == View.VISIBLE) {
+                //audio.setPid();
+            }
+
+            post.setAudio(audio);
+
+            //  Upload audio to firebase
+
+            StorageReference stPost = dbManager.getStoragePost(post.getPostid());
+
+            try {
+
+                if (post.getAudio() == null)
+                    throw new NullPointerException("There is no audio in this post. ");
+
+                UploadTask uploadTask = stPost.child(post.getAudio().getAid()).putFile(mAudioUri);
+
+                uploadTask
+                        .addOnProgressListener(new OnProgressListener<UploadTask.TaskSnapshot>() {
+                            @Override
+                            public void onProgress(UploadTask.TaskSnapshot taskSnapshot) {
+                                Log.d(TAG, "Byte transferred: " + taskSnapshot.getBytesTransferred());
+
+                                //TODO: add byte transfer to ProgressDialog
+                            }
+                        })
+                        .addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+                            @Override
+                            public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                                dismiss();
+                                Log.d(TAG, "image uploaded");
+                            }
+                        }).addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        Log.e(TAG, e.getMessage());
+                    }
+                });
+
+            } catch (NullPointerException e) {
+                Log.e(TAG, e.getMessage());
+            }
+
+        }
+
+    }
+
+
+    /**
+     *
+     *
+     *      Validation
+     *
+     *
+     */
+
     private boolean validateForm() {
         boolean valid = true;
 
@@ -468,5 +569,24 @@ public class CreateDialog extends BottomSheetDialogFragment implements View.OnCl
         }
 
         return valid;
+    }
+
+    /* Checks if external storage is available for read and write */
+    public boolean isExternalStorageWritable() {
+        String state = Environment.getExternalStorageState();
+        if (Environment.MEDIA_MOUNTED.equals(state)) {
+            return true;
+        }
+        return false;
+    }
+
+    /* Checks if external storage is available to at least read */
+    public boolean isExternalStorageReadable() {
+        String state = Environment.getExternalStorageState();
+        if (Environment.MEDIA_MOUNTED.equals(state) ||
+                Environment.MEDIA_MOUNTED_READ_ONLY.equals(state)) {
+            return true;
+        }
+        return false;
     }
 }

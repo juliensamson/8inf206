@@ -328,30 +328,19 @@ public class SwipePostAdapter extends RecyclerSwipeAdapter<SwipePostAdapter.View
         holder.multimediaView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Bundle bundle = new Bundle();
-                bundle.putString("postid", holderPost.getPostid());
                 if(holder.multimediaView.isPhoto()) {
-
-                    bundle.putInt("code", Constants.EXPAND_PHOTO);
                     ExpandMediaDialog dialog = new ExpandMediaDialog(mUserActivity);
                     dialog.create()
                             .withImage(stPost.child(holderPost.getImages().get(0).getImageid()))
                             .show();
-                    //Intent intent = new Intent(mContext, ExpandPostMediaActivity.class);
-                    //intent.putExtras(bundle);
-
-                    //mContext.startActivity(intent);
                 }
                 if(holder.multimediaView.isAudio()) {
 
                     ExpandMediaDialog dialog = new ExpandMediaDialog(mUserActivity);
-                    dialog.create().withAudio(stPost.child(holderPost.getAudio().getAid()));
-                    /*bundle.putInt("code", Constants.EXPAND_AUDIO);
+                    dialog.create()
+                            .withAudio(stPost.child(holderPost.getAudio().getAid()))
+                            .show();
 
-                    Intent intent = new Intent(mContext, ExpandPostMediaActivity.class);
-                    intent.putExtras(bundle);
-
-                    mContext.startActivity(intent);*/
                 }
                 if(holder.multimediaView.isLink()) {
 

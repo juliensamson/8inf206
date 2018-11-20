@@ -159,7 +159,7 @@ public class MultimediaView extends FrameLayout {
     }
 
     public MultimediaView loadAudio(Audio audio) {
-
+        
         setBottomTextLayout(R.drawable.ic_play_circle_outline_black_24dp, audio.getTitle(), "");
         setMediaUsed(false, true, false);
 
