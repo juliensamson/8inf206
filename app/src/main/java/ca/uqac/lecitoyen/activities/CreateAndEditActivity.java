@@ -47,7 +47,7 @@ import ca.uqac.lecitoyen.views.ToolbarView;
 import de.hdodenhof.circleimageview.CircleImageView;
 import nl.changer.audiowife.AudioWife;
 
-public class CreateAndEditActivity extends BaseActivity implements View.OnClickListener {
+public class CreateAndEditActivity extends BaseActivity {
 
     private static String TAG = "CreateAndEditActivity";
 
@@ -118,16 +118,16 @@ public class CreateAndEditActivity extends BaseActivity implements View.OnClickL
         mPlayerLayout = findViewById(R.id.create_post_audioplayer);
 
         //  Button
-        mPostToolbar.onButtonClickListener(this);
-        findViewById(R.id.create_post_picture_gallery).setOnClickListener(this);
-        findViewById(R.id.create_post_picture_camera).setOnClickListener(this);
-        findViewById(R.id.create_post_music).setOnClickListener(this);
-        findViewById(R.id.create_post_link).setOnClickListener(this);
+        //mPostToolbar.onButtonClickListener(this);
+        //findViewById(R.id.create_post_picture_gallery).setOnClickListener(this);
+        //findViewById(R.id.create_post_picture_camera).setOnClickListener(this);
+        //findViewById(R.id.create_post_music).setOnClickListener(this);
+        //findViewById(R.id.create_post_link).setOnClickListener(this);
         //findViewById(R.id.publication_picture_remove).setVisibility(View.VISIBLE);
         //findViewById(R.id.publication_picture_remove).setOnClickListener(this);
 
     }
-
+/*
     @Override
     public void onStart() {
         super.onStart();
@@ -184,11 +184,7 @@ public class CreateAndEditActivity extends BaseActivity implements View.OnClickL
             if(mUserAuth.getPid() == null || mUserAuth.getPid().isEmpty()) {
                 Glide.with(this).load(R.color.black_200).into(mCircleImageView);
                 throw new NullPointerException("User pid cannot be null");
-            }*/
-
-            mPostToolbar.buttonToolbar(this, "Publier");
-
-            setImageView(mCircleImageView, dbManager.getStorageUserProfilPicture(mUserAuth.getUid(), mUserAuth.getPid()));
+            }
 
             //Glide.with(this)
             //        .load(dbManager.getStorageUserProfilPicture(mUserAuth.getUid(), mUserAuth.getPid()))
@@ -267,11 +263,11 @@ public class CreateAndEditActivity extends BaseActivity implements View.OnClickL
         //String path = Environment.getExternalStorageDirectory() + File.separator;
     }
 
-    /*
+
 
             Firebase, ValueEventListener, update database.
 
-     */
+
 
     @SuppressWarnings("unchecked")
     private void updateDB() {
@@ -292,15 +288,17 @@ public class CreateAndEditActivity extends BaseActivity implements View.OnClickL
                     currentTime
             );
 
+
+            DatabaseReference dbPost = dbManager.getDatabasePost()
             //  Create post-history object
-            ArrayList postHistoryList = new ArrayList<PostHistory>();
+            Map<String, PostHistory> postHistoryList = new HashMap();
             PostHistory postHistory = new PostHistory(
                     0,
                     publication,
                     currentTime
             );
             //  Add publications history to post
-            postHistoryList.add(postHistory);
+            postHistoryList.put(add(postHistory);
             post.setHistories(postHistoryList);
 
             stPosts = dbManager.getStoragePost(post.getPostid());
@@ -308,11 +306,13 @@ public class CreateAndEditActivity extends BaseActivity implements View.OnClickL
             if (mMultimediaView.getVisibility() != View.GONE && mImageUri != null) {
 
                 ArrayList<Image> postImageList = new ArrayList<>();
-                postImageList.add(new Image("image" + post.getPostid() + "1000"));
+                Image image = new Image();
+                image.setImageid("image" + post.getPostid() + "1000");
+                postImageList.add(image);
                 post.setImages(postImageList);
 
                 if (post.getImages() != null && !post.getImages().isEmpty())
-                    updateImageStorage(stPosts, post.getImages().get(0).getImageId());
+                    updateImageStorage(stPosts, post.getImages().get(0).getImageid());
                 else
                     Log.e(TAG, "picture is null");
             } else {
@@ -429,7 +429,7 @@ public class CreateAndEditActivity extends BaseActivity implements View.OnClickL
 
             dbReference.updateChildren(childUpdates);
     }
-    /*
+
     private void showAudioSetup(Uri uri) {
         final AlertDialog.Builder builder = new AlertDialog.Builder(mContext);
 
@@ -469,7 +469,7 @@ public class CreateAndEditActivity extends BaseActivity implements View.OnClickL
                 })
                 .show();
     }
-    */
+
 
     private boolean validateForm() {
         boolean valid = true;
@@ -485,7 +485,7 @@ public class CreateAndEditActivity extends BaseActivity implements View.OnClickL
         return valid;
     }
 
-    /* Checks if external storage is available for read and write */
+
     public boolean isExternalStorageWritable() {
         String state = Environment.getExternalStorageState();
         if (Environment.MEDIA_MOUNTED.equals(state)) {
@@ -494,7 +494,7 @@ public class CreateAndEditActivity extends BaseActivity implements View.OnClickL
         return false;
     }
 
-    /* Checks if external storage is available to at least read */
+
     public boolean isExternalStorageReadable() {
         String state = Environment.getExternalStorageState();
         if (Environment.MEDIA_MOUNTED.equals(state) ||
@@ -508,4 +508,6 @@ public class CreateAndEditActivity extends BaseActivity implements View.OnClickL
     protected void onDestroy() {
         super.onDestroy();
     }
+
+    */
 }

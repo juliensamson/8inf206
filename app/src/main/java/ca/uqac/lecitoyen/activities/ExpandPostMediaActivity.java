@@ -53,7 +53,7 @@ public class ExpandPostMediaActivity extends BaseActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_expand_post_media);
+        setContentView(R.layout.dialog_bottom_expand_media);
         mAudioplayer = AudioWife.getInstance();
 
         //  Get bundle
@@ -151,7 +151,7 @@ public class ExpandPostMediaActivity extends BaseActivity {
                         case Constants.EXPAND_PHOTO:
                             Log.d(TAG, "Picture");
                             Glide.with(getBaseContext())
-                                    .load(stPost.child(post.getImages().get(0).getImageId()))
+                                    .load(stPost.child(post.getImages().get(0).getImageid()))
                                     .into(mPictureView);
                             break;
                     }
@@ -168,10 +168,10 @@ public class ExpandPostMediaActivity extends BaseActivity {
     }
 
     private void setAudioPlayer(Post post) {
-        if (post.getAudio() != null && !post.getAudio().isEmpty()) {
+        if (post.getAudio() != null) {
 
             // Load audio file
-            stPost.child(post.getAudio()).getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
+            stPost.child(post.getAudio().getAid()).getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
                 @Override
                 public void onSuccess(Uri uri) {
 

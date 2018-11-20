@@ -1,0 +1,147 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.design.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    app:behavior_hideable="false"
+    app:behavior_peekHeight="1000dp"
+    app:layout_behavior="@string/bottom_sheet_behavior">
+
+    <android.support.design.widget.AppBarLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <ca.uqac.lecitoyen.views.ToolbarView
+            android:id="@+id/create_post_toolbar"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:layout_scrollFlags="scroll|snap"/>
+
+    </android.support.design.widget.AppBarLayout>
+
+    <android.support.v4.widget.NestedScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:padding="@dimen/activity_horizontal_margin"
+            android:orientation="vertical">
+
+            <!--    Profile image & edit text   -->
+            <FrameLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="32dp">
+
+                <de.hdodenhof.circleimageview.CircleImageView
+                    android:id="@+id/create_post_profile_picture"
+                    android:layout_width="48dp"
+                    android:layout_height="48dp"
+                    android:src="@mipmap/ic_launcher_round"/>
+
+                <EditText
+                    android:id="@+id/create_post_message"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_marginStart="56dp"
+                    android:layout_gravity="center_vertical"
+                    android:background="@color/transparent"
+                    android:gravity="top"
+                    android:hint="Que pensez-vous?"
+                    android:inputType="textMultiLine"
+                    android:padding="4dp" />
+
+            </FrameLayout>
+
+            <!--    Add image & audio   -->
+            <FrameLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <include layout="@layout/dialog_bottom_create_post_image" />
+
+                <include layout="@layout/dialog_bottom_create_post_audio" />
+
+                <View
+                    android:layout_marginStart="@dimen/activity_horizontal_margin"
+                    android:layout_marginEnd="@dimen/activity_horizontal_margin"
+                    android:layout_marginTop="20dp"
+                    android:layout_gravity="top"
+                    android:background="@color/black_200"
+                    style="@style/Divider" />
+
+                <com.github.clans.fab.FloatingActionMenu
+                    android:id="@+id/create_post_add_menu"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    app:menu_fab_size="mini"
+                    app:menu_colorNormal="@color/black_200"
+                    app:menu_colorPressed="@color/black_400"
+                    app:menu_showShadow="false"
+                    app:menu_openDirection="down">
+
+                    <com.github.clans.fab.FloatingActionButton
+                        android:id="@+id/create_post_add_image_layout"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:src="@drawable/ic_photo_library_black_24dp"
+                        app:fab_size="mini"
+                        app:fab_colorPressed="@color/black_400"
+                        app:fab_colorNormal="@color/black_200"
+                        app:fab_showShadow="true"/>
+
+                    <com.github.clans.fab.FloatingActionButton
+                        android:id="@+id/create_post_add_audio_layout"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:src="@drawable/ic_music_note_black_24dp"
+                        app:fab_size="mini"
+                        app:fab_colorPressed="@color/black_400"
+                        app:fab_colorNormal="@color/black_200"
+                        app:fab_showShadow="true"/>
+
+                </com.github.clans.fab.FloatingActionMenu>
+
+                <TextView
+                    android:id="@+id/create_post_remove_layout"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/button_close_circle"
+                    android:layout_margin="8dp"
+                    android:layout_gravity="end|top"
+                    android:visibility="gone"/>
+
+
+            </FrameLayout>
+
+            <!--    Image & audio section   -->
+
+            <!--
+
+            <FrameLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="56dp">
+
+                <ca.uqac.lecitoyen.util.MultimediaView
+                    android:id="@+id/create_post_image"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content" />
+
+                <android.support.v7.widget.RecyclerView
+                    android:id="@+id/create_post_images"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content" />
+
+            </FrameLayout>
+
+            -->
+
+        </LinearLayout>
+
+    </android.support.v4.widget.NestedScrollView>
+
+</android.support.design.widget.CoordinatorLayout>

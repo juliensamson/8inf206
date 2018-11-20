@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.design.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<android.support.design.widget.CoordinatorLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     xmlns:app="http://schemas.android.com/apk/res-auto">
@@ -23,27 +24,22 @@
 
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:layout_margin="@dimen/activity_vertical_margin">
+            android:layout_height="match_parent"
+            android:padding="@dimen/activity_horizontal_margin"
+            android:orientation="horizontal">
 
-            <de.hdodenhof.circleimageview.CircleImageView
-                android:id="@+id/post_profil_picture"
-                android:layout_width="48dp"
-                android:layout_height="48dp"
-                android:src="@mipmap/ic_launcher_round"/>
+                <de.hdodenhof.circleimageview.CircleImageView
+                    android:id="@+id/post_profil_picture"
+                    android:layout_width="48dp"
+                    android:layout_height="48dp"
+                    android:src="@mipmap/ic_launcher_round"/>
 
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="8dp"
-                android:layout_marginBottom="@dimen/activity_vertical_margin"
-                android:orientation="vertical">
-
-                <FrameLayout
+                <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginBottom="@dimen/activity_vertical_margin">
+                    android:layout_marginStart="8dp"
+                    android:layout_marginBottom="@dimen/activity_vertical_margin"
+                    android:orientation="vertical">
 
                     <EditText
                         android:id="@+id/create_post_message"
@@ -53,16 +49,22 @@
                         android:background="@color/transparent"
                         android:hint="Que pensez-vous?"
                         android:inputType="textMultiLine"
+                        android:lines="3"
                         android:padding="4dp" />
 
-                </FrameLayout>
+                    <View style="@style/Divider" />
 
-                <ca.uqac.lecitoyen.util.MultimediaView
-                    android:id="@+id/create_post_multimedia"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content" />
+                    <ca.uqac.lecitoyen.util.MultimediaView
+                        android:id="@+id/create_post_image"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content" />
 
-            </LinearLayout>
+                    <android.support.v7.widget.RecyclerView
+                        android:id="@+id/create_post_images"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content" />
+
+                </LinearLayout>
 
         </LinearLayout>
 

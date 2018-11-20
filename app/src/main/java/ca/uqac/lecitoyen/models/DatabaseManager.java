@@ -210,46 +210,33 @@ public class DatabaseManager  {
                 .child(pid);
     }
 
-    /*
+    /**
+     *
+     *
+     *      Write data into firebase database
+     *
+     *
+     **/
 
-            Write data into firebase
-
-     */
-
-    public void deleteHolderPost(Post holderPost) {
-        if(holderPost.getImages() != null && !holderPost.getImages().isEmpty()) {
-            getStoragePost(holderPost.getPostid())
-                    .child(holderPost.getImages().get(0).getImageId())
-                    .delete().addOnFailureListener(new OnFailureListener() {
-                @Override
-                public void onFailure(@NonNull Exception e) {
-                    Log.e(TAG, e.getMessage());
-                }
-            }).addOnSuccessListener(new OnSuccessListener<Void>() {
-                @Override
-                public void onSuccess(Void aVoid) {
-                    Log.d(TAG, "Deleted");
-                }
-            });
+    public void writeUserInformation(DatabaseReference db, User userdata) {
+        if(!userdata.getUid().equals("") && userdata.getUid() != null)
+            db.child("users").child(userdata.getUid()).setValue(userdata);
+        else {
+            String key = db.child("users").push().getKey();
+            db.child("users").child(key).setValue(userdata);
         }
-        if(holderPost.getAudio() != null && !holderPost.getAudio().isEmpty()) {
-            getStoragePost(holderPost.getPostid())
-                    .child(holderPost.getAudio())
-                    .delete().addOnFailureListener(new OnFailureListener() {
-                @Override
-                public void onFailure(@NonNull Exception e) {
-                    Log.e(TAG, e.getMessage());
-                }
-            }).addOnSuccessListener(new OnSuccessListener<Void>() {
-                @Override
-                public void onSuccess(Void aVoid) {
-                    Log.d(TAG, "Deleted");
-                }
-            });
-        }
-        getDatabasePost(holderPost.getPostid()).removeValue();
-        getDatabaseUserPost(holderPost.getUser().getUid(), holderPost.getPostid()).removeValue();
-        //Delete Repost & Like of user of post is deleted
+    }
+
+    public void writePostToFirebase(Post post) {
+        Log.d(TAG, "writePost");
+        Map<String, Object> postValues = post.toMap();
+
+        //  write on firebase
+        Map<String, Object> childUpdates = new HashMap<>();
+        childUpdates.put("/posts/" + post.getPostid(), postValues);
+        childUpdates.put("/user-posts/" + post.getUser().getUid() + "/" + post.getPostid(), postValues);
+
+        getReference().updateChildren(childUpdates);
     }
 
     public void writeUpvoteToPost(final User user, final Post post) {
@@ -272,43 +259,27 @@ public class DatabaseManager  {
         userPostRef.child(CHILD_UPVOTE_COUNT).setValue(post.getUpvoteCount());
         userPostRef.child(CHILD_UPVOTE_USERS).setValue(post.getUpvoteUsers());
 
+    }
 
-        /*final DatabaseReference userRef = getDatabaseUser(user.getUid());
-        User userTemps
-        userRef.addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                User userTemps = dataSnapshot.getValue(User.class);
-                if (userTemps != null) {
+    public void writeRepostToPost(User user, Post post) {
+        /*
 
+            Update "posts/post-id/" reference
 
-                    Update "users/user-id/" reference
+         */
+        DatabaseReference postRef = getDatabasePost(post.getPostid());
+        postRef.child(CHILD_REPOST_COUNT).setValue(post.getRepostCount());
+        postRef.child(CHILD_REPOST_USERS).setValue(post.getRepostUsers());
 
+        /*
 
-                    Map<String, Post> posts;
-                    Post postTemps = new Post(post.getPostid());
-                    if(userTemps.getUpvotePosts() != null)
-                        posts = userTemps.getUpvotePosts();
-                    else
-                        posts = new HashMap<>();
+            Update "user-posts/user-id/post-id/ reference
 
-                    posts.put(postTemps.getPostid(), postTemps);
-                    userTemps.setUpvotePosts(posts);
-                    userTemps.setUpvoteCount(posts.size());
+         */
+        DatabaseReference userPostRef = getDatabaseUserPost(post.getUser().getUid(), post.getPostid());
+        userPostRef.child(CHILD_REPOST_COUNT).setValue(post.getRepostCount());
+        userPostRef.child(CHILD_REPOST_USERS).setValue(post.getRepostUsers());
 
-                    //DatabaseReference userRef = getDatabaseUser(user.getUid());
-
-                }
-            }
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
-
-            }
-        });
-
-        userRef.child(CHILD_UPVOTE_COUNT).setValue(userTemps.getUpvoteCount());
-        userRef.child(CHILD_UPVOTE_POSTS).setValue(userTemps.getUpvotePosts());
-        */
     }
 
     public void updateUserdata(final User user) {
@@ -368,6 +339,14 @@ public class DatabaseManager  {
 
     }
 
+    /**
+     *
+     *
+     *      Remove data into firebase database
+     *
+     *
+     **/
+
     public void removeUpvoteFromPost(final User user, final Post post) {
 
         /*
@@ -420,53 +399,6 @@ public class DatabaseManager  {
         */
     }
 
-    public void writeRepostToPost(User user, Post post) {
-/*
-
-            Update "posts/post-id/" reference
-
-         */
-        DatabaseReference postRef = getDatabasePost(post.getPostid());
-        postRef.child(CHILD_REPOST_COUNT).setValue(post.getRepostCount());
-        postRef.child(CHILD_REPOST_USERS).setValue(post.getRepostUsers());
-
-        /*
-
-            Update "user-posts/user-id/post-id/ reference
-
-         */
-        DatabaseReference userPostRef = getDatabaseUserPost(post.getUser().getUid(), post.getPostid());
-        userPostRef.child(CHILD_REPOST_COUNT).setValue(post.getRepostCount());
-        userPostRef.child(CHILD_REPOST_USERS).setValue(post.getRepostUsers());
-
-
-        //TODO: DON'T WORK BECAUSE the User only contain the userid
-        /*
-
-        Update "users/user-id/" reference
-
-         */
-
-        /*DatabaseReference userRef = getDatabaseUser(user.getUid());
-
-        //  Create the list of Repost posts by user if doesn't exist
-        Post postTemp = new Post(post.getPostid());
-        Map<String, Post> posts = new HashMap<>();
-        if(user.getRepostPosts() != null) {
-            if (!user.getRepostPosts().isEmpty())
-                posts = user.getRepostPosts();
-            else
-                posts = new HashMap<>();
-        }
-        posts.put(postTemp.getPostid(), postTemp);
-        user.setRepostCount(posts.size());
-        user.setRepostPosts(posts);
-
-        userRef.child(CHILD_REPOST_COUNT).setValue(user.getRepostCount());
-        userRef.child(CHILD_REPOST_POSTS).setValue(user.getRepostPosts());
-        */
-    }
-
     public void removeRepostFromPost(User user, Post post) {
 /*
 
@@ -512,25 +444,65 @@ public class DatabaseManager  {
         */
     }
 
-    @Exclude
-    public void writeUserInformation(DatabaseReference db, User userdata) {
-        if(!userdata.getUid().equals("") && userdata.getUid() != null)
-            db.child("users").child(userdata.getUid()).setValue(userdata);
-        else {
-            String key = db.child("users").push().getKey();
-            db.child("users").child(key).setValue(userdata);
+    /**
+     *
+     *
+     *      Write data from firebase storage
+     *
+     *
+     **/
+
+
+
+    /**
+     *
+     *
+     *      Delete data from firebase storage
+     *
+     *
+     **/
+
+    public void deletePost(Post holderPost) {
+        if(holderPost.getImages() != null && !holderPost.getImages().isEmpty()) {
+            getStoragePost(holderPost.getPostid())
+                    .child(holderPost.getImages().get(0).getImageid())
+                    .delete().addOnFailureListener(new OnFailureListener() {
+                @Override
+                public void onFailure(@NonNull Exception e) {
+                    Log.e(TAG, e.getMessage());
+                }
+            }).addOnSuccessListener(new OnSuccessListener<Void>() {
+                @Override
+                public void onSuccess(Void aVoid) {
+                    Log.d(TAG, "Deleted");
+                }
+            });
         }
-    }
 
-    public void writePostToFirebase(Post post) {
-        Log.d(TAG, "writePost");
-        Map<String, Object> postValues = post.toMap();
+        try {
+            //if (holderPost.getAudio() != null) {
 
-        //  write on firebase
-        Map<String, Object> childUpdates = new HashMap<>();
-        childUpdates.put("/posts/" + post.getPostid(), postValues);
-        childUpdates.put("/user-posts/" + post.getUser().getUid() + "/" + post.getPostid(), postValues);
+            getStoragePost(holderPost.getPostid())
+                    .child(holderPost.getAudio().getAid())
+                    .delete().addOnFailureListener(new OnFailureListener() {
+                @Override
+                public void onFailure(@NonNull Exception e) {
+                    Log.e(TAG, e.getMessage());
+                }
+            }).addOnSuccessListener(new OnSuccessListener<Void>() {
+                @Override
+                public void onSuccess(Void aVoid) {
+                    Log.d(TAG, "Deleted");
+                }
+            });
 
-        getReference().updateChildren(childUpdates);
+            //}
+            getDatabasePost(holderPost.getPostid()).removeValue();
+            getDatabaseUserPost(holderPost.getUser().getUid(), holderPost.getPostid()).removeValue();
+
+        } catch (NullPointerException e) {
+            Log.e(TAG, e.getMessage());
+        }
+        //Delete Repost & Like of user of post is deleted
     }
 }

@@ -17,6 +17,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ProgressBar;
+import android.widget.Toast;
 
 import com.daimajia.swipe.adapters.RecyclerSwipeAdapter;
 import com.github.clans.fab.FloatingActionButton;
@@ -64,6 +65,8 @@ public class ForumFragment extends BaseFragment implements View.OnClickListener 
 
     private iHandleFragment mHandleFragment;
     private MainUserActivity mainUserActivity;
+
+    private CreateDialog mCreatePostDialog;
 
     private User mUserAuth;
     private Post mPost;
@@ -174,20 +177,112 @@ public class ForumFragment extends BaseFragment implements View.OnClickListener 
         });
 
 
-        int postLastPostLoaded = mPostsList.size() - 1;
-        Post mostRecentPost = mPostsList.get(0);
+        return view;
+    }
 
-        Log.e(TAG, "LastPost " + mostRecentPost.getMessage());
-        Log.e(TAG, "LastPost " + mostRecentPost.getDate());
-        long startAt = mostRecentPost.getDateInverse() - 1000;
-        dbManager.getDatabasePosts().orderByChild("dateInverse").endAt(startAt).addChildEventListener(new ChildEventListener() {
+    @Override
+    public void onStart() {
+        super.onStart();
+        updateUI();
+    }
+
+    @Override
+    public void onAttach(Context context) {
+        super.onAttach(context);
+        mHandleFragment = (MainUserActivity) getActivity();
+    }
+
+    @Override
+    public void onDetach() {
+        super.onDetach();
+        mForumAdapter = null;
+        Log.d(TAG, "onDetach");
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        Log.d(TAG, "onActivityResult " + requestCode + " " + resultCode);
+        if (resultCode == RESULT_OK) {
+            switch (requestCode) {
+                case GALLERY_REQUEST_CODE:
+                    break;
+                //case CAMERA_REQUEST_CODE:    //TODO: Make this work somehow
+                    //checkInternalStorage();
+                    //updateStorage(imageUri);
+                //    break;
+                case AUDIO_REQUEST_CODE:
+                    CreateDialog audioDialog = CreateDialog.newInstance(CreateDialog.AUDIO_POST_TYPE, mUserAuth);
+                    break;
+                default:
+                    break;
+            }
+        } else if (requestCode == RESULT_CANCELED) {
+            Log.e(TAG, "Some error occured");
+        }
+    }
+
+    @Override
+    public void onClick(View view) {
+        switch (view.getId())
+        {
+            case R.id.forum_add_post:
+                mCreatePostDialog =CreateDialog.newInstance(CreateDialog.IMAGE_POST_TYPE, mUserAuth);
+                mCreatePostDialog.show(mainUserActivity.getSupportFragmentManager(), getTag());
+                mAddPostMenu.close(false);
+                break;
+            case R.id.forum_add_images:
+                openGallery();
+                mAddPostMenu.close(false);
+                break;
+            case R.id.forum_add_audio:
+                openStorage();
+                mAddPostMenu.close(false);
+                break;
+            default:
+                break;
+        }
+    }
+
+    //TODO: Only update when refreshing. Work only once because listener is not removed
+    private void updateUI() {
+
+        mSwipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+
+                try {
+                    long startAt = mPostsList.get(0).getDateInverse() - 1000;
+
+                    Query query = dbManager.getDatabasePosts().orderByChild("dateInverse").endAt(startAt);
+                    ChildEventListener listener = query.addChildEventListener(childEventListener());
+
+                } catch (IndexOutOfBoundsException e) {
+                    Log.e(TAG, e.getMessage());
+                }
+
+
+            }
+        });
+
+        mSwipeRefreshLayout.setOnChildScrollUpCallback(new SwipeRefreshLayout.OnChildScrollUpCallback() {
+            @Override
+            public boolean canChildScrollUp(@NonNull SwipeRefreshLayout parent, @Nullable View child) {
+                parent.setRefreshing(false);
+                return false;
+            }
+        });
+
+    }
+
+    private ChildEventListener childEventListener() {
+        return new ChildEventListener() {
             @Override
             public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
                 mPostsList.add(0, dataSnapshot.getValue(Post.class));
                 mForumAdapter.notifyItemInserted(0);
                 Log.e(TAG, "Post add " + dataSnapshot.getValue(Post.class).getMessage());
-                //mForumAdapter.notifyItemInserted(mForumAdapter.getItemCount() + 1);
-                //mForumAdapter.notifyDataSetChanged();
+                mSwipeRefreshLayout.setRefreshing(false);
+                Toast.makeText(mainUserActivity, "Feed is up to date", Toast.LENGTH_SHORT).show();
             }
 
             @Override
@@ -208,207 +303,6 @@ public class ForumFragment extends BaseFragment implements View.OnClickListener 
             @Override
             public void onCancelled(@NonNull DatabaseError databaseError) {
 
-            }
-        });
-
-        return view;
-    }
-
-    @Override
-    public void onStart() {
-        super.onStart();
-        if(fbAuth != null) {
-
-            FirebaseUser fbUser = fbAuth.getCurrentUser();
-
-            if(fbUser != null) {
-                //  Get database & storage reference
-                dbPosts = dbManager.getDatabasePosts();
-                dbUsersData = dbManager.getDatabaseUsers();
-                DatabaseReference dbRef = dbManager.getReference();
-                DatabaseReference dbPosts = dbManager.getDatabasePosts();
-                //updateUI(fbUser, dbRef);
-             }
-        } else {
-            Log.e(TAG, "auth is null");
-        }
-    }
-
-    @Override
-    public void onResume() {
-        super.onResume();
-        Log.d(TAG, "onResume");
-    }
-
-    @Override
-    public void onPause() {
-        super.onPause();
-        Log.d(TAG, "onPause");
-    }
-
-    @Override
-    public void onStop() {
-        super.onStop();
-        Log.d(TAG, "onStop");
-    }
-
-    @Override
-    public void onDestroyView() {
-        super.onDestroyView();
-        Log.d(TAG, "onDestroyView");
-    }
-
-    @Override
-    public void onDestroy() {
-        super.onDestroy();
-        Log.d(TAG, "onDestroy");
-    }
-
-    @Override
-    public void onSaveInstanceState(@NonNull Bundle outState) {
-        super.onSaveInstanceState(outState);
-        Log.d(TAG, "onSaveInstanceState");
-        outState.putSerializable(ARG_USER, mUserAuth);
-    }
-
-    @Override
-    public void onAttach(Context context) {
-        super.onAttach(context);
-        mHandleFragment = (MainUserActivity) getActivity();
-    }
-
-    @Override
-    public void onDetach() {
-        super.onDetach();
-        mForumAdapter = null;
-        Log.d(TAG, "onDetach");
-    }
-
-    @Override
-    public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if (resultCode == RESULT_OK) {
-            switch (requestCode) {
-                case GALLERY_REQUEST_CODE:
-                    CreateDialog imageDialog = new CreateDialog(this, mUserAuth);
-                    imageDialog.createPostView(CreateDialog.IMAGE_POST_TYPE, data.getData()).show();
-                    //mPictureLayout.setVisibility(View.VISIBLE);
-                    //Glide.with(this).load(mImageUri).into(mPicture);
-                    break;
-                //case CAMERA_REQUEST_CODE:    //TODO: Make this work somehow
-                    //checkInternalStorage();
-                    //updateStorage(imageUri);
-                //    break;
-                case AUDIO_REQUEST_CODE:
-                    CreateDialog audioDialog = new CreateDialog(this, mUserAuth);
-                    audioDialog.createPostView(CreateDialog.AUDIO_POST_TYPE, data.getData()).show();
-                    break;
-                default:
-                    break;
-            }
-        } else if (requestCode == RESULT_CANCELED) {
-            Log.e(TAG, "Some error occured");
-        }
-    }
-
-    @Override
-    public void onClick(View view) {
-        switch (view.getId())
-        {
-            case R.id.forum_add_post:
-                CreateDialog createDialog = new CreateDialog(this, mUserAuth, mForumAdapter, mPostsList);
-                createDialog.createPostView(CreateDialog.MESSAGE_POST_TYPE, null).show();
-                mAddPostMenu.close(false);
-                break;
-            case R.id.forum_add_images:
-                openGallery();
-                break;
-            case R.id.forum_add_audio:
-                openStorage();
-                break;
-            default:
-                break;
-        }
-    }
-
-    private void updateUI(final FirebaseUser user, final DatabaseReference dbRef) {
-
-        //final ArrayList<Post> postsList = new ArrayList<>();
-
-        //Log.e(TAG, mForumRecyclerView.getAdapter().toString());
-        //if(mForumRecyclerView.getAdapter() == null)
-       //     dbManager.getReference().addListenerForSingleValueEvent(initPostsList(user, postsList));
-
-
-
-        mSwipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
-            @Override
-            public void onRefresh() {
-
-                try {
-                    Log.e(TAG, "Posts size: " + mPostsList.size());
-                    int postLastPostLoaded = mPostsList.size() - 1;
-                    Post lastPostLoaded = mPostsList.get(postLastPostLoaded);
-                    Log.e(TAG, "Posts size: " + lastPostLoaded.getDate());
-
-                    long currentTime = System.currentTimeMillis();
-
-                    dbManager.getDatabasePosts()
-                            .startAt(lastPostLoaded.getDate())
-                            .addChildEventListener(childEventListener(mPostsList));
-                    //dbManager.getDatabasePosts()
-                    //        .addChildEventListener(childEventListener(mPostsList));
-                } catch (ArrayIndexOutOfBoundsException e) {
-                    Log.e(TAG, e.getMessage());
-                }
-                /*while (true) {
-                    if(System.currentTimeMillis() >= currentTime + 5000) {
-                        mSwipeRefreshLayout.setRefreshing(false);
-                        break;
-                    }
-                }*/
-            }
-        });
-        mSwipeRefreshLayout.setOnChildScrollUpCallback(new SwipeRefreshLayout.OnChildScrollUpCallback() {
-            @Override
-            public boolean canChildScrollUp(@NonNull SwipeRefreshLayout parent, @Nullable View child) {
-                parent.setRefreshing(false);
-                return false;
-            }
-        });
-    }
-
-    private ChildEventListener childEventListener(final ArrayList<Post> postsList) {
-        return new ChildEventListener() {
-            @Override
-            public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
-                Log.d(TAG, "Added " + dataSnapshot.toString());
-                mPostsList.add(dataSnapshot.getValue(Post.class));
-                mForumAdapter.notifyDataSetChanged();
-                mSwipeRefreshLayout.setRefreshing(false);
-            }
-
-            @Override
-            public void onChildChanged(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
-                Log.d(TAG, "Changed " + dataSnapshot.toString());
-                mSwipeRefreshLayout.setRefreshing(false);
-            }
-
-            @Override
-            public void onChildRemoved(@NonNull DataSnapshot dataSnapshot) {
-                Log.d(TAG, "Removed " + dataSnapshot.toString());
-               // mForumAdapter.notifyDataSetChanged();
-                mSwipeRefreshLayout.setRefreshing(false);
-            }
-
-            @Override
-            public void onChildMoved(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
-                Log.d(TAG, "Moved " + dataSnapshot.toString());
-                mSwipeRefreshLayout.setRefreshing(false);
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
-                Log.e(TAG, databaseError.toString());
             }
         };
     }

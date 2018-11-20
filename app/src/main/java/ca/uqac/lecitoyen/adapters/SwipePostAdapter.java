@@ -45,6 +45,7 @@ import ca.uqac.lecitoyen.activities.ExpandPostMediaActivity;
 import ca.uqac.lecitoyen.activities.MainUserActivity;
 import ca.uqac.lecitoyen.buttons.RepostButton;
 import ca.uqac.lecitoyen.dialogs.DeletePostDialog;
+import ca.uqac.lecitoyen.dialogs.ExpandMediaDialog;
 import ca.uqac.lecitoyen.dialogs.PostHistoryDialog;
 import ca.uqac.lecitoyen.fragments.userUI.ProfilFragment;
 import ca.uqac.lecitoyen.fragments.userUI.UserProfileFragment;
@@ -212,10 +213,13 @@ public class SwipePostAdapter extends RecyclerSwipeAdapter<SwipePostAdapter.View
                 holder.modify.setVisibility(View.VISIBLE);
 
 
-            if(holderPost.getImages() != null) {
-                if (!holderPost.getImages().get(0).getImageId().isEmpty()){
+            if(holderPost.getImages() != null && !holderPost.getImages().isEmpty()) {
+
+
+
+                if (!holderPost.getImages().get(0).getImageid().isEmpty()){
                     holder.multimediaView
-                            .loadImages(stPosts.child(holderPost.getImages().get(0).getImageId()))
+                            .loadImages(stPosts.child(holderPost.getImages().get(0).getImageid()))
                             .setMinimumHeight();
 
 
@@ -224,11 +228,9 @@ public class SwipePostAdapter extends RecyclerSwipeAdapter<SwipePostAdapter.View
                 } else
                     Log.e(TAG, "nothing");
             }
-            
+
             if(holderPost.getAudio() != null) {
-                if (!holderPost.getAudio().isEmpty()) {
-                    holder.multimediaView.loadAudio(holderPost.getAudio());
-                }
+                holder.multimediaView.loadAudio(holderPost.getAudio());
             }
 
             holder.upvoteButton.setButtonCount(holderPost.getUpvoteCount());
@@ -289,6 +291,7 @@ public class SwipePostAdapter extends RecyclerSwipeAdapter<SwipePostAdapter.View
     private void setOnClickListener(@NonNull final ViewHolder holder) {
 
         final Post holderPost = mPostList.get(holder.getAdapterPosition());
+        final StorageReference stPost = dbManager.getStoragePost(holderPost.getPostid());
 
         holder.mainLayout.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -307,12 +310,12 @@ public class SwipePostAdapter extends RecyclerSwipeAdapter<SwipePostAdapter.View
                 mCurrentUser,
                 mPostList.get(holder.getAdapterPosition())
         );
+
         holder.repostButton.setRepostOnClickListener(
                 holder.repostButton,
                 mCurrentUser,
                 mPostList.get(holder.getAdapterPosition())
         );
-
 
         holder.profilPicture.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -330,20 +333,25 @@ public class SwipePostAdapter extends RecyclerSwipeAdapter<SwipePostAdapter.View
                 if(holder.multimediaView.isPhoto()) {
 
                     bundle.putInt("code", Constants.EXPAND_PHOTO);
+                    ExpandMediaDialog dialog = new ExpandMediaDialog(mUserActivity);
+                    dialog.create()
+                            .withImage(stPost.child(holderPost.getImages().get(0).getImageid()))
+                            .show();
+                    //Intent intent = new Intent(mContext, ExpandPostMediaActivity.class);
+                    //intent.putExtras(bundle);
 
-                    Intent intent = new Intent(mContext, ExpandPostMediaActivity.class);
-                    intent.putExtras(bundle);
-
-                    mContext.startActivity(intent);
+                    //mContext.startActivity(intent);
                 }
                 if(holder.multimediaView.isAudio()) {
 
-                    bundle.putInt("code", Constants.EXPAND_AUDIO);
+                    ExpandMediaDialog dialog = new ExpandMediaDialog(mUserActivity);
+                    dialog.create().withAudio(stPost.child(holderPost.getAudio().getAid()));
+                    /*bundle.putInt("code", Constants.EXPAND_AUDIO);
 
                     Intent intent = new Intent(mContext, ExpandPostMediaActivity.class);
                     intent.putExtras(bundle);
 
-                    mContext.startActivity(intent);
+                    mContext.startActivity(intent);*/
                 }
                 if(holder.multimediaView.isLink()) {
 
@@ -376,7 +384,7 @@ public class SwipePostAdapter extends RecyclerSwipeAdapter<SwipePostAdapter.View
                     @Override
                     public void onClick(DialogInterface dialogInterface, int i) {
                         Log.e(TAG, holder.getAdapterPosition() + " " + holderPost.getMessage());
-                        dbManager.deleteHolderPost(holderPost);
+                        dbManager.deletePost(holderPost);
                         mPostList.remove(holder.getAdapterPosition());
                         notifyItemRemoved(holder.getAdapterPosition());
                         //notifyItemRangeChanged(holder.getAdapterPosition(), mPostList.size());

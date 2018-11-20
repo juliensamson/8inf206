@@ -14,6 +14,10 @@ public final class Constants {
     final public static int EXPAND_PHOTO = 66;
     final public static int EXPAND_AUDIO = 69;
 
+    public static final int REQUEST_CAMERA_CODE= 1;
+    public static final int REQUEST_GALLERY_CODE = 2;
+    public static final int REQUEST_AUDIO_CODE = 3;
+
 
     //  Throw
 

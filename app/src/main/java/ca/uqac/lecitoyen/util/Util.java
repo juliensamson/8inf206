@@ -5,11 +5,16 @@ import android.app.Application;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.res.TypedArray;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.os.Build;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.Toolbar;
 import android.util.DisplayMetrics;
+import android.widget.FrameLayout;
+import android.widget.ImageView;
 
+import java.io.ByteArrayOutputStream;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
@@ -26,6 +31,12 @@ public final class Util {
     private ProgressDialog mProgressDialog;
 
     private Util() {}
+
+    /**
+     *
+     *      Time Util
+     *
+     */
 
     public static String setDisplayTime(Context context, long time) {
 
@@ -80,6 +91,13 @@ public final class Util {
 
     }
 
+
+    /**
+     *
+     *      Size & Screen Util
+     *
+     */
+
     public static int getToolbarHeight(Context context) {
         int[] attrs = new int[] {R.attr.actionBarSize};
         TypedArray ta = context.obtainStyledAttributes(attrs);
@@ -88,20 +106,54 @@ public final class Util {
         return toolBarHeight;
     }
 
-    public static int getScreenSize(Context context) {
-        int[] attrs = new int[] {R.attr.actionBarSize};
-        TypedArray ta = context.obtainStyledAttributes(attrs);
-        int toolBarHeight = ta.getDimensionPixelSize(0, -1);
-        ta.recycle();
-        return toolBarHeight;
+    public static int getImageHeight(Activity activity, Bitmap bitmap) {
+
+        /*Bitmap bitmapOrg = BitmapFactory.decodeResource(activity.getResources(), R.drawable.ic_launcher);
+
+        bitmap = bitmapOrg;
+        ByteArrayOutputStream stream = new ByteArrayOutputStream();
+        bitmap.compress(Bitmap.CompressFormat.JPEG, 100, stream);
+        byte[] imageInByte = stream.toByteArray();
+        long lengthbmp = imageInByte.length;
+        long heightBmp = imageInByte.*/
+
+        return 0;
     }
+
 
     public static int getScreenHeightPixel(Activity activity) {
         DisplayMetrics metrics = new DisplayMetrics();
         activity.getWindowManager().getDefaultDisplay().getMetrics(metrics);
-
         return metrics.heightPixels;
     }
+
+    public static int getScreenWidthPixel(Activity activity) {
+        DisplayMetrics metrics = new DisplayMetrics();
+        activity.getWindowManager().getDefaultDisplay().getMetrics(metrics);
+        return metrics.widthPixels;
+    }
+
+    public static int getImageHeight(Activity activity, int imageHeight) {
+        int scale = imageHeight / getScreenHeightPixel(activity);
+        return imageHeight / scale;
+    }
+
+
+    public static int getImageWidth(Activity activity, int imageWidth) {
+        int scale = imageWidth / getScreenWidthPixel(activity);
+        return imageWidth / scale;
+    }
+
+
+    public static int getRandomNumber() {
+        return (int)(Math.random() * 1000 + 1);
+    }
+
+    /**
+     *
+     *      String util
+     *
+     */
 
     public static String setStringPlurial(int size, String word) {
 

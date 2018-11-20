@@ -5,9 +5,8 @@
     android:layout_height="match_parent"
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
-
     <LinearLayout
-        android:id="@+id/create_post_audio_layout"
+        android:id="@+id/create_post_image_layout"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_marginTop="48dp"
@@ -21,60 +20,13 @@
             style="@style/EditTextCircleFrame">
 
             <EditText
-                android:id="@+id/create_post_audio_title"
+                android:id="@+id/create_post_image_title"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:hint="Titre de la chanson"
-                android:maxLines="1"
+                android:hint="Titre de la photo/album"
                 android:inputType="text"
+                android:maxLines="1"
                 style="@style/EditTextCircleFrame.EditText"/>
-
-        </FrameLayout>
-
-        <!-- ****** AUDIO ******* -->
-        <FrameLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            style="@style/EditTextCircleFrame">
-
-            <ImageView style="@style/DrawableStart"
-                android:src="@drawable/ic_music_note_black_24dp" />
-
-            <EditText
-                android:id="@+id/create_post_audio_add_audio"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:hint="Ajouter une chanson"
-                style="@style/EditTextCircleFrame.EditText.DrawableStart" />
-
-            <FrameLayout
-                android:id="@+id/create_post_audio_player"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:padding="8dp"/>
-
-        </FrameLayout>
-
-        <!-- ****** ALBUM PHOTO ******* -->
-        <FrameLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            style="@style/EditTextCircleFrame">
-
-            <ImageView style="@style/DrawableStart"
-                android:src="@drawable/ic_camera_alt_black_24dp" />
-
-            <EditText
-                android:id="@+id/create_post_audio_add_image"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:hint="Ajouter un image au fichier audio"
-                style="@style/EditTextCircleFrame.EditText.DrawableStart" />
-
-            <ca.uqac.lecitoyen.util.MultimediaView
-                android:id="@+id/create_post_audio_image"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content" />
 
         </FrameLayout>
 
@@ -87,11 +39,47 @@
             <ImageView style="@style/DrawableStart" />
 
             <EditText
-                android:id="@+id/create_post_audio_add_genre"
+                android:id="@+id/create_post_image_add_genre"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:hint="Ajouter une genre"
+                android:hint="Ajouter un type de photo"
                 style="@style/EditTextCircleFrame.EditText.DrawableStart" />
+
+        </FrameLayout>
+
+
+        <!-- ****** PHOTOS ******* -->
+        <FrameLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            style="@style/EditTextCircleFrame">
+
+            <ImageView style="@style/DrawableStart"
+                android:src="@drawable/ic_camera_alt_black_24dp"
+                android:layout_gravity="top"
+                android:layout_marginTop="8dp"/>
+
+            <EditText
+                android:id="@+id/create_post_add_image"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="Ajouter une image"
+                style="@style/EditTextCircleFrame.EditText.DrawableStart" />
+
+            <ca.uqac.lecitoyen.util.MultimediaView
+                android:id="@+id/create_post_image"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:padding="8dp"
+                android:layout_marginTop="48dp"
+                android:layout_gravity="bottom"/>
+
+            <!--
+            <android.support.v7.widget.RecyclerView
+                android:id="@+id/create_post_images"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" />
+                -->
 
         </FrameLayout>
 

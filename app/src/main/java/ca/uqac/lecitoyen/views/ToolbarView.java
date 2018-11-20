@@ -77,25 +77,6 @@ public class ToolbarView extends FrameLayout  {
 
     }
 
-    public void createToolbarWithImageView(Activity activity, boolean displayHome, int returnHomeIcon) {
-
-        //View rootView = inflate(activity);
-
-        if(rootView == null)
-            throw new IllegalArgumentException("Make sure the view is inflated");
-
-        try {
-            Toolbar toolbar = findViewById(R.id.custom_toolbar);
-            ((AppCompatActivity) activity).setSupportActionBar(toolbar);
-
-            ((AppCompatActivity) activity).getSupportActionBar().setDisplayHomeAsUpEnabled(displayHome);
-            ((AppCompatActivity) activity).getSupportActionBar().setHomeAsUpIndicator(returnHomeIcon);
-
-        } catch (NullPointerException npe) {
-            Log.e(TAG, npe.getMessage());
-        }
-    }
-
     public void defaultToolbar(Activity parent, int style, String title, StorageReference image) {
 
         if(rootView == null)
@@ -134,17 +115,16 @@ public class ToolbarView extends FrameLayout  {
         if(rootView == null)
             throw new IllegalArgumentException("Make sure the view is inflated");
 
+        try {
+
         setToolbarTitle(title);
         setToolbarImage((Uri) null);
         setToolbarButton(null);
 
-        try {
             Toolbar toolbar = findViewById(R.id.custom_toolbar);
             ((AppCompatActivity)parent).setSupportActionBar(toolbar);
             ((AppCompatActivity) parent).getSupportActionBar().setDisplayHomeAsUpEnabled(true);
             ((AppCompatActivity) parent).getSupportActionBar().setHomeAsUpIndicator(R.drawable.ic_close_primary_24dp);
-            Fragment fragment =  new Fragment();
-            fragment.setHasOptionsMenu(true);
         } catch (NullPointerException npe) {
             Log.e(TAG, npe.getMessage());
         }

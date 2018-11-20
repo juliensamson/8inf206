@@ -3,27 +3,22 @@ package ca.uqac.lecitoyen.activities;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Typeface;
-import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.widget.Toolbar;
-import android.util.AndroidRuntimeException;
 import android.util.Log;
 import android.widget.TextView;
 
 import com.daimajia.swipe.adapters.RecyclerSwipeAdapter;
-import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
-import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FileDownloadTask;
@@ -37,14 +32,13 @@ import java.util.ArrayList;
 import ca.uqac.lecitoyen.Interface.iHandleFragment;
 import ca.uqac.lecitoyen.R;
 import ca.uqac.lecitoyen.adapters.SwipePostAdapter;
+import ca.uqac.lecitoyen.dialogs.CreateDialog;
 import ca.uqac.lecitoyen.fragments.userUI.CityfeedFragment;
-import ca.uqac.lecitoyen.fragments.userUI.CreateEventFragment;
 import ca.uqac.lecitoyen.fragments.userUI.DoSearchFragment;
 import ca.uqac.lecitoyen.fragments.userUI.MessageFragment;
 import ca.uqac.lecitoyen.fragments.userUI.ForumFragment;
 import ca.uqac.lecitoyen.fragments.userUI.UserProfileFragment;
 import ca.uqac.lecitoyen.models.UserStorage;
-import ca.uqac.lecitoyen.fragments.userUI.ProfilFragment;
 import ca.uqac.lecitoyen.fragments.userUI.SearchFragment;
 import ca.uqac.lecitoyen.models.DatabaseManager;
 import ca.uqac.lecitoyen.models.Post;
@@ -55,8 +49,7 @@ import it.sephiroth.android.library.bottomnavigation.BottomNavigationFixedItemVi
 public class MainUserActivity extends BaseActivity implements
         iHandleFragment,
         ForumFragment.OnFragmentInteractionListener,
-        UserProfileFragment.OnFragmentInteractionListener,
-        CreateEventFragment.OnFragmentInteractionListener
+        UserProfileFragment.OnFragmentInteractionListener
 {
 
     private final static String TAG = MainUserActivity.class.getSimpleName();
@@ -317,7 +310,7 @@ public class MainUserActivity extends BaseActivity implements
         transaction.commit();
     }
 
-    private void doFragmentTransaction(Fragment fragment, String tag, boolean addToBackStack, String message) {
+    public void doFragmentTransaction(Fragment fragment, String tag, boolean addToBackStack, String message) {
         Log.d(TAG, "doFragmentTransaction");
 
         FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
@@ -348,13 +341,15 @@ public class MainUserActivity extends BaseActivity implements
                 doFragmentTransaction(forumFragment, getString(R.string.fragment_forum), false, "");
                 //doFragmentTransaction(forumFragment, getString(R.string.fragment_forum));
                 break;
+            case R.string.fragment_add_post:
+                CreateDialog imageDialog = CreateDialog.newInstance(CreateDialog.MESSAGE_POST_TYPE, mUserAuth);
+                doFragmentTransaction(imageDialog, getString(R.string.fragment_add_post), true, "");
+                //doFragmentTransaction(forumFragment, getString(R.string.fragment_forum));
+                break;
             case R.string.fragment_search:
                 doFragmentTransaction(searchFragment, getString(R.string.fragment_search), false, "");
                 //doFragmentTransaction(searchFragment, getString(R.string.fragment_search));
                 break;
-            case R.string.fragment_create_event:
-                CreateEventFragment createEventFragment = CreateEventFragment.newInstance(mUserAuth);
-                doFragmentTransaction(createEventFragment, getString(R.string.fragment_create_event), true, "");
             case R.string.fragment_do_search:
                 //doFragmentTransaction(doSearchFragment, getString(R.string.fragment_search), true, "");
                 break;
@@ -447,9 +442,4 @@ public class MainUserActivity extends BaseActivity implements
         onBackPressed();
     }
 
-
-    @Override
-    public void onFragmentInteraction() {
-        onBackPressed();
-    }
 }

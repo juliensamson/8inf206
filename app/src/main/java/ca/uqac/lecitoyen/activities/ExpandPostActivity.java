@@ -173,17 +173,14 @@ public class ExpandPostActivity extends BaseActivity implements View.OnClickList
                         mIsModifyTextView.setVisibility(View.VISIBLE);
 
                     if(post.getImages() != null) {
-                        if (!post.getImages().get(0).getImageId().isEmpty()){
+                        if (!post.getImages().get(0).getImageid().isEmpty()){
                             mMultimediaView.loadImages(stPost
-                                    .child(post.getImages().get(0).getImageId()));
+                                    .child(post.getImages().get(0).getImageid()));
                         }
                     }
 
                     if(post.getAudio() != null) {
-                        if (!post.getAudio().isEmpty()) {
-                            Log.d(TAG, post.getAudio());
-                            mMultimediaView.loadAudio(post.getAudio());
-                        }
+                        mMultimediaView.loadAudio(post.getAudio());
                     }
 
                     mUpvoteButton.setButtonCount(post.getUpvoteCount());

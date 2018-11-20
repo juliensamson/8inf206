@@ -1,9 +1,12 @@
 package ca.uqac.lecitoyen.util;
 
+import android.app.Activity;
 import android.content.Context;
+import android.graphics.Bitmap;
 import android.net.Uri;
 import android.util.AttributeSet;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.View;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
@@ -15,6 +18,7 @@ import com.google.firebase.storage.StorageReference;
 import com.makeramen.roundedimageview.RoundedImageView;
 
 import ca.uqac.lecitoyen.R;
+import ca.uqac.lecitoyen.models.Audio;
 
 public class MultimediaView extends FrameLayout {
 
@@ -47,6 +51,7 @@ public class MultimediaView extends FrameLayout {
 
     private MultimediaView mMultimediaView;
     private Context mContext;
+    private Activity mActivity;
 
     private View mRootView;
     private RoundedImageView mPicture;
@@ -90,7 +95,7 @@ public class MultimediaView extends FrameLayout {
         mTitle   = mRootView.findViewById(R.id.multimedia_title);
         mLink    = mRootView.findViewById(R.id.multimedia_link);
 
-        setAllLayoutGone();
+        hideAllLayoutGone();
         isFrameEditable();
 
         mRootView.setOnClickListener(new OnClickListener() {
@@ -110,11 +115,36 @@ public class MultimediaView extends FrameLayout {
      *
      */
 
-    public MultimediaView loadImages(Uri uri) {
+    public MultimediaView with(Activity activity) {
+        mActivity = activity;
+        return this;
+    }
+
+    public MultimediaView loadImages(Uri uri, String title) {
 
         isFrameEditable();
 
-        setPictureLayout(uri, null);
+        if(!title.isEmpty())
+            mTitle.setText(title);
+        else
+            hideAllLayoutGone();
+
+        setPictureLayout(uri, null, null);
+        setMediaUsed(true, false, false);
+
+        return this;
+    }
+
+    public MultimediaView loadImages(Bitmap bitmap, String title) {
+
+        isFrameEditable();
+
+        if(!title.isEmpty())
+            mTitle.setText(title);
+        else
+            hideAllLayoutGone();
+
+        setPictureLayout(null, bitmap, null);
         setMediaUsed(true, false, false);
 
         return this;
@@ -122,15 +152,15 @@ public class MultimediaView extends FrameLayout {
 
     public MultimediaView loadImages(StorageReference storageReference) {
 
-        setPictureLayout(null, storageReference);
+        setPictureLayout(null, null, storageReference);
         setMediaUsed(true, false, false);
 
         return this;
     }
 
-    public MultimediaView loadAudio(String title) {
+    public MultimediaView loadAudio(Audio audio) {
 
-        setBottomTextLayout(R.drawable.ic_play_circle_outline_black_24dp, title, "");
+        setBottomTextLayout(R.drawable.ic_play_circle_outline_black_24dp, audio.getTitle(), "");
         setMediaUsed(false, true, false);
 
         return this;
@@ -160,6 +190,16 @@ public class MultimediaView extends FrameLayout {
 
     public boolean isEditable() {
         return this.isEditable;
+    }
+
+
+    public MultimediaView setFrameSize() {
+        LayoutParams params = (LayoutParams) mPicture.getLayoutParams();
+        params.gravity = Gravity.CENTER_HORIZONTAL;
+        params.width  = ( Util.getScreenWidthPixel(mActivity) * 75 ) / 100 ;
+        params.height = ( Util.getScreenHeightPixel(mActivity) * 75 ) / 100;
+        mPicture.setLayoutParams(params);
+        return this;
     }
 
     public MultimediaView setFullHeight() {
@@ -194,7 +234,7 @@ public class MultimediaView extends FrameLayout {
      *
      */
 
-    private void setAllLayoutGone() {
+    private void hideAllLayoutGone() {
         mRootView.setVisibility(GONE);
         mRemove.setVisibility(GONE);
         mPicture.setVisibility(GONE);
@@ -219,14 +259,15 @@ public class MultimediaView extends FrameLayout {
         }
     }
 
-    private void setPictureLayout(Uri uri, StorageReference stReference) {
-        removeBottomTextLayout();
+    private void setPictureLayout(Uri uri, Bitmap bitmap, StorageReference stReference) {
         mRootView.setVisibility(VISIBLE);
         mPicture.setVisibility(VISIBLE);
         if(uri != null)
             Glide.with(mContext).load(uri).into(mPicture);
         if(stReference != null)
             Glide.with(mContext).load(stReference).into(mPicture);
+        if(bitmap != null)
+            Glide.with(mContext).load(bitmap).into(mPicture);
     }
 
     private void setBottomTextLayout(int resId, String title, String link) {

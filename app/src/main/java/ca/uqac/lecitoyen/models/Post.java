@@ -21,7 +21,7 @@ public class Post implements Parcelable {
 
     private ArrayList<Image> images;
 
-    private String audio;
+    private Audio audio;
 
     private long date;
 
@@ -55,7 +55,6 @@ public class Post implements Parcelable {
     public Post(User user, String message, long date) {
         this.user = user;
         this.message = message;
-        this.images = new ArrayList<>();
         this.date = date;
         this.dateInverse = 0 - date;
         this.upvoteCount = 0;
@@ -66,18 +65,17 @@ public class Post implements Parcelable {
         this.postid = postid;
         this.user = user;
         this.message = message;
-        this.images = new ArrayList<>();
         this.date = date;
         this.dateInverse = 0 - date;
         this.upvoteCount = 0;
         this.repostCount = 0;
     }
 
-    public Post(String postid, User user, String message, long date, ArrayList<Image> imageList, ArrayList<PostHistory> histories) {
+    public Post(String postid, User user, String message, long date, ArrayList<Image> images, ArrayList<PostHistory> histories) {
         this.postid = postid;
         this.user = user;
         this.message = message;
-        this.images = imageList;
+        this.images = images;
         this.histories = histories;
         this.date = date;
         this.dateInverse = 0 - date;
@@ -95,7 +93,6 @@ public class Post implements Parcelable {
     protected Post(Parcel in) {
         postid = in.readString();
         message = in.readString();
-        audio = in.readString();
         date = in.readLong();
         dateInverse = in.readLong();
         upvoteCount = in.readLong();
@@ -170,11 +167,11 @@ public class Post implements Parcelable {
         this.images = images;
     }
 
-    public String getAudio() {
+    public Audio getAudio() {
         return audio;
     }
 
-    public void setAudio(String audio) {
+    public void setAudio(Audio audio) {
         this.audio = audio;
     }
 
@@ -244,7 +241,6 @@ public class Post implements Parcelable {
     public void writeToParcel(Parcel parcel, int i) {
         parcel.writeString(postid);
         parcel.writeString(message);
-        parcel.writeString(audio);
         parcel.writeLong(date);
         parcel.writeLong(dateInverse);
         parcel.writeLong(upvoteCount);

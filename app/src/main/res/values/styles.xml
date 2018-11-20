@@ -177,6 +177,34 @@
         <item name="android:background">@color/black_300</item>
     </style>
 
+    <!-- ****** EDIT TEXT ****** -->
+    <style name="EditTextCircleFrame" >
+        <item name="android:background">@drawable/edittext_rounded_corner</item>
+        <item name="android:layout_marginTop">4dp</item>
+        <item name="android:layout_marginBottom">4dp</item>
+        <item name="android:padding">8dp</item>
+    </style>
+
+    <style name="EditTextCircleFrame.EditText" >
+        <item name="android:hint">placeholder</item>
+        <item name="android:background">@color/transparent</item>
+        <item name="android:padding">4dp</item>
+    </style>
+
+    <style name="EditTextCircleFrame.EditText.DrawableStart" >
+        <item name="android:layout_marginStart">48dp</item>
+        <item name="android:focusable">false</item>
+    </style>
+
+    <style name="DrawableStart" >
+        <item name="android:layout_gravity">center_vertical</item>
+        <item name="android:layout_marginStart">8dp</item>
+        <item name="android:layout_height">24dp</item>
+        <item name="android:layout_width">24dp</item>
+    </style>
+
+
+
     <!--    EditText    -->
     <style name="EditTextStyle" parent="TextAppearance.AppCompat">
         <!-- Hint color and label color in FALSE state -->

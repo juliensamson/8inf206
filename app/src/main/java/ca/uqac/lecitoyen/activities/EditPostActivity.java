@@ -121,15 +121,15 @@ public class EditPostActivity extends BaseActivity {
                 {
                     mCurrentPost.setMessage(mMessage.getText().toString());
 
-                    ArrayList<PostHistory> history = mCurrentPost.getHistories();
+                    //ArrayList<PostHistory> history = mCurrentPost.getHistories();
 
-                    PostHistory postHistory = new PostHistory(
+                    /*PostHistory postHistory = new PostHistory(
                             history.size(),
                             mMessage.getText().toString(),
                             System.currentTimeMillis()
                     );
                     history.add(postHistory);
-                    mCurrentPost.setHistories(history);
+                    mCurrentPost.setHistories(history);*/
 
                     DatabaseManager.getInstance().getReference()
                             .child("posts")
