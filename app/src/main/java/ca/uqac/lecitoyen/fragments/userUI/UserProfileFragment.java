@@ -6,7 +6,6 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.AppBarLayout;
-import android.support.design.widget.FloatingActionButton;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -23,6 +22,7 @@ import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
 import com.daimajia.swipe.adapters.RecyclerSwipeAdapter;
+import com.github.clans.fab.FloatingActionMenu;
 import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -35,23 +35,33 @@ import java.util.ArrayList;
 import ca.uqac.lecitoyen.Interface.iHandleFragment;
 import ca.uqac.lecitoyen.R;
 import ca.uqac.lecitoyen.activities.EditProfilActivity;
+import ca.uqac.lecitoyen.activities.ExpandPostActivity;
 import ca.uqac.lecitoyen.activities.MainUserActivity;
 import ca.uqac.lecitoyen.activities.SettingsActivity;
 import ca.uqac.lecitoyen.adapters.SwipePostAdapter;
+import ca.uqac.lecitoyen.dialogs.CreateDialog;
 import ca.uqac.lecitoyen.fragments.BaseFragment;
 import ca.uqac.lecitoyen.models.DatabaseManager;
 import ca.uqac.lecitoyen.models.Post;
 import ca.uqac.lecitoyen.models.User;
+import ca.uqac.lecitoyen.util.Constants;
 import ca.uqac.lecitoyen.util.Util;
+import ca.uqac.lecitoyen.views.ToolbarView;
 import de.hdodenhof.circleimageview.CircleImageView;
 
 public class UserProfileFragment extends BaseFragment implements View.OnClickListener {
 
     private static final String TAG = UserProfileFragment.class.getSimpleName();
+    private static final String ARG_FROM = "from";
     private static final String ARG_USER_AUTH = "user_auth";
     private static final String ARG_USER_SELECT = "user_select";
 
+
+    private int mLayoutUsed = 0;
+
     private OnFragmentInteractionListener mListener;
+
+    private DatabaseManager dbManager;
 
     private MainUserActivity mUserActivity;
     private iHandleFragment mHandleFragment;
@@ -65,6 +75,7 @@ public class UserProfileFragment extends BaseFragment implements View.OnClickLis
     private MenuItem mEditMenuItem;
 
     //  Toolbar expanded false
+    private ToolbarView mToolbar;
     private CircleImageView mToolbarProfilPictureView;
     private TextView mToolbarName;
     private TextView mToolbarPostCount;
@@ -77,7 +88,6 @@ public class UserProfileFragment extends BaseFragment implements View.OnClickLis
     private TextView mFollowerCount;
     private TextView mFollowingCount;
     private TextView mEditAccountButton;
-    private FloatingActionButton mAddPostButton;
     private RecyclerView mProfileRecyclerView;
     private RecyclerSwipeAdapter mProfileAdapter;
 
@@ -87,18 +97,20 @@ public class UserProfileFragment extends BaseFragment implements View.OnClickLis
         // Required empty public constructor
     }
 
-    public static UserProfileFragment newInstance(User userSelect) {
+    public static UserProfileFragment newInstance(int from, User userSelect) {
         UserProfileFragment fragment = new UserProfileFragment();
         Bundle args = new Bundle();
+        args.putInt(ARG_FROM, from);
         args.putSerializable(ARG_USER_SELECT, userSelect);
         fragment.setArguments(args);
         return fragment;
     }
 
-    public static UserProfileFragment newInstance(String userAuthId, User userSelect) {
+    public static UserProfileFragment newInstance(int from, String userAuthId, User userSelect) {
         UserProfileFragment fragment = new UserProfileFragment();
         Bundle args = new Bundle();
-        //args.putString(ARG_USER_AUTH, userAuthId);
+        args.putInt(ARG_FROM, from);
+        args.putString(ARG_USER_AUTH, userAuthId);
         args.putSerializable(ARG_USER_SELECT, userSelect);
         fragment.setArguments(args);
         return fragment;
@@ -107,9 +119,13 @@ public class UserProfileFragment extends BaseFragment implements View.OnClickLis
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        this.dbManager = DatabaseManager.getInstance();
+        this.mUserActivity = (MainUserActivity) getActivity();
+
         if (getArguments() != null) {
-            this.mUserActivity = (MainUserActivity) getActivity();
-            //mUserAuthId = getArguments().getString(ARG_USER_AUTH);
+            mLayoutUsed = getArguments().getInt(ARG_FROM);
+            mUserAuthId = getArguments().getString(ARG_USER_AUTH);
             mUserSelect = (User) getArguments().getSerializable(ARG_USER_SELECT);
         } else {
             Log.e(TAG, "User select is null");
@@ -123,6 +139,7 @@ public class UserProfileFragment extends BaseFragment implements View.OnClickLis
 
         //  Views
         AppBarLayout toolbarLayout = view.findViewById(R.id.toolbar_profil_layout);
+        mToolbar = view.findViewById(R.id.toolbar_user_profil);
         mToolbarProfilPictureView = view.findViewById(R.id.toolbar_profil_picture);
         mToolbarName = view.findViewById(R.id.toolbar_profil_name);
         mToolbarPostCount= view.findViewById(R.id.toolbar_profil_post_count);
@@ -133,8 +150,9 @@ public class UserProfileFragment extends BaseFragment implements View.OnClickLis
         mBiographyView = view.findViewById(R.id.toolbar_profil_collapsing_biography);
         mFollowerCount = view.findViewById(R.id.toolbar_profil_collapsing_follower_count);
         mFollowingCount = view.findViewById(R.id.toolbar_profil_collapsing_following_count);
-        mAddPostButton = view.findViewById(R.id.user_profile_add_message);
         mSwipeRefreshLayout = view.findViewById(R.id.profile_refresh_layout);
+
+        //botton
 
         //  Toolbar Listner
         toolbarLayout.addOnOffsetChangedListener(onOffsetChangedListener(view));
@@ -151,21 +169,6 @@ public class UserProfileFragment extends BaseFragment implements View.OnClickLis
          *      Handle toolbar if user own profile or someone else profile
          *
          */
-        Toolbar toolbar = view.findViewById(R.id.toolbar_user_profil);
-        mUserActivity.setSupportActionBar(toolbar);
-        setHasOptionsMenu(true);
-        if(mUserActivity.getSupportActionBar() != null) {
-
-            //if (mUserAuthId.equals(mUserSelect.getUid())) {
-                //mAddPostButton.setVisibility(View.VISIBLE);
-                //mUserActivity.setBottomNavigationItem(4);
-                //mUserActivity.getSupportActionBar().setDisplayHomeAsUpEnabled(false);
-            //} else {
-                mAddPostButton.setVisibility(View.GONE);
-                mUserActivity.getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-            //}
-
-        }
 
 
         return view;
@@ -209,12 +212,30 @@ public class UserProfileFragment extends BaseFragment implements View.OnClickLis
 
     @Override
     public void onClick(View view) {
-
+        switch (view.getId()) {
+        }
     }
 
     private void updateUI() {
 
-        DatabaseManager dbManager = DatabaseManager.getInstance();
+        StorageReference profileImage = dbManager.getStorageUserProfilPicture(mUserSelect.getUid(), mUserSelect.getPid());
+        mToolbar.profileToolbar(this,"", profileImage,  mUserSelect);
+        //mUserActivity.setSupportActionBar();
+        //setHasOptionsMenu(true);
+        if(mUserActivity.getSupportActionBar() != null) {
+
+            //if (mUserAuthId.equals(mUserSelect.getUid())) {
+            //mAddPostButton.setVisibility(View.VISIBLE);
+            //mUserActivity.setBottomNavigationItem(4);
+            //mUserActivity.getSupportActionBar().setDisplayHomeAsUpEnabled(false);
+            //} else {
+            //mAddPostButton.setVisibility(View.GONE);
+            //mUserActivity.getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+            //}
+
+        }
+
+
         DatabaseReference dbUserPost = dbManager.getDatabaseUserPosts(mUserSelect.getUid());
 
         initUserdata(dbManager);
@@ -265,29 +286,63 @@ public class UserProfileFragment extends BaseFragment implements View.OnClickLis
         Log.d(TAG, "onCreateOptionsMenu");
         //if (mUserAuthId.equals(mUserSelect.getUid())) {
         inflater.inflate(R.menu.user_menu, menu);
-        if(mCollapsedMenu == null)
+        MenuItem edit = menu.findItem(R.id.menu_edit);
+        MenuItem sett = menu.findItem(R.id.menu_settings);
+        MenuItem back = menu.findItem(R.id.menu_back);
+
+        if(mLayoutUsed == Constants.FROM_POST) {
+            edit.setVisible(false);
+            sett.setVisible(false);
+            back.setVisible(true);
+
+            if(!isAppBarExpanded) {
+                back.setIcon(R.drawable.ic_arrow_forward_primary_24dp);
+            } else {
+                back.setIcon(R.drawable.ic_arrow_forward_white_24dp);
+            }
+
+        }
+        if(mLayoutUsed == Constants.FROM_PROFILE) {
+            edit.setVisible(true);
+            sett.setVisible(true);
+            back.setVisible(false);
+
+            if(!isAppBarExpanded) {
+                edit.setIcon(R.drawable.ic_edit_primary_24dp);
+                sett.setIcon(R.drawable.ic_search_primary_24dp);
+            } else {
+                edit.setIcon(R.drawable.ic_edit_white_24dp);
+                sett.setIcon(R.drawable.ic_settings_white_24dp);
+            }
+
+        }
+        /*if(mCollapsedMenu == null)
             mCollapsedMenu = menu;
         if(mSettingsMenuItem == null)
             mSettingsMenuItem = mCollapsedMenu.findItem(R.id.menu_settings);
         if(mEditMenuItem == null)
             mEditMenuItem = mCollapsedMenu.findItem(R.id.menu_edit);
-        // }
+        // }*/
     }
 
     @Override
     public void onPrepareOptionsMenu(Menu menu) {
         super.onPrepareOptionsMenu(mCollapsedMenu);
 
+        MenuItem edit = menu.findItem(R.id.menu_edit);
+        MenuItem sett = menu.findItem(R.id.menu_settings);
+        MenuItem back = menu.findItem(R.id.menu_back);
+
         if(mCollapsedMenu != null) {
 
             if (!isAppBarExpanded) {
-
+                back.setIcon(R.drawable.ic_arrow_forward_primary_24dp);
                 mSettingsMenuItem.setIcon(R.drawable.ic_more_vert_primary_24dp);
                 mSettingsMenuItem.setVisible(true);
                 mEditMenuItem.setVisible(true);
 
             } else {
-
+                back.setIcon(R.drawable.ic_arrow_forward_white_24dp);
                 mSettingsMenuItem.setVisible(true);
                 mSettingsMenuItem.setIcon(R.drawable.ic_more_vert_white_24dp);
                 mEditMenuItem.setVisible(false);
@@ -302,14 +357,19 @@ public class UserProfileFragment extends BaseFragment implements View.OnClickLis
         Log.w(TAG, "item selected");
         switch (item.getItemId())
         {
-            case android.R.id.home:
+            case R.id.menu_back:
 
                 //mHandleFragment.inflateFragment(R.string.fragment_forum, "");
                 sendBack("allo");
                 return true;
             case R.id.menu_edit:
                 Log.w(TAG, "menu_edit clicked");
-                startActivity(new Intent(mUserActivity, EditProfilActivity.class ));
+                Bundle bundle = new Bundle();
+                bundle.putParcelable("user-auth", mUserSelect);
+                Intent intent = new Intent(mUserActivity, EditProfilActivity.class);
+                intent.putExtras(bundle);
+                //intent.putExtra(TAG, holderPost);
+                startActivity(intent);
                 return true;
             case R.id.menu_settings:
                 Log.w(TAG, "menu_setting clicked");
@@ -336,26 +396,21 @@ public class UserProfileFragment extends BaseFragment implements View.OnClickLis
                     mUserActivity.invalidateOptionsMenu();
                 if(Math.abs(verticalOffset) >  415) {
                     isAppBarExpanded = false;
-                    mProfilPictureView.setVisibility(View.GONE);
                     mToolbarProfilPictureView.setVisibility(View.VISIBLE);
-                    mToolbarPostCount.setVisibility(View.VISIBLE);
-                    mToolbarPostCount.setAlpha(percentage);
-                    mToolbarName.setVisibility(View.VISIBLE);
-                    mToolbarName.setAlpha((percentage));
+                    mToolbar.getUsernameTextView().setVisibility(View.VISIBLE);
+                    mToolbar.getPostCountTextView().setVisibility(View.VISIBLE);
+                    mToolbar.getUsernameTextView().setAlpha(percentage);
+                    mToolbar.getPostCountTextView().setAlpha(percentage);
 
-                    if(mUserActivity.getSupportActionBar() != null)
-                        mUserActivity.getSupportActionBar().setHomeAsUpIndicator(R.drawable.ic_arrow_back_primary_24dp);
+                    mProfilPictureView.setVisibility(View.GONE);
                 } else {
                     isAppBarExpanded = true;
+                    mToolbar.getProfileImage().setVisibility(View.GONE);
+                    mToolbar.getUsernameTextView().setVisibility(View.GONE);
+                    mToolbar.getPostCountTextView().setVisibility(View.GONE);
                     mProfilPictureView.setVisibility(View.VISIBLE);
-                    mToolbarProfilPictureView.setVisibility(View.GONE);
 
-                    mToolbarName.setVisibility(View.GONE);
-                    mToolbarPostCount.setVisibility(View.GONE);
                     mToolbarProfilPictureView.setVisibility(View.GONE);
-
-                    if(mUserActivity.getSupportActionBar() != null)
-                    mUserActivity.getSupportActionBar().setHomeAsUpIndicator(R.drawable.ic_arrow_back_white_24dp);
                 }
             }
         };
@@ -408,6 +463,7 @@ public class UserProfileFragment extends BaseFragment implements View.OnClickLis
                                 userPostsList.size(),
                                 getString(R.string.textview_post))
                         );
+                        mToolbar.setPostCount(userPostsList.size());
                         mProfileAdapter = new SwipePostAdapter(mUserActivity, mUserSelect, userPostsList);
                         mProfileRecyclerView.setAdapter(mProfileAdapter);
                     }

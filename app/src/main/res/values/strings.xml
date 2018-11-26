@@ -71,6 +71,10 @@
     <string name="fragment_verify_account">Verifier votre compte</string>
 
 
+    <string name="channel_name">channel_new_post</string>
+    <string name="channel_description">new post was added</string>
+
+
     <!-- ********************************************** -->
     <!-- ************ STATIC TEXT VIEWS  ************** -->
     <!-- ********************************************** -->

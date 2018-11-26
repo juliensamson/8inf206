@@ -4,6 +4,7 @@ import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.widget.EditText;
 import android.widget.TextView;
 
@@ -20,11 +21,13 @@ import com.google.firebase.storage.StorageReference;
 
 import ca.uqac.lecitoyen.Interface.iHandleFragment;
 import ca.uqac.lecitoyen.R;
-import ca.uqac.lecitoyen.fragments.UserEditProfilFragment;
+import ca.uqac.lecitoyen.fragments.UserEditProfileFragment;
 import ca.uqac.lecitoyen.models.User;
 import ca.uqac.lecitoyen.fragments.UserEditEmailFragment;
 
 public class EditProfilActivity extends BaseActivity implements iHandleFragment {
+
+    private static final String TAG = EditProfilActivity.class.getSimpleName();
 
     private EditText mNameField;
     private EditText mUserNameField;
@@ -45,18 +48,29 @@ public class EditProfilActivity extends BaseActivity implements iHandleFragment 
     private AuthCredential mCredential;
     private String mUid;
 
+    private User mUserAuth;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_edit_profil);
 
+        Bundle bundle = getIntent().getExtras();
+        if(bundle != null) {
+            mUserAuth = bundle.getParcelable("user-auth");
+            Log.d(TAG, "user id " + mUserAuth.getName() );
+        }else
+            Log.e(TAG, "bundle is null");
+
         //  SetToolbar
+
+
         mToolbar = findViewById(R.id.edit_profil_toolbar);
         mToolbarTitle = findViewById(R.id.toolbar_title);
         setSupportActionBar(mToolbar);
 
         //  Initiate first fragement
-        UserEditProfilFragment fragment = new UserEditProfilFragment();
+        UserEditProfileFragment fragment = UserEditProfileFragment.newInstance(mUserAuth);
         doFragmentTransaction(containerId, fragment, getString(R.string.fragment_edit_profil), false, "");
 
         //  Initialize auth
@@ -92,7 +106,7 @@ public class EditProfilActivity extends BaseActivity implements iHandleFragment 
         switch (fragmentTagId)
         {
             case R.string.fragment_edit_profil:
-                fragment = new UserEditProfilFragment();
+                fragment = UserEditProfileFragment.newInstance(mUserAuth);
                 doFragmentTransaction(containerId, fragment, getString(R.string.fragment_edit_profil), false, "");
                 break;
             case R.string.fragment_edit_profil_email:
@@ -109,7 +123,7 @@ public class EditProfilActivity extends BaseActivity implements iHandleFragment 
         super.onBackPressed();
 
         if(!currentFragment.equals(getString(R.string.fragment_edit_profil))) {
-            Fragment fragment = new UserEditProfilFragment();
+            Fragment fragment = new UserEditProfileFragment();
             doFragmentTransaction(containerId, fragment, getString(R.string.fragment_edit_profil), true, "");
         } else {
             this.finish();

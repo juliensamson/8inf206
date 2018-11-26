@@ -3,9 +3,10 @@ package ca.uqac.lecitoyen.helpers;
 import android.content.Context;
 import android.support.design.widget.AppBarLayout;
 import android.support.design.widget.CoordinatorLayout;
-import android.support.design.widget.FloatingActionButton;
 import android.util.AttributeSet;
 import android.view.View;
+
+import com.github.clans.fab.FloatingActionButton;
 
 import ca.uqac.lecitoyen.util.Util;
 

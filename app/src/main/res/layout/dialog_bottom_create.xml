@@ -126,7 +126,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginStart="56dp">
 
-                <ca.uqac.lecitoyen.util.MultimediaView
+             ca.uqac.lecitoyen.views.MultimediaViewView
                     android:id="@+id/create_post_image"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content" />

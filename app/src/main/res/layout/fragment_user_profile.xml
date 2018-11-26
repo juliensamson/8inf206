@@ -5,7 +5,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="ca.uqac.lecitoyen.fragments.userUI.ProfilFragment">
+    tools:context="ca.uqac.lecitoyen.fragments.userUI.UserProfileFragment">
 
     <include layout="@layout/toolbar_profil" />
 
@@ -29,14 +29,5 @@
         </android.support.v4.widget.NestedScrollView>
 
     </android.support.v4.widget.SwipeRefreshLayout>
-
-    <android.support.design.widget.FloatingActionButton
-        android:id="@+id/user_profile_add_message"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="bottom|end"
-        app:srcCompat="@drawable/ic_add_white_24dp"
-        app:layout_behavior="@string/ca_uqac_fab_behavior"
-        style="@style/LightFloatingActionButton"/>
 
 </android.support.design.widget.CoordinatorLayout>

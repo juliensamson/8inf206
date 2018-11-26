@@ -74,22 +74,6 @@
 
         </LinearLayout>
 
-        <!--<de.hdodenhof.circleimageview.CircleImageView
-            android:id="@+id/toolbar_profil_collapsing_picture"
-            android:layout_width="@dimen/image_width"
-            android:layout_height="@dimen/image_width"
-            android:layout_gravity="start"
-            app:border_color=""
-            app:border_width="2dp"
-            app:finalHeight="@dimen/image_final_width"
-            app:finalYPosition="2dp"
-            app:layout_behavior="@string/ca_uqac_profil_image_behavior"
-            app:startHeight="2dp"
-            app:startToolbarPosition="2dp"
-            app:startXPosition="2dp"
-            app:layout_anchor="@id/toolbar_profil_collapsing_background"
-            app:layout_anchorGravity="start|bottom"
-            />-->
 
         <de.hdodenhof.circleimageview.CircleImageView
             android:id="@+id/toolbar_profil_collapsing_picture"
@@ -101,19 +85,6 @@
             app:layout_anchor="@id/toolbar_profil_collapsing_background"
             app:layout_anchorGravity="start|bottom"
             android:src="@mipmap/ic_launcher_round" />
-
-        <ImageView
-            android:id="@+id/toolbar_profil_collapsing_button"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginEnd="@dimen/activity_horizontal_margin"
-            android:layout_marginStart="@dimen/activity_horizontal_margin"
-            android:padding="8dp"
-            android:background="@drawable/button_profil"
-            app:srcCompat="@drawable/ic_edit_white_24dp"
-            android:textColor="@color/white_50"
-            app:layout_anchor="@id/toolbar_profil_collapsing_background"
-            app:layout_anchorGravity="bottom|end" />
 
     </android.support.design.widget.CoordinatorLayout>
 

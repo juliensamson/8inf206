@@ -33,9 +33,6 @@
         <activity
             android:name=".activities.MainUserActivity"
             android:label="@string/title_activity_user" />
-        <activity
-            android:name=".activities.CreateAndEditActivity"
-            android:windowSoftInputMode="adjustResize" />
 
         <!-- USER SETTING ACTIVITY -->
         <activity
@@ -65,9 +62,7 @@
                 <data android:scheme="@string/fb_login_protocol_scheme" />
             </intent-filter>
         </activity>
-        <activity android:name=".activities.EditPostActivity" />
         <activity android:name=".activities.EditProfilActivity" />
-        <activity android:name=".activities.ExpandPostMediaActivity" />
         <activity android:name=".activities.ExpandPostActivity" />
     </application>
 

@@ -204,10 +204,16 @@ public class DatabaseManager  {
     }
 
     public StorageReference getStorageUserProfilPicture(String uid, String pid) {
-        return FirebaseStorage.getInstance().getReference()
-                .child(CHILD_USER_PROFIL_PICTURE)
-                .child(uid)
-                .child(pid);
+
+        if(pid != null && !pid.isEmpty())
+            return FirebaseStorage.getInstance().getReference()
+                    .child(CHILD_USER_PROFIL_PICTURE)
+                    .child(uid)
+                    .child(pid);
+        else
+            return FirebaseStorage.getInstance().getReference()
+                    .child(CHILD_USER_PROFIL_PICTURE)
+                    .child(uid);
     }
 
     /**
@@ -481,6 +487,7 @@ public class DatabaseManager  {
 
         try {
             //if (holderPost.getAudio() != null) {
+
 
             getStoragePost(holderPost.getPostid())
                     .child(holderPost.getAudio().getAid())

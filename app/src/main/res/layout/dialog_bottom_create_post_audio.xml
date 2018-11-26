@@ -71,7 +71,7 @@
                 android:hint="Ajouter un image au fichier audio"
                 style="@style/EditTextCircleFrame.EditText.DrawableStart" />
 
-            <ca.uqac.lecitoyen.util.MultimediaView
+            <ca.uqac.lecitoyen.views.MultimediaView
                 android:id="@+id/create_post_audio_image"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content" />

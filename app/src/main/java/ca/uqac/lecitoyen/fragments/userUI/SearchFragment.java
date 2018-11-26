@@ -27,6 +27,7 @@ import ca.uqac.lecitoyen.fragments.BaseFragment;
 import ca.uqac.lecitoyen.models.DatabaseManager;
 import ca.uqac.lecitoyen.models.Event;
 import ca.uqac.lecitoyen.models.User;
+import ca.uqac.lecitoyen.util.Constants;
 import ca.uqac.lecitoyen.views.ToolbarView;
 
 //  TODO: Handle research of (user, post, etc.)
@@ -107,7 +108,7 @@ public class SearchFragment extends BaseFragment implements View.OnClickListener
             @Override
             public void onClick(View view) {
                 if(mUserAuth != null) {
-                    UserProfileFragment fragment = UserProfileFragment.newInstance(mUserAuth);
+                    UserProfileFragment fragment = UserProfileFragment.newInstance(Constants.FROM_PROFILE, mUserAuth);
                     activity.doUserProfileTransaction(fragment, MainUserActivity.AUTH_USER);
                 }
             }
@@ -175,7 +176,6 @@ public class SearchFragment extends BaseFragment implements View.OnClickListener
         switch (view.getId()) {
 
             case R.id.search_add_event:
-                CreateDialog createDialog = CreateDialog.newInstance(7, mUserAuth);
                 //createDialog.createEventView().show();
                // mHandleFragment.inflateFragment(R.string.fragment_create_event, "");
                 break;

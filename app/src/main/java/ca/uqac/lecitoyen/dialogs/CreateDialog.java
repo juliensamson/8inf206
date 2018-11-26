@@ -1,21 +1,17 @@
 package ca.uqac.lecitoyen.dialogs;
 
 
-import android.annotation.SuppressLint;
 import android.app.Activity;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
 import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.support.design.widget.BottomSheetBehavior;
-import android.support.design.widget.BottomSheetDialog;
 import android.support.design.widget.BottomSheetDialogFragment;
-import android.support.v4.app.Fragment;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -28,23 +24,23 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
-import com.daimajia.swipe.adapters.RecyclerSwipeAdapter;
-import com.github.clans.fab.FloatingActionButton;
 import com.github.clans.fab.FloatingActionMenu;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.storage.FileDownloadTask;
 import com.google.firebase.storage.OnProgressListener;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
 
 import ca.uqac.lecitoyen.R;
-import ca.uqac.lecitoyen.fragments.userUI.ForumFragment;
 import ca.uqac.lecitoyen.models.Audio;
 import ca.uqac.lecitoyen.models.DatabaseManager;
 import ca.uqac.lecitoyen.models.Image;
@@ -53,7 +49,7 @@ import ca.uqac.lecitoyen.models.PostHistory;
 import ca.uqac.lecitoyen.models.User;
 import ca.uqac.lecitoyen.util.Constants;
 import ca.uqac.lecitoyen.util.ImageHandler;
-import ca.uqac.lecitoyen.util.MultimediaView;
+import ca.uqac.lecitoyen.views.MultimediaView;
 import ca.uqac.lecitoyen.util.Util;
 import ca.uqac.lecitoyen.views.ToolbarView;
 import de.hdodenhof.circleimageview.CircleImageView;
@@ -63,58 +59,43 @@ import static android.app.Activity.RESULT_CANCELED;
 import static android.app.Activity.RESULT_OK;
 
 
-public class CreateDialog extends BottomSheetDialogFragment implements View.OnClickListener, BottomSheetDialog.OnDismissListener {
+public class CreateDialog extends BottomSheetDialogFragment implements View.OnClickListener {
 
     private static final String TAG = CreateDialog.class.getSimpleName() ;
 
-    private static final String ARG_POST_TYPE = "post-type";
+    private static final String ARG_POST = "post";
     private static final String ARG_USER = "user";
 
-    public static final int MESSAGE_POST_TYPE = 665;
-    public static final int IMAGE_POST_TYPE = 666;
-    public static final int AUDIO_POST_TYPE = 667;
-
-    private static final int CREATE_POST_LAYOUT = 999;
-    private static final int CREATE_EVENT_LAYOUT = 1000;
-
-    private CreateDialog mCreateDialog;
-
-    private int layoutInflated = 0;
-
     private Activity mActivity;
-    private Fragment mFragment;
     private ImageHandler mImageHandler;
-    private RecyclerSwipeAdapter mAdpater;
-
-    private BottomSheetDialog mBottomSheetDialog;
-    private View mRootView;
 
     private Bitmap mBitmapImage;
-    private Uri mAudioUri;
+    private File mLocalFile;
+    private Uri mImageUri, mAudioUri;
 
     //  Views
     private ToolbarView mToolbar;
+    private CircleImageView mProfileImage;
     private TextView mRemoveLayout;
     private EditText mMessage;
     private EditText mImageTitle, mImageGenre, mAddImageEditText;
     private EditText mAudioTitle, mAudioGenre, mAddAudioEditText, mAddAudioImage;
     private LinearLayout mImageLayout, mAudioLayout;
     private FloatingActionMenu mAddLayoutMenu;
-    private FloatingActionButton mAddImageButton;
 
     private FrameLayout mPlayerView;
     private MultimediaView mImageView, mAudioImageView;
 
     private DatabaseManager dbManager;
-    private int  mPostType;
+    private Post mPostSelect;
     private User mUserAuth;
 
     public CreateDialog() {}
 
-    public static CreateDialog newInstance(int postType, User user) {
+    public static CreateDialog newInstance(Post post, User user) {
         CreateDialog createDialog = new CreateDialog();
         Bundle args = new Bundle();
-        args.putInt(ARG_POST_TYPE, postType);
+        args.putParcelable(ARG_POST, post);
         args.putParcelable(ARG_USER, user);
         createDialog.setArguments(args);
         return createDialog;
@@ -124,33 +105,27 @@ public class CreateDialog extends BottomSheetDialogFragment implements View.OnCl
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        Log.d(TAG, "onCreate");
         this.mActivity = getActivity();
         this.dbManager = DatabaseManager.getInstance();
         this.mImageHandler = ImageHandler.getInstance();
 
         if(getArguments() != null) {
-            mPostType = getArguments().getInt(ARG_POST_TYPE);
+            mPostSelect = getArguments().getParcelable(ARG_POST);
             mUserAuth = getArguments().getParcelable(ARG_USER);
         }
-
-        if(mBottomSheetDialog == null)
-            mBottomSheetDialog = new BottomSheetDialog(mActivity);
-
     }
 
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.dialog_bottom_create, container, false);
-
+        Log.d(TAG, "onCreateView");
         //  Toolbar
         mToolbar = rootView.findViewById(R.id.create_post_toolbar);
-        mToolbar.buttonToolbar(mActivity, "Publier");
-        mToolbar.onButtonClickListener(this);
-        mToolbar.onCloseClickListener(this);
 
         //  Main Views
-        CircleImageView profileImage = rootView.findViewById(R.id.create_post_profile_picture);
+        mProfileImage = rootView.findViewById(R.id.create_post_profile_picture);
         mMessage = rootView.findViewById(R.id.create_post_message);
         mAddLayoutMenu = rootView.findViewById(R.id.create_post_add_menu);
         mRemoveLayout = rootView.findViewById(R.id.create_post_remove_layout);
@@ -166,13 +141,10 @@ public class CreateDialog extends BottomSheetDialogFragment implements View.OnCl
         mAudioTitle = rootView.findViewById(R.id.create_post_audio_title);
         mPlayerView = rootView.findViewById(R.id.create_post_audio_player);
         mAudioImageView = rootView.findViewById(R.id.create_post_audio_image);
-        //if(postType == AUDIO_POST_TYPE && uri != null) {
-            //mRemoveLayout.setVisibility(View.VISIBLE);
-            //mAudioLayout.setVisibility(View.VISIBLE);
-            //AudioWife.getInstance().init(mActivity, uri).useDefaultUi(mPlayerView, mActivity.getLayoutInflater());
-        //}
 
         //  Button
+        mToolbar.onButtonClickListener(this);
+
         rootView.findViewById(R.id.create_post_remove_layout).setOnClickListener(this);
         rootView.findViewById(R.id.create_post_add_image_layout).setOnClickListener(this);
         rootView.findViewById(R.id.create_post_add_audio_layout).setOnClickListener(this);
@@ -184,17 +156,14 @@ public class CreateDialog extends BottomSheetDialogFragment implements View.OnCl
         rootView.findViewById(R.id.create_post_audio_add_image).setOnClickListener(this);
         rootView.findViewById(R.id.create_post_audio_add_genre).setOnClickListener(this);
 
-        //RecyclerView mImagesRecyclerView = messageView.findViewById(R.id.create_post_images);
-        //LinearLayoutManager llm = new LinearLayoutManager(mActivity, LinearLayoutManager.HORIZONTAL, false);
-        //mImagesRecyclerView.setHasFixedSize(true);
-        //mImagesRecyclerView.setLayoutManager(llm);
-
         return rootView;
     }
 
     @Override
     public void onStart() {
         super.onStart();
+        Log.d(TAG, "onStart");
+        updateUI();
     }
 
     /**
@@ -244,6 +213,7 @@ public class CreateDialog extends BottomSheetDialogFragment implements View.OnCl
         Log.d(TAG, "onActivityResult " + requestCode + " " + resultCode);
 
         if (resultCode == RESULT_OK) {
+
             switch (requestCode) {
                 case Constants.REQUEST_GALLERY_CODE:
                     Log.d(TAG, "onRequestGalleryCode");
@@ -266,9 +236,35 @@ public class CreateDialog extends BottomSheetDialogFragment implements View.OnCl
                 default:
                     break;
             }
+
         } else if (requestCode == RESULT_CANCELED) {
             Log.e(TAG, "Some error occured");
         }
+    }
+
+    @Override
+    public void dismiss() {
+        super.dismiss();
+        mActivity.finish();
+        mImageHandler = null;
+        mBitmapImage = null;
+        mAudioUri = null;
+
+        mToolbar = null;
+        mProfileImage = null;
+        mRemoveLayout = null;
+        mMessage = null;
+        mImageTitle = null; mImageGenre = null; mAddImageEditText = null;
+        mAudioTitle = null; mAudioGenre = null; mAddAudioEditText = null; mAddAudioImage = null;
+        mImageLayout = null; mAudioLayout = null;
+        mAddLayoutMenu = null;
+
+        mPlayerView = null;
+        mImageView = null; mAudioImageView =null;
+
+        dbManager = null;
+        mPostSelect = null;
+        mUserAuth = null;
     }
 
     /**
@@ -279,11 +275,132 @@ public class CreateDialog extends BottomSheetDialogFragment implements View.OnCl
      *
      */
 
+    private void updateUI() {
+
+        if(mPostSelect == null)
+            mToolbar.buttonToolbar(mActivity, "Publier");
+        else
+            mToolbar.buttonToolbar(mActivity, "Modifier");
+
+
+        //StorageReference stUserImage = dbManager.getStorageUserProfilPicture(mUserAuth.getUid(), mUserAuth.getPid());
+
+        //if(mUserAuth.getPid() != null && !mUserAuth.getPid().isEmpty())
+        //    Glide.with(mActivity).load(stUserImage).into(mProfileImage);
+
+        if(mPostSelect != null) {
+
+            mMessage.setText(mPostSelect.getMessage());
+
+            if(mPostSelect.getImages() != null) {
+
+                StorageReference stPost = dbManager.getStoragePost(mPostSelect.getPostid());
+
+                Image image = mPostSelect.getImages().get(0);
+                mImageLayout.setVisibility(View.VISIBLE);
+                mImageTitle.setText(image.getName());
+
+                try {
+
+                    final File localFile = File.createTempFile(image.getName(), "jpg");
+
+                    stPost.child(image.getImageid()).getFile(localFile).addOnFailureListener(new OnFailureListener() {
+                        @Override
+                        public void onFailure(@NonNull Exception e) {
+                            Log.e(TAG, e.getMessage());
+                        }
+                    }).addOnSuccessListener(new OnSuccessListener<FileDownloadTask.TaskSnapshot>() {
+                        @Override
+                        public void onSuccess(FileDownloadTask.TaskSnapshot taskSnapshot) {
+                            setImageFile(localFile);
+                        }
+                    });
+
+                } catch (IOException e) {
+                    Log.e(TAG, e.getMessage());
+                }
+
+            }
+
+            if(mPostSelect.getAudio() != null) {
+
+                StorageReference stPost = dbManager.getStoragePost(mPostSelect.getPostid());
+
+                Audio audio = mPostSelect.getAudio();
+                mAudioLayout.setVisibility(View.VISIBLE);
+                mAudioTitle.setText(audio.getTitle());
+
+                /*stPost.child(audio.getPid()).getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
+                    @Override
+                    public void onSuccess(Uri uri) {
+                        setImageUri(uri);
+                    }
+                }).addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        Log.e(TAG, "2+2" + e.getMessage());
+
+
+                    }
+                });*/
+
+                stPost.child(audio.getAid()).getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
+                    @Override
+                    public void onSuccess(Uri uri) {
+                        setAudioUri(uri);
+                    }
+                }).addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        Log.e(TAG, e.getMessage());
+                    }
+                });
+
+            }
+
+
+        } else {
+
+            Log.d(TAG, "new post is created");
+
+        }
+
+    }
+
+    private void setImageFile(File file) {
+
+        mLocalFile = file;
+
+
+        try {
+            BitmapFactory.Options options = new BitmapFactory.Options();
+            options.inPreferredConfig = Bitmap.Config.ARGB_8888;
+            mBitmapImage = BitmapFactory.decodeStream(new FileInputStream(mLocalFile), null, options);
+
+            if (mImageLayout.getVisibility() == View.VISIBLE) {
+                mImageView.with(mActivity)
+                        .setEditable(true)
+                        .setFrameSize()
+                        .loadImages(mBitmapImage, "");
+            } else if (mAudioLayout.getVisibility() == View.VISIBLE) {
+                mAudioImageView.with(mActivity)
+                        .setEditable(true)
+                        .setFrameSize()
+                        .loadImages(mBitmapImage, "");
+            }
+        } catch (FileNotFoundException e) {
+            Log.e(TAG, e.getMessage());
+        }
+
+    }
+
     private void setImageUri(Uri uri) {
+
+        mImageUri = uri;
 
         try {
 
-            mBitmapImage = MediaStore.Images.Media.getBitmap(mActivity.getContentResolver(), uri);
+            mBitmapImage = MediaStore.Images.Media.getBitmap(mActivity.getContentResolver(), mImageUri);
 
             if(mImageLayout.getVisibility() == View.VISIBLE) {
                 mImageView.with(mActivity)
@@ -298,7 +415,7 @@ public class CreateDialog extends BottomSheetDialogFragment implements View.OnCl
             }
 
         } catch (IOException e) {
-            Log.e(TAG, e.getMessage());
+            Log.e(TAG, "3" + e.getMessage());
         }
     }
 
@@ -393,31 +510,75 @@ public class CreateDialog extends BottomSheetDialogFragment implements View.OnCl
             if (mUserAuth == null)
                 throw new NullPointerException("Userauth is null");
 
-            String message = mMessage.getText().toString();
-            long currentTime = System.currentTimeMillis();
 
-            //  Create post object
-            Post post = new Post(
-                    dbManager.getDatabasePosts().push().getKey(),
-                    mUserAuth,
-                    message,
-                    currentTime
-            );
 
-            DatabaseReference dbPost = dbManager.getDatabasePost(post.getPostid());
+            if(mPostSelect ==  null) {
 
-            //  Create post-history object
-            PostHistory postHistory = new PostHistory(0, post.getMessage(), post.getDate());
-            ArrayList postHistoryList = new ArrayList<PostHistory>();
-            postHistoryList.add(postHistory);
-            post.setHistories(postHistoryList);
+                String message = mMessage.getText().toString();
+                long currentTime = System.currentTimeMillis();
 
-            updateImages(post);
-            updateAudio(post);
+                //  Create post object
+                Post post = new Post(
+                        dbManager.getDatabasePosts().push().getKey(),
+                        mUserAuth,
+                        message,
+                        currentTime
+                );
 
-            dbManager.writePostToFirebase(post);
-            dismiss();
+                DatabaseReference dbPost = dbManager.getDatabasePost(post.getPostid());
 
+                //  Create post-history object
+                PostHistory postHistory = new PostHistory(0, post.getMessage(), post.getDate());
+                ArrayList postHistoryList = new ArrayList<PostHistory>();
+                postHistoryList.add(postHistory);
+                post.setHistories(postHistoryList);
+
+                if (post.getImages() != null) {
+                    Log.d(TAG, "avant images not null");
+                }
+
+                if (post.getAudio() != null) {
+                    Log.d(TAG, "avant audio not null");
+                }
+
+                updateImages(post);
+                updateAudio(post);
+
+                if (post.getImages() != null) {
+                    Log.d(TAG, "apres images not null");
+                }
+                if (post.getAudio() != null) {
+                    Log.d(TAG, "apres audio not null");
+                }
+
+                dbManager.writePostToFirebase(post);
+                dismiss();
+
+            } else {
+
+                Post post = mPostSelect;
+                String message = mMessage.getText().toString();
+                long currentTime = System.currentTimeMillis();
+
+                ArrayList postHistoryList = post.getHistories();
+
+                PostHistory postHistory = new PostHistory(
+                        postHistoryList.size() + 1,
+                        message,
+                        currentTime
+                );
+                postHistoryList.add(postHistory);
+
+                post.setHistories(postHistoryList);
+                post.setMessage(message);
+
+                updateImages(post);
+                updateAudio(post);
+
+                dbManager.writePostToFirebase(post);
+                dismiss();
+
+            }
         } catch (NullPointerException e) {
             Log.e(TAG, e.getMessage());
         }
@@ -425,7 +586,7 @@ public class CreateDialog extends BottomSheetDialogFragment implements View.OnCl
 
     private void updateImages(Post post) {
 
-        if(mImageView.getVisibility() != View.GONE) {
+        if(mImageLayout.getVisibility() != View.GONE) {
 
             ArrayList<Image> postImageList = new ArrayList<>();
             Image image = new Image();
@@ -488,7 +649,7 @@ public class CreateDialog extends BottomSheetDialogFragment implements View.OnCl
 
     private void updateAudio(Post post) {
 
-        if (mPlayerView.getVisibility() != View.GONE) {
+        if (mAudioLayout.getVisibility() != View.GONE) {
 
             //  Set audio data structure
 
@@ -516,6 +677,9 @@ public class CreateDialog extends BottomSheetDialogFragment implements View.OnCl
                 if (post.getAudio() == null)
                     throw new NullPointerException("There is no audio in this post. ");
 
+                if (mAudioUri == null)
+                    throw new NullPointerException("Audio uri is null");
+
                 UploadTask uploadTask = stPost.child(post.getAudio().getAid()).putFile(mAudioUri);
 
                 uploadTask
@@ -531,7 +695,7 @@ public class CreateDialog extends BottomSheetDialogFragment implements View.OnCl
                             @Override
                             public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
                                 dismiss();
-                                Log.d(TAG, "image uploaded");
+                                Log.d(TAG, "audio uploaded");
                             }
                         }).addOnFailureListener(new OnFailureListener() {
                     @Override
@@ -589,4 +753,50 @@ public class CreateDialog extends BottomSheetDialogFragment implements View.OnCl
         }
         return false;
     }
+    /*
+    // TODO: Si le message n'est pas changé, assuré qu'il ne fasse pas de mise à jour (éviter de dupliqué donné)
+    private void updateDB() {
+
+        final DatabaseReference ref = DatabaseManager.getInstance().getReference();
+
+
+        showProgressDialog();
+        ref.child("users").addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+
+                if(dataSnapshot.hasChildren())
+                {
+                    mCurrentPost.setMessage(mMessage.getText().toString());
+
+                    //ArrayList<PostHistory> history = mCurrentPost.getHistories();
+
+                    /*PostHistory postHistory = new PostHistory(
+                            history.size(),
+                            mMessage.getText().toString(),
+                            System.currentTimeMillis()
+                    );
+                    history.add(postHistory);
+                    mCurrentPost.setHistories(history);
+                    /*
+                    DatabaseManager.getInstance().getReference(.child("posts")
+                            .child(mCurrentPost.getPostid())
+                            .setValue(mCurrentPost);
+                    DatabaseManager.getInstance().getReference()
+                            .child("user-post")
+                            .child(mCurrentPost.getUser().getUid())
+                            .child(mCurrentPost.getPostid())
+                            .setValue(mCurrentPost);
+                    Toast.makeText(getApplicationContext(), "Data modified", Toast.LENGTH_SHORT).show();
+                }*//*
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+                Log.e(TAG, databaseError.getMessage());
+            }
+        });
+        hideProgressDialog();
+        this.finish();
+    }*/
 }

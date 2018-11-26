@@ -1,11 +1,10 @@
-package ca.uqac.lecitoyen.util;
+package ca.uqac.lecitoyen.views;
 
 import android.app.Activity;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.net.Uri;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.view.Gravity;
 import android.view.View;
 import android.widget.FrameLayout;
@@ -17,8 +16,11 @@ import com.bumptech.glide.Glide;
 import com.google.firebase.storage.StorageReference;
 import com.makeramen.roundedimageview.RoundedImageView;
 
+import java.io.File;
+
 import ca.uqac.lecitoyen.R;
 import ca.uqac.lecitoyen.models.Audio;
+import ca.uqac.lecitoyen.util.Util;
 
 public class MultimediaView extends FrameLayout {
 
@@ -134,6 +136,25 @@ public class MultimediaView extends FrameLayout {
 
         return this;
     }
+
+
+    public MultimediaView loadImages(File file, String title) {
+
+        isFrameEditable();
+
+        if(!title.isEmpty())
+            mTitle.setText(title);
+        else
+            hideAllLayoutGone();
+
+        setPictureLayout(null, null, null);
+        setMediaUsed(true, false, false);
+
+        Glide.with(mContext).load(file).into(mPicture);
+
+        return this;
+    }
+
 
     public MultimediaView loadImages(Bitmap bitmap, String title) {
 

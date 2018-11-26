@@ -19,6 +19,9 @@ public final class Constants {
     public static final int REQUEST_AUDIO_CODE = 3;
 
 
+    public static final int FROM_POST = 90;
+    public static final int FROM_PROFILE = 91;
+
     //  Throw
 
 }

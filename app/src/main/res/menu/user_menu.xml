@@ -17,4 +17,11 @@
         app:showAsAction="ifRoom">
     </item>
 
+    <item
+        android:id="@+id/menu_back"
+        android:title="back"
+        android:icon="@drawable/ic_more_vert_white_24dp"
+        app:showAsAction="ifRoom">
+    </item>
+
 </menu>

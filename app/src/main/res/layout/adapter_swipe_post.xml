@@ -39,7 +39,7 @@
         android:textSize="16sp" />
 
     <!-- *********  Multimedia Frame ******** -->
-    <ca.uqac.lecitoyen.util.MultimediaView
+    <ca.uqac.lecitoyen.views.MultimediaView
         android:id="@+id/swipe_post_multimedia"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"

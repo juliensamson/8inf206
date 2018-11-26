@@ -1,14 +1,10 @@
 package ca.uqac.lecitoyen.activities;
 
 import android.content.Context;
-import android.content.Intent;
-import android.provider.ContactsContract;
 import android.support.annotation.NonNull;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
-import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
@@ -22,14 +18,12 @@ import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.StorageReference;
 
 import ca.uqac.lecitoyen.R;
-import ca.uqac.lecitoyen.adapters.SwipePostAdapter;
 import ca.uqac.lecitoyen.buttons.RepostButton;
 import ca.uqac.lecitoyen.buttons.UpvoteButton;
 import ca.uqac.lecitoyen.models.DatabaseManager;
 import ca.uqac.lecitoyen.models.Post;
 import ca.uqac.lecitoyen.models.User;
-import ca.uqac.lecitoyen.util.Constants;
-import ca.uqac.lecitoyen.util.MultimediaView;
+import ca.uqac.lecitoyen.views.MultimediaView;
 import ca.uqac.lecitoyen.util.Util;
 import de.hdodenhof.circleimageview.CircleImageView;
 
@@ -219,21 +213,21 @@ public class ExpandPostActivity extends BaseActivity implements View.OnClickList
 
         if(mMultimediaView.isPhoto()) {
 
-            bundle.putInt("code", Constants.EXPAND_PHOTO);
+            /*bundle.putInt("code", Constants.EXPAND_PHOTO);
 
             Intent intent = new Intent(mContext, ExpandPostMediaActivity.class);
             intent.putExtras(bundle);
 
-            mContext.startActivity(intent);
+            mContext.startActivity(intent);*/
         }
         if(mMultimediaView.isAudio()) {
 
-            bundle.putInt("code", Constants.EXPAND_AUDIO);
+            /*bundle.putInt("code", Constants.EXPAND_AUDIO);
 
             Intent intent = new Intent(mContext, ExpandPostMediaActivity.class);
             intent.putExtras(bundle);
 
-            mContext.startActivity(intent);
+            mContext.startActivity(intent);*/
         }
         if(mMultimediaView.isLink()) {
 

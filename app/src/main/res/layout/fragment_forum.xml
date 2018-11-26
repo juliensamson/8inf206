@@ -40,45 +40,17 @@
 
     </android.support.v4.widget.SwipeRefreshLayout>
 
-    <com.github.clans.fab.FloatingActionMenu
-        android:id="@+id/forum_add_menu"
+    <com.github.clans.fab.FloatingActionButton
+        android:id="@+id/forum_add_post"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="bottom|end"
-        app:menu_colorNormal="@color/primaryColor"
-        app:menu_colorPressed="@color/primaryDarkColor"
-        app:layout_behavior="@string/ca_uqac_fab_menu_behavior"
-        style="@style/LightFloatingActionButton">
-
-        <com.github.clans.fab.FloatingActionButton
-            android:id="@+id/forum_add_post"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            app:fab_size="mini"
-            app:fab_colorNormal="@color/primaryColor"
-            app:fab_colorPressed="@color/primaryDarkColor"
-            app:fab_label="Ajouter une publication"/>
-
-        <com.github.clans.fab.FloatingActionButton
-            android:id="@+id/forum_add_images"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:src="@drawable/ic_photo_library_black_24dp"
-            app:fab_size="mini"
-            app:fab_colorNormal="@color/primaryColor"
-            app:fab_colorPressed="@color/primaryDarkColor"
-            app:fab_label="Ajouter des images"/>
-
-        <com.github.clans.fab.FloatingActionButton
-            android:id="@+id/forum_add_audio"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            app:fab_size="mini"
-            app:fab_colorNormal="@color/primaryColor"
-            app:fab_colorPressed="@color/primaryDarkColor"
-            app:fab_label="Ajouter musique"/>
-
-    </com.github.clans.fab.FloatingActionMenu>
+        android:layout_margin="@dimen/activity_horizontal_margin"
+        android:src="@drawable/ic_add_white_24dp"
+        app:layout_behavior="@string/ca_uqac_fab_behavior"
+        app:fab_size="normal"
+        app:fab_colorNormal="@color/primaryColor"
+        app:fab_colorPressed="@color/primaryDarkColor" />
 
 
 </android.support.design.widget.CoordinatorLayout>

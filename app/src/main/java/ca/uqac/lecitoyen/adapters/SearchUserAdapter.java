@@ -21,6 +21,7 @@ import ca.uqac.lecitoyen.activities.MainUserActivity;
 import ca.uqac.lecitoyen.fragments.userUI.UserProfileFragment;
 import ca.uqac.lecitoyen.models.DatabaseManager;
 import ca.uqac.lecitoyen.models.User;
+import ca.uqac.lecitoyen.util.Constants;
 import de.hdodenhof.circleimageview.CircleImageView;
 
 public class SearchUserAdapter extends RecyclerView.Adapter<SearchUserAdapter.ViewHolder> {
@@ -98,7 +99,7 @@ public class SearchUserAdapter extends RecyclerView.Adapter<SearchUserAdapter.Vi
         holder.mainLayout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                UserProfileFragment fragment = UserProfileFragment.newInstance(holderUser);
+                UserProfileFragment fragment = UserProfileFragment.newInstance(Constants.FROM_PROFILE, holderUser);
                 mUserActivity.doUserProfileTransaction(fragment, MainUserActivity.SELECT_USER);
             }
         });

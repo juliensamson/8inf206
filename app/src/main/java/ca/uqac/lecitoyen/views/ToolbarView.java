@@ -29,6 +29,7 @@ import com.google.firebase.storage.StorageReference;
 import ca.uqac.lecitoyen.R;
 import ca.uqac.lecitoyen.activities.BaseActivity;
 import ca.uqac.lecitoyen.fragments.BaseFragment;
+import ca.uqac.lecitoyen.models.User;
 import de.hdodenhof.circleimageview.CircleImageView;
 
 public class ToolbarView extends FrameLayout  {
@@ -43,6 +44,9 @@ public class ToolbarView extends FrameLayout  {
     private FrameLayout mToolbarLayout;
     private TextView mToolbarTitle, mToolbarButton;
     private CircleImageView mToolbarImage;
+
+    private LinearLayout mToolbarProfileLayout;
+    private TextView mToolbarUserName, mToolbarUserPostCount;
 
     private ImageView mToolbarClose, mReturn;
     private EditText mSearchEditText;
@@ -73,9 +77,22 @@ public class ToolbarView extends FrameLayout  {
         this.mToolbarClose = rootView.findViewById(R.id.toolbar_view_close);
         this.mReturn = rootView.findViewById(R.id.toolbar_view_return);
 
+        this.mToolbarProfileLayout = rootView.findViewById(R.id.toolbar_view_user_layout);
+        this.mToolbarUserName = rootView.findViewById(R.id.toolbar_view_user_name);
+        this.mToolbarUserPostCount = rootView.findViewById(R.id.toolbar_view_user_post_count);
+
         hideAllViews();
 
     }
+
+    /**
+     *
+     *        Toolbar with a profile image view, on the right or left depending of what you want
+     * @param parent
+     * @param style
+     * @param title
+     * @param image
+     */
 
     public void defaultToolbar(Activity parent, int style, String title, StorageReference image) {
 
@@ -109,6 +126,13 @@ public class ToolbarView extends FrameLayout  {
         }
 
     }
+
+    /**
+     *      Toolbar with name and close icon
+     *
+     * @param parent
+     * @param title
+     */
 
     public void simpleToolbar(Activity parent, String title) {
 
@@ -158,12 +182,31 @@ public class ToolbarView extends FrameLayout  {
 
         setToolbarTitle(null);
         setToolbarImage((Uri) null);
-        setToolbarButton(title);
-        showToolbarClose();
+        setToolbarButton(null);
 
         try {
             Toolbar toolbar = findViewById(R.id.custom_toolbar);
             ((AppCompatActivity) fragment.getActivity()).setSupportActionBar(toolbar);
+        } catch (NullPointerException npe) {
+            Log.e(TAG, npe.getMessage());
+        }
+
+    }
+
+    public void profileToolbar(Fragment fragment, String title, StorageReference image, User user) {
+
+        if(rootView == null)
+            throw new IllegalArgumentException("Make sure the view is inflated");
+
+        setToolbarTitle(null);
+        setToolbarImage(image);
+        setToolbarButton(title);
+        setToolbarProfileLayout(user);
+
+        try {
+            Toolbar toolbar = findViewById(R.id.custom_toolbar);
+            ((AppCompatActivity) fragment.getActivity()).setSupportActionBar(toolbar);
+            fragment.setHasOptionsMenu(true);
         } catch (NullPointerException npe) {
             Log.e(TAG, npe.getMessage());
         }
@@ -248,6 +291,34 @@ public class ToolbarView extends FrameLayout  {
     }
 
 
+    public void onImageClickListener(OnClickListener listener) {
+        mToolbarImage.setOnClickListener(listener);
+    }
+
+    public void onButtonClickListener(OnClickListener listener) {
+        mToolbarButton.setOnClickListener(listener);
+    }
+
+    public void onCloseClickListener(OnClickListener listener) {
+        mToolbarClose.setOnClickListener(listener);
+    }
+
+    public void onSearchViewClick(OnClickListener listener) {
+        mSearchEditText.setOnClickListener(listener);
+    }
+
+    public void onSearchTextWatcher(TextWatcher listener) {
+        mSearchEditText.addTextChangedListener(listener);
+    }
+
+    /**
+     *
+     *
+     *      Setter & Getter
+     *
+     *
+     */
+
     public ToolbarView setToolbarTitle(String title) {
 
         showToolbarTitle();
@@ -302,31 +373,56 @@ public class ToolbarView extends FrameLayout  {
 
         if(st == null)
             hideToolbarImage();
-        else
-            Glide.with(mContext).load(st).into(mToolbarImage);
+        else {
+            if(!st.toString().equals(""))
+                Glide.with(mContext).load(st).into(mToolbarImage);
+            else
+                Glide.with(mContext).load(R.color.black_200).into(mToolbarImage);
+        }
 
         return this;
     }
 
-    public void onImageClickListener(OnClickListener listener) {
-        mToolbarImage.setOnClickListener(listener);
+    public ToolbarView setToolbarProfileLayout(User user) {
+
+        showToolbarProfileLayout();
+
+        if(mToolbarUserName == null)
+            throw new IllegalArgumentException("Toolbar username not inflated");
+
+        if(mToolbarUserPostCount == null)
+            throw new IllegalArgumentException("Toolbar post count not inflated");
+
+        if(user == null)
+            throw new IllegalArgumentException("No user sent");
+
+        mToolbarUserName.setText(user.getName());
+
+        return this;
     }
 
-    public void onButtonClickListener(OnClickListener listener) {
-        mToolbarButton.setOnClickListener(listener);
+    public ToolbarView setUserName(String name) {
+        mToolbarUserName.setText(name);
+        return this;
     }
 
-    public void onCloseClickListener(OnClickListener listener) {
-        mToolbarClose.setOnClickListener(listener);
+    public TextView getUsernameTextView() {
+        return mToolbarUserName;
     }
 
-    public void onSearchViewClick(OnClickListener listener) {
-        mSearchEditText.setOnClickListener(listener);
+    public ToolbarView setPostCount(int count) {
+        mToolbarUserPostCount.setText(String.valueOf(count));
+        return this;
     }
 
-    public void onSearchTextWatcher(TextWatcher listener) {
-        mSearchEditText.addTextChangedListener(listener);
+    public TextView getPostCountTextView() {
+        return mToolbarUserPostCount;
     }
+
+    public CircleImageView getProfileImage() {
+        return mToolbarImage;
+    }
+
 
     /**
      *
@@ -341,6 +437,7 @@ public class ToolbarView extends FrameLayout  {
         hideToolbarButton();
         hideToolbarImage();
         hideToolbarClose();
+        hideToolbarProfileLayout();
     }
 
     private void showToolbarTitle() {
@@ -370,6 +467,11 @@ public class ToolbarView extends FrameLayout  {
     private void showToolbarClose() { mToolbarClose.setVisibility(VISIBLE); }
 
     private void hideToolbarClose() { mToolbarClose.setVisibility(GONE); }
+
+    private void showToolbarProfileLayout() { mToolbarProfileLayout.setVisibility(VISIBLE); }
+
+    private void hideToolbarProfileLayout() { mToolbarProfileLayout.setVisibility(GONE); }
+
 
 
 }

@@ -98,6 +98,9 @@ public final class Util {
      *
      */
 
+    //  params.height = (int) getResources().getDimension(R.dimen.profile_image_view_small);
+    //params.width = (int) getResources().getDimension(R.dimen.profile_image_view_small);
+
     public static int getToolbarHeight(Context context) {
         int[] attrs = new int[] {R.attr.actionBarSize};
         TypedArray ta = context.obtainStyledAttributes(attrs);

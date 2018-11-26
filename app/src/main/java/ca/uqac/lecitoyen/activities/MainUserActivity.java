@@ -1,15 +1,22 @@
 package ca.uqac.lecitoyen.activities;
 
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Typeface;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
+import android.support.v4.app.NotificationCompat;
+import android.support.v4.app.NotificationManagerCompat;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.view.View;
 import android.widget.TextView;
 
 import com.daimajia.swipe.adapters.RecyclerSwipeAdapter;
@@ -46,6 +53,8 @@ import ca.uqac.lecitoyen.models.User;
 import it.sephiroth.android.library.bottomnavigation.BottomNavigation;
 import it.sephiroth.android.library.bottomnavigation.BottomNavigationFixedItemView;
 
+import static android.support.v4.app.NotificationCompat.VISIBILITY_PUBLIC;
+
 public class MainUserActivity extends BaseActivity implements
         iHandleFragment,
         ForumFragment.OnFragmentInteractionListener,
@@ -53,6 +62,7 @@ public class MainUserActivity extends BaseActivity implements
 {
 
     private final static String TAG = MainUserActivity.class.getSimpleName();
+    private final static String CHANNEL_ID = "856854";
 
     public final static int AUTH_USER = 10;
     public final static int SELECT_USER = 20;
@@ -102,6 +112,8 @@ public class MainUserActivity extends BaseActivity implements
         super.onCreate(savedInstanceState);
         showProgressDialog();
         setContentView(R.layout.activity_user);
+
+        createNotificationChannel();
 
         this.mContext = this;
         this.mUserActivity = this;
@@ -282,7 +294,7 @@ public class MainUserActivity extends BaseActivity implements
         forumFragment = ForumFragment.newInstance(mUserAuth, mPostsList);
         FragmentTransaction transaction = mFragmentManager.beginTransaction();
         transaction.replace(R.id.user_container, forumFragment);
-        transaction.commit();
+        transaction.commitAllowingStateLoss();
     }
 
 
@@ -342,7 +354,7 @@ public class MainUserActivity extends BaseActivity implements
                 //doFragmentTransaction(forumFragment, getString(R.string.fragment_forum));
                 break;
             case R.string.fragment_add_post:
-                CreateDialog imageDialog = CreateDialog.newInstance(CreateDialog.MESSAGE_POST_TYPE, mUserAuth);
+                CreateDialog imageDialog = CreateDialog.newInstance(null, mUserAuth);
                 doFragmentTransaction(imageDialog, getString(R.string.fragment_add_post), true, "");
                 //doFragmentTransaction(forumFragment, getString(R.string.fragment_forum));
                 break;
@@ -414,6 +426,72 @@ public class MainUserActivity extends BaseActivity implements
         intent.putExtras(extras);
         startActivity(intent);
     }
+
+    /**
+     *
+     *      Notification
+     *
+     *
+     */
+
+    public void sendNotification(Post post) {
+        Log.e(TAG, "send notification");
+        //Get an instance of NotificationManager//
+        Bundle bundle = new Bundle();
+        bundle.putString("postid", post.getPostid());
+        Intent intent = new Intent(this, ExpandPostActivity.class);
+        intent.putExtras(bundle);
+        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+        PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, intent, 0);
+
+        NotificationCompat.Builder mBuilder = new NotificationCompat.Builder(this, CHANNEL_ID)
+                .setSmallIcon(R.drawable.ic_forum_black_24dp)
+                .setContentTitle(post.getUser().getName())
+                .setContentText(post.getMessage())
+                .setStyle(new NotificationCompat.BigTextStyle()
+                        .bigText(post.getMessage()))
+                .setPriority(NotificationCompat.PRIORITY_DEFAULT)
+                .setContentIntent(pendingIntent)
+                .setAutoCancel(true)
+                .setVisibility(VISIBILITY_PUBLIC);
+
+        // Gets an instance of the NotificationManager service//
+
+        NotificationManager mNotificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+
+        // When you issue multiple notifications about the same type of event,
+        // it’s best practice for your app to try to update an existing notification
+        // with this new information, rather than immediately creating a new notification.
+        // If you want to update this notification at a later date, you need to assign it an ID.
+        // You can then use this ID whenever you issue a subsequent notification.
+        // If the previous notification is still visible, the system will update this existing notification,
+        // rather than create a new one. In this example, the notification’s ID is 001//
+
+        //NotificationManager.notify().mNotificationManager.notify(001, mBuilder.build());
+
+        NotificationManagerCompat notificationManager = NotificationManagerCompat.from(this);
+
+// notificationId is a unique int for each notification that you must define
+        notificationManager.notify(123, mBuilder.build());
+    }
+
+    private void createNotificationChannel() {
+        // Create the NotificationChannel, but only on API 26+ because
+        // the NotificationChannel class is new and not in the support library
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            CharSequence name = getString(R.string.channel_name);
+            String description = getString(R.string.channel_description);
+            int importance = NotificationManager.IMPORTANCE_DEFAULT;
+            NotificationChannel channel = new NotificationChannel(CHANNEL_ID, name, importance);
+            channel.setDescription(description);
+            // Register the channel with the system; you can't change the importance
+            // or other notification behaviors after this
+            NotificationManager notificationManager = getSystemService(NotificationManager.class);
+            notificationManager.createNotificationChannel(channel);
+        }
+    }
+
+
 
     /**
      *

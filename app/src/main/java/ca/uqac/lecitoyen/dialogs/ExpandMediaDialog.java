@@ -74,9 +74,11 @@ public class ExpandMediaDialog {
         ref.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
             @Override
             public void onSuccess(Uri uri) {
-
-                AudioWife.getInstance().useDefaultUi(audioPlayer, mActivity.getLayoutInflater())
-                        .init(mActivity, uri);
+                try {
+                    AudioWife.getInstance().init(mActivity, uri).useDefaultUi(audioPlayer, mActivity.getLayoutInflater());
+                } catch (NullPointerException e) {
+                    Log.e(TAG, e.getMessage());
+                }
             }
         }).addOnFailureListener(new OnFailureListener() {
             @Override

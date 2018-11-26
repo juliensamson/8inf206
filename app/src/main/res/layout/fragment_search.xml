@@ -65,13 +65,15 @@
 
     </android.support.v4.widget.NestedScrollView>
 
-    <android.support.design.widget.FloatingActionButton
+    <com.github.clans.fab.FloatingActionButton
         android:id="@+id/search_add_event"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_margin="@dimen/activity_vertical_margin"
         android:layout_gravity="bottom|end"
-        app:srcCompat="@drawable/ic_event_white_24dp"
+        android:src="@drawable/ic_event_white_24dp"
+        app:fab_colorNormal="@color/primaryColor"
+        app:fab_colorPressed="@color/primaryDarkColor"
         app:layout_behavior="@string/ca_uqac_fab_behavior"/>
 
 </android.support.design.widget.CoordinatorLayout>

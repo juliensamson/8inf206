@@ -1,23 +1,15 @@
 package ca.uqac.lecitoyen.adapters;
 
-import android.app.Activity;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
-import android.support.constraint.ConstraintLayout;
-import android.support.design.widget.CoordinatorLayout;
-import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentTransaction;
-import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.animation.Animation;
-import android.view.animation.AnimationUtils;
 import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -41,19 +33,18 @@ import java.util.Map;
 import ca.uqac.lecitoyen.Interface.iHandleFragment;
 import ca.uqac.lecitoyen.R;
 import ca.uqac.lecitoyen.activities.ExpandPostActivity;
-import ca.uqac.lecitoyen.activities.ExpandPostMediaActivity;
 import ca.uqac.lecitoyen.activities.MainUserActivity;
 import ca.uqac.lecitoyen.buttons.RepostButton;
+import ca.uqac.lecitoyen.dialogs.CreateDialog;
 import ca.uqac.lecitoyen.dialogs.DeletePostDialog;
 import ca.uqac.lecitoyen.dialogs.ExpandMediaDialog;
 import ca.uqac.lecitoyen.dialogs.PostHistoryDialog;
-import ca.uqac.lecitoyen.fragments.userUI.ProfilFragment;
 import ca.uqac.lecitoyen.fragments.userUI.UserProfileFragment;
 import ca.uqac.lecitoyen.models.DatabaseManager;
 import ca.uqac.lecitoyen.models.Post;
 import ca.uqac.lecitoyen.models.User;
 import ca.uqac.lecitoyen.util.Constants;
-import ca.uqac.lecitoyen.util.MultimediaView;
+import ca.uqac.lecitoyen.views.MultimediaView;
 import ca.uqac.lecitoyen.buttons.UpvoteButton;
 import ca.uqac.lecitoyen.util.Util;
 import de.hdodenhof.circleimageview.CircleImageView;
@@ -320,7 +311,7 @@ public class SwipePostAdapter extends RecyclerSwipeAdapter<SwipePostAdapter.View
         holder.profilPicture.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                UserProfileFragment fragment = UserProfileFragment.newInstance(mCurrentUserId, holderPost.getUser());
+                UserProfileFragment fragment = UserProfileFragment.newInstance(Constants.FROM_POST, mCurrentUserId, holderPost.getUser());
                 mUserActivity.doUserProfileTransaction(fragment, MainUserActivity.SELECT_USER);
             }
         });
@@ -361,6 +352,8 @@ public class SwipePostAdapter extends RecyclerSwipeAdapter<SwipePostAdapter.View
             @Override
             public void onClick(View view) {
                 Toast.makeText(view.getContext(), "Edit " + holderPost.getMessage(), Toast.LENGTH_SHORT).show();
+                CreateDialog editPostDialog = CreateDialog.newInstance(holderPost, mCurrentUser);
+                editPostDialog.show(mUserActivity.getSupportFragmentManager(), editPostDialog.getTag());
                 //Start activity edit
             }
         });

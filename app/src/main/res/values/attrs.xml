@@ -9,15 +9,6 @@
         <attr name="finalHeight" format="dimension"/>
     </declare-styleable>
 
-    <declare-styleable name="ProfileImageView">
-        <attr name="small" android:layout_height="32dp" android:layout_width="32dp" localization="suggested" />
-        <attr name="normal" android:layout_height="48dp" android:layout_width="48dp" localization="suggested" />
-        <attr name="large" android:layout_height="96dp" android:layout_width="96dp" localization="suggested" />
-        <attr name="height" format="dimension" localization="suggested" />
-        <attr name="width" format="dimension" localization="suggested" />
-        <attr name="valueColor" format="color" />
-    </declare-styleable>
-
     <declare-styleable name="MyCustomView">
         <attr name="gravity">
             <flag name="bottom" value="80" />
