@@ -16,7 +16,6 @@ import android.support.v4.app.NotificationCompat;
 import android.support.v4.app.NotificationManagerCompat;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
-import android.view.View;
 import android.widget.TextView;
 
 import com.daimajia.swipe.adapters.RecyclerSwipeAdapter;
@@ -39,12 +38,13 @@ import java.util.ArrayList;
 import ca.uqac.lecitoyen.Interface.iHandleFragment;
 import ca.uqac.lecitoyen.R;
 import ca.uqac.lecitoyen.adapters.SwipePostAdapter;
-import ca.uqac.lecitoyen.dialogs.CreateDialog;
+import ca.uqac.lecitoyen.fragments.CreateAndEditPostDialogFragment;
 import ca.uqac.lecitoyen.fragments.userUI.CityfeedFragment;
 import ca.uqac.lecitoyen.fragments.userUI.DoSearchFragment;
 import ca.uqac.lecitoyen.fragments.userUI.MessageFragment;
 import ca.uqac.lecitoyen.fragments.userUI.ForumFragment;
 import ca.uqac.lecitoyen.fragments.userUI.UserProfileFragment;
+import ca.uqac.lecitoyen.models.Event;
 import ca.uqac.lecitoyen.models.UserStorage;
 import ca.uqac.lecitoyen.fragments.userUI.SearchFragment;
 import ca.uqac.lecitoyen.models.DatabaseManager;
@@ -88,6 +88,7 @@ public class MainUserActivity extends BaseActivity implements
     public UserStorage mUserStorage;
     private ArrayList<User> mUsersList = new ArrayList<>();
     private ArrayList<Post> mPostsList = new ArrayList<>();
+    private ArrayList<Event> mEventsList = new ArrayList<>();
     private RecyclerSwipeAdapter mForumAdapter;
 
     private Toolbar mUserToolbar;
@@ -185,9 +186,16 @@ public class MainUserActivity extends BaseActivity implements
 
                 loadUsersList(dataSnapshot);
 
+                /*      Get the list of events      */
+
+                loadEventsList(dataSnapshot);
+
                 /*      Get the list of posts      */
 
                 loadPostsList(dataSnapshot);
+
+                /*      updateUI      */
+
 
             }
 
@@ -248,14 +256,15 @@ public class MainUserActivity extends BaseActivity implements
 
     private void loadUsersList(DataSnapshot dataSnapshot) {
         Query dbPosts = dataSnapshot.getRef().child("users");
+
+
         dbPosts.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
 
-                for(DataSnapshot postSnapshot : dataSnapshot.getChildren()) {
+                for (DataSnapshot postSnapshot : dataSnapshot.getChildren()) {
                     mUsersList.add(postSnapshot.getValue(User.class));
                 }
-                searchFragment = SearchFragment.newInstance(mUserAuth, mUsersList);
             }
 
             @Override
@@ -276,9 +285,7 @@ public class MainUserActivity extends BaseActivity implements
                 }
 
                 mForumAdapter = new SwipePostAdapter(mUserActivity, mUserAuth, mPostsList);
-
                 updateUI();
-
                 hideProgressDialog();
 
             }
@@ -290,8 +297,27 @@ public class MainUserActivity extends BaseActivity implements
         });
     }
 
+    private void loadEventsList(DataSnapshot dataSnapshot) {
+        Query dbEvents = dataSnapshot.getRef().child("events");
+        dbEvents.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                for(DataSnapshot eventSnapshot : dataSnapshot.getChildren()) {
+                    mEventsList.add(eventSnapshot.getValue(Event.class));
+                }
+
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
+    }
+
     private void loadInitialFragment() {
         forumFragment = ForumFragment.newInstance(mUserAuth, mPostsList);
+        searchFragment = SearchFragment.newInstance(mUserAuth, mUsersList, mEventsList);
         FragmentTransaction transaction = mFragmentManager.beginTransaction();
         transaction.replace(R.id.user_container, forumFragment);
         transaction.commitAllowingStateLoss();
@@ -354,11 +380,12 @@ public class MainUserActivity extends BaseActivity implements
                 //doFragmentTransaction(forumFragment, getString(R.string.fragment_forum));
                 break;
             case R.string.fragment_add_post:
-                CreateDialog imageDialog = CreateDialog.newInstance(null, mUserAuth);
+                CreateAndEditPostDialogFragment imageDialog = CreateAndEditPostDialogFragment.newInstance(null, mUserAuth);
                 doFragmentTransaction(imageDialog, getString(R.string.fragment_add_post), true, "");
                 //doFragmentTransaction(forumFragment, getString(R.string.fragment_forum));
                 break;
             case R.string.fragment_search:
+
                 doFragmentTransaction(searchFragment, getString(R.string.fragment_search), false, "");
                 //doFragmentTransaction(searchFragment, getString(R.string.fragment_search));
                 break;

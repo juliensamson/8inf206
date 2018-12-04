@@ -1,14 +1,10 @@
 package ca.uqac.lecitoyen.fragments.userUI;
 
 
-import android.app.NotificationManager;
 import android.content.Context;
-import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.support.v4.app.NotificationCompat;
-import android.support.v4.widget.NestedScrollView;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -16,7 +12,6 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import com.daimajia.swipe.adapters.RecyclerSwipeAdapter;
@@ -31,7 +26,7 @@ import ca.uqac.lecitoyen.Interface.iHandleFragment;
 import ca.uqac.lecitoyen.R;
 import ca.uqac.lecitoyen.activities.MainUserActivity;
 import ca.uqac.lecitoyen.adapters.SwipePostAdapter;
-import ca.uqac.lecitoyen.dialogs.CreateDialog;
+import ca.uqac.lecitoyen.fragments.CreateAndEditPostDialogFragment;
 import ca.uqac.lecitoyen.fragments.BaseFragment;
 import ca.uqac.lecitoyen.models.DatabaseManager;
 import ca.uqac.lecitoyen.models.Post;
@@ -141,7 +136,7 @@ public class ForumFragment extends BaseFragment implements View.OnClickListener 
                     mainUserActivity.doUserProfileTransaction(fragment, MainUserActivity.AUTH_USER);
                     break;
                 case R.id.forum_add_post:
-                    CreateDialog createPostDialog = CreateDialog.newInstance(null, mUserAuth);
+                    CreateAndEditPostDialogFragment createPostDialog = CreateAndEditPostDialogFragment.newInstance(null, mUserAuth);
                     createPostDialog.show(mainUserActivity.getSupportFragmentManager(), getTag());
                     break;
                 default:
@@ -165,7 +160,9 @@ public class ForumFragment extends BaseFragment implements View.OnClickListener 
 
         mForumRecyclerView.setNestedScrollingEnabled(false);
 
-        long startAt = mPostsList.get(0).getDateInverse() - 1000;
+        long startAt = 0;
+        if(mPostsList.size() != 0)
+            startAt = mPostsList.get(0).getDateInverse() - 1000;
 
         Query query = dbManager.getDatabasePosts().orderByChild("dateInverse").endAt(startAt);
         ChildEventListener listener = query.addChildEventListener(childEventListener());

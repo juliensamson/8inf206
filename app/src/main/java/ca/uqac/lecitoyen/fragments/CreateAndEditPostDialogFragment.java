@@ -1,4 +1,4 @@
-package ca.uqac.lecitoyen.dialogs;
+package ca.uqac.lecitoyen.fragments;
 
 
 import android.app.Activity;
@@ -23,7 +23,6 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.bumptech.glide.Glide;
 import com.github.clans.fab.FloatingActionMenu;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -41,6 +40,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 
 import ca.uqac.lecitoyen.R;
+import ca.uqac.lecitoyen.dialogs.SelectImageTypeDialog;
 import ca.uqac.lecitoyen.models.Audio;
 import ca.uqac.lecitoyen.models.DatabaseManager;
 import ca.uqac.lecitoyen.models.Image;
@@ -59,9 +59,9 @@ import static android.app.Activity.RESULT_CANCELED;
 import static android.app.Activity.RESULT_OK;
 
 
-public class CreateDialog extends BottomSheetDialogFragment implements View.OnClickListener {
+public class CreateAndEditPostDialogFragment extends BottomSheetDialogFragment implements View.OnClickListener {
 
-    private static final String TAG = CreateDialog.class.getSimpleName() ;
+    private static final String TAG = CreateAndEditPostDialogFragment.class.getSimpleName() ;
 
     private static final String ARG_POST = "post";
     private static final String ARG_USER = "user";
@@ -90,15 +90,15 @@ public class CreateDialog extends BottomSheetDialogFragment implements View.OnCl
     private Post mPostSelect;
     private User mUserAuth;
 
-    public CreateDialog() {}
+    public CreateAndEditPostDialogFragment() {}
 
-    public static CreateDialog newInstance(Post post, User user) {
-        CreateDialog createDialog = new CreateDialog();
+    public static CreateAndEditPostDialogFragment newInstance(Post post, User user) {
+        CreateAndEditPostDialogFragment createAndEditPostDialogFragment = new CreateAndEditPostDialogFragment();
         Bundle args = new Bundle();
         args.putParcelable(ARG_POST, post);
         args.putParcelable(ARG_USER, user);
-        createDialog.setArguments(args);
-        return createDialog;
+        createAndEditPostDialogFragment.setArguments(args);
+        return createAndEditPostDialogFragment;
     }
 
 
@@ -533,23 +533,10 @@ public class CreateDialog extends BottomSheetDialogFragment implements View.OnCl
                 postHistoryList.add(postHistory);
                 post.setHistories(postHistoryList);
 
-                if (post.getImages() != null) {
-                    Log.d(TAG, "avant images not null");
-                }
-
-                if (post.getAudio() != null) {
-                    Log.d(TAG, "avant audio not null");
-                }
 
                 updateImages(post);
                 updateAudio(post);
 
-                if (post.getImages() != null) {
-                    Log.d(TAG, "apres images not null");
-                }
-                if (post.getAudio() != null) {
-                    Log.d(TAG, "apres audio not null");
-                }
 
                 dbManager.writePostToFirebase(post);
                 dismiss();

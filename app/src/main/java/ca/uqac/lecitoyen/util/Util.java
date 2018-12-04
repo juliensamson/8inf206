@@ -15,7 +15,9 @@ import android.widget.FrameLayout;
 import android.widget.ImageView;
 
 import java.io.ByteArrayOutputStream;
+import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.Locale;
 
@@ -37,6 +39,19 @@ public final class Util {
      *      Time Util
      *
      */
+
+    public static String setEventDate(Activity activity, long time) {
+
+        Date date = new Date(time) ;
+
+        String sdf = new SimpleDateFormat(
+                activity.getResources().getString(R.string.complete_date_format),
+                Locale.CANADA_FRENCH)
+                .format(date);
+
+        return sdf;
+
+    }
 
     public static String setDisplayTime(Context context, long time) {
 
@@ -90,6 +105,20 @@ public final class Util {
         }
 
     }
+
+    public static  int getCurrentYear(){
+        return Calendar.getInstance().get(Calendar.YEAR);
+    }
+
+    public static int getCurrentMonth() {
+        return Calendar.getInstance().get(Calendar.MONTH);
+    }
+
+    public static int getCurrentDay() {
+        return Calendar.getInstance().get(Calendar.DAY_OF_YEAR);
+    }
+
+
 
 
     /**

@@ -3,7 +3,11 @@ package ca.uqac.lecitoyen.models;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import com.google.firebase.database.Exclude;
+
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 
 public class Event implements Parcelable {
 
@@ -176,6 +180,28 @@ public class Event implements Parcelable {
 
     public void setPrivate(boolean aPrivate) {
         isPrivate = aPrivate;
+    }
+
+
+    @Exclude
+    public Map<String, Object> toMap() {
+        HashMap<String, Object> result = new HashMap<>();
+        result.put("eid", eid);
+
+        result.put("pid", pid);
+        result.put("title", title);
+        result.put("eventDate", eventDate);
+        result.put("location", location);
+        result.put("eventType", eventType);
+        result.put("details", details);
+        result.put("price", price);
+
+        result.put("administrators", administrators);
+        result.put("attendees", attendees);
+        result.put("interested", interested);
+        result.put("isPrivate", isPrivate);
+
+        return result;
     }
 
     @Override

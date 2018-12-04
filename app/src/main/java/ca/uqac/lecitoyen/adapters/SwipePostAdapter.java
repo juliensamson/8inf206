@@ -35,7 +35,7 @@ import ca.uqac.lecitoyen.R;
 import ca.uqac.lecitoyen.activities.ExpandPostActivity;
 import ca.uqac.lecitoyen.activities.MainUserActivity;
 import ca.uqac.lecitoyen.buttons.RepostButton;
-import ca.uqac.lecitoyen.dialogs.CreateDialog;
+import ca.uqac.lecitoyen.fragments.CreateAndEditPostDialogFragment;
 import ca.uqac.lecitoyen.dialogs.DeletePostDialog;
 import ca.uqac.lecitoyen.dialogs.ExpandMediaDialog;
 import ca.uqac.lecitoyen.dialogs.PostHistoryDialog;
@@ -235,12 +235,21 @@ public class SwipePostAdapter extends RecyclerSwipeAdapter<SwipePostAdapter.View
 
     private void setHolderBottomLayout(@NonNull final ViewHolder holder) {
         Post holderPost = mPostList.get(holder.getAdapterPosition());
-        if(!mCurrentUserId.equals(holderPost.getUser().getUid())) {
-            holder.editButton.setVisibility(View.GONE);
-            holder.deleteButton.setVisibility(View.GONE);
-        } else {
-            holder.editButton.setVisibility(View.VISIBLE);
-            holder.deleteButton.setVisibility(View.VISIBLE);
+
+        try {
+
+            if(holderPost.getUser().getUid() == null)
+                throw new NullPointerException(holderPost.getPostid() + "No user associated to this post");
+
+            if (!mCurrentUserId.equals(holderPost.getUser().getUid())) {
+                holder.editButton.setVisibility(View.GONE);
+                holder.deleteButton.setVisibility(View.GONE);
+            } else {
+                holder.editButton.setVisibility(View.VISIBLE);
+                holder.deleteButton.setVisibility(View.VISIBLE);
+            }
+        } catch (NullPointerException e) {
+            Log.e(TAG, e.getMessage());
         }
     }
 
@@ -352,7 +361,7 @@ public class SwipePostAdapter extends RecyclerSwipeAdapter<SwipePostAdapter.View
             @Override
             public void onClick(View view) {
                 Toast.makeText(view.getContext(), "Edit " + holderPost.getMessage(), Toast.LENGTH_SHORT).show();
-                CreateDialog editPostDialog = CreateDialog.newInstance(holderPost, mCurrentUser);
+                CreateAndEditPostDialogFragment editPostDialog = CreateAndEditPostDialogFragment.newInstance(holderPost, mCurrentUser);
                 editPostDialog.show(mUserActivity.getSupportFragmentManager(), editPostDialog.getTag());
                 //Start activity edit
             }

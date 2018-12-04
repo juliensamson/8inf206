@@ -22,8 +22,8 @@ import ca.uqac.lecitoyen.adapters.HorizontalEventTypeAdapter;
 import ca.uqac.lecitoyen.adapters.VerticalEventAdapter;
 import ca.uqac.lecitoyen.adapters.SearchUserAdapter;
 import ca.uqac.lecitoyen.buttons.ToggleButton;
-import ca.uqac.lecitoyen.dialogs.CreateDialog;
 import ca.uqac.lecitoyen.fragments.BaseFragment;
+import ca.uqac.lecitoyen.fragments.CreateEventDialogFragment;
 import ca.uqac.lecitoyen.models.DatabaseManager;
 import ca.uqac.lecitoyen.models.Event;
 import ca.uqac.lecitoyen.models.User;
@@ -38,7 +38,8 @@ public class SearchFragment extends BaseFragment implements View.OnClickListener
     private final static String TAG = SearchFragment.class.getSimpleName();
 
     private final static String ARG_USERAUTH = "user";
-    private final static String ARG_USERS = "users";
+    private final static String ARG_USERS = "events";
+    private final static String ARG_EVENTS = "events";
 
     private MainUserActivity activity;
     private iHandleFragment mHandleFragment;
@@ -64,11 +65,12 @@ public class SearchFragment extends BaseFragment implements View.OnClickListener
     }
 
     //TODO: Add Even arrayList
-    public static SearchFragment newInstance(User userAuth, ArrayList<User> users) {
+    public static SearchFragment newInstance(User userAuth, ArrayList<User> users, ArrayList<Event> events) {
         SearchFragment fragment = new SearchFragment();
         Bundle args = new Bundle();
         args.putParcelable(ARG_USERAUTH, userAuth);
         args.putParcelableArrayList(ARG_USERS, users);
+        args.putParcelableArrayList(ARG_EVENTS, events);
         fragment.setArguments(args);
         return fragment;
     }
@@ -85,6 +87,7 @@ public class SearchFragment extends BaseFragment implements View.OnClickListener
         if (getArguments() != null) {
             mUserAuth = getArguments().getParcelable(ARG_USERAUTH);
             mUsersList = getArguments().getParcelableArrayList(ARG_USERS);
+            mEventsList = getArguments().getParcelableArrayList(ARG_EVENTS);
             mSearchAdapter = new SearchUserAdapter(activity, mUsersList);
             //mEventAdapter = new HorizontalEventAdapter(activity, mEventsList);
         } else {
@@ -116,45 +119,27 @@ public class SearchFragment extends BaseFragment implements View.OnClickListener
 
         view.findViewById(R.id.search_add_event).setOnClickListener(this);
 
-        testAdapter(view);
 
-        //LinearLayoutManager llm = new LinearLayoutManager(activity, LinearLayoutManager.HORIZONTAL, false);
-       // SnapHelper snapHelper = new LinearSnapHelper();
-        //mSearchRecyclerView = view.findViewById(R.id.search_recycler_view);
-        //mSearchRecyclerView.setLayoutManager(llm);
-        //mSearchRecyclerView.setAdapter(mSearchAdapter);
+        LinearLayoutManager hllm = new LinearLayoutManager(activity, LinearLayoutManager.HORIZONTAL, false);
+        mEventRecyclerView = view.findViewById(R.id.search_event_type_recycler_view);
+        mEventRecyclerView.setLayoutManager(hllm);
 
-        //mEventRecyclerView = view.findViewById(R.id.search_event_recycler_view);
-        //snapHelper.attachToRecyclerView(mEventRecyclerView);
-        //mEventRecyclerView.setNestedScrollingEnabled(false);
-        //mEventRecyclerView.setLayoutManager(llm);
+        LinearLayoutManager llm = new LinearLayoutManager(activity);
+        mEventByDateRecyclerView = view.findViewById(R.id.search_event_by_date_recycler_view);
+        mEventByDateRecyclerView.setHasFixedSize(false);
+        mEventByDateRecyclerView.setLayoutManager(llm);
+        mEventByDateRecyclerView.setNestedScrollingEnabled(false);
 
 
-
-        //mEventRecyclerView.setAdapter(mEventAdapter);
-
-        //  Search bar
-        /*mSearchBar = view.findViewById(R.id.search_bar);
-        mSearchBar.enableSearch();
-        mSearchBar.setOnSearchActionListener(new MaterialSearchBar.OnSearchActionListener() {
-            @Override
-            public void onSearchStateChanged(boolean enabled) {
-
-            }
-
-            @Override
-            public void onSearchConfirmed(CharSequence text) {
-
-            }
-
-            @Override
-            public void onButtonClicked(int buttonCode) {
-
-            }
-        });*/
-
+        //testAdapter(view);
 
         return view;
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+        updateUI();
     }
 
     @Override
@@ -169,18 +154,44 @@ public class SearchFragment extends BaseFragment implements View.OnClickListener
         mHandleFragment = (MainUserActivity) getActivity();
     }
 
-
-
     @Override
     public void onClick(View view) {
         switch (view.getId()) {
 
             case R.id.search_add_event:
+                CreateEventDialogFragment createEvent = CreateEventDialogFragment.newInstance(null, mUserAuth);
+                createEvent.show(activity.getSupportFragmentManager(), getTag());
                 //createDialog.createEventView().show();
                // mHandleFragment.inflateFragment(R.string.fragment_create_event, "");
                 break;
 
         }
+    }
+
+    private void updateUI() {
+
+        if(mEventsList != null && !mEventsList.isEmpty()) {
+
+            ArrayList<ToggleButton> toggleButtons = new ArrayList<>();
+            for (int i = 0; i < 10; i++) {
+                ToggleButton button = new ToggleButton(activity);
+                button.create(ToggleButton.CIRCLE_BUTTON);
+                button.setTitle("Type " + i);
+                button.setCircleButtonColor(R.color.primaryColor);
+                toggleButtons.add(button);
+            }
+            RecyclerView.Adapter typeAdapter = new HorizontalEventTypeAdapter(activity, toggleButtons);
+            mEventRecyclerView.setAdapter(typeAdapter);
+
+
+            ArrayList<ArrayList<Event>> mCompleteEventList = new ArrayList<>();
+            ArrayList<Event> mBydateEventList = mEventsList;
+            mCompleteEventList.add(mBydateEventList);
+            mEventByDateAdapter = new VerticalEventAdapter(activity, mCompleteEventList);
+            mEventByDateRecyclerView.setAdapter(mEventByDateAdapter);
+
+        }
+
     }
 
     private void testAdapter(View view) {

@@ -37,6 +37,8 @@ public class DatabaseManager  {
     private final static String CHILD_REPOST_USERS = "repostUsers";
     private final static String CHILD_REPOST_COUNT = "repostCount";
 
+    private final static String CHILD_EVENTS = "events";
+
     public final static String CHILD_UPVOTES = "upvotes";
     public final static String CHILD_REPOSTS = "reposts";
     public final static String CHILD_COMMENTS = "comments";
@@ -122,6 +124,18 @@ public class DatabaseManager  {
                 .child(CHILD_POSTS)
                 .child(postid);
     }
+
+    public DatabaseReference getDatabaseEvents() {
+        return FirebaseDatabase.getInstance().getReference()
+                .child(CHILD_EVENTS);
+    }
+
+    public DatabaseReference getDatabaseEvent(String eid) {
+        return FirebaseDatabase.getInstance().getReference()
+                .child(CHILD_EVENTS)
+                .child(eid);
+    }
+
 
     public DatabaseReference getDatabasePostUpvoteCount(String postid) {
         return FirebaseDatabase.getInstance().getReference()
@@ -216,6 +230,12 @@ public class DatabaseManager  {
                     .child(uid);
     }
 
+    public StorageReference getStorageEvent(String eventId) {
+        return FirebaseStorage.getInstance().getReference()
+                .child(CHILD_EVENTS)
+                .child(eventId);
+    }
+
     /**
      *
      *
@@ -242,6 +262,13 @@ public class DatabaseManager  {
         childUpdates.put("/posts/" + post.getPostid(), postValues);
         childUpdates.put("/user-posts/" + post.getUser().getUid() + "/" + post.getPostid(), postValues);
 
+        getReference().updateChildren(childUpdates);
+    }
+
+    public void writeEventToFirebase(Event event) {
+        Map<String, Object> eventValues = event.toMap();
+        Map<String, Object> childUpdates = new HashMap<>();
+        childUpdates.put("/events/" + event.getEid(), eventValues);
         getReference().updateChildren(childUpdates);
     }
 
@@ -469,47 +496,50 @@ public class DatabaseManager  {
      **/
 
     public void deletePost(Post holderPost) {
+
         if(holderPost.getImages() != null && !holderPost.getImages().isEmpty()) {
+
             getStoragePost(holderPost.getPostid())
                     .child(holderPost.getImages().get(0).getImageid())
                     .delete().addOnFailureListener(new OnFailureListener() {
-                @Override
-                public void onFailure(@NonNull Exception e) {
-                    Log.e(TAG, e.getMessage());
-                }
-            }).addOnSuccessListener(new OnSuccessListener<Void>() {
+                        @Override
+                        public void onFailure(@NonNull Exception e) {
+                            Log.e(TAG, e.getMessage());
+                        }
+                    })
+                    .addOnSuccessListener(new OnSuccessListener<Void>() {
                 @Override
                 public void onSuccess(Void aVoid) {
                     Log.d(TAG, "Deleted");
                 }
             });
+
         }
 
-        try {
-            //if (holderPost.getAudio() != null) {
+
+        if (holderPost.getAudio() != null ) {
 
 
             getStoragePost(holderPost.getPostid())
                     .child(holderPost.getAudio().getAid())
-                    .delete().addOnFailureListener(new OnFailureListener() {
-                @Override
-                public void onFailure(@NonNull Exception e) {
-                    Log.e(TAG, e.getMessage());
-                }
-            }).addOnSuccessListener(new OnSuccessListener<Void>() {
-                @Override
-                public void onSuccess(Void aVoid) {
-                    Log.d(TAG, "Deleted");
-                }
-            });
-
-            //}
-            getDatabasePost(holderPost.getPostid()).removeValue();
-            getDatabaseUserPost(holderPost.getUser().getUid(), holderPost.getPostid()).removeValue();
-
-        } catch (NullPointerException e) {
-            Log.e(TAG, e.getMessage());
+                    .delete()
+                    .addOnFailureListener(new OnFailureListener() {
+                        @Override
+                        public void onFailure(@NonNull Exception e) {
+                            Log.e(TAG, e.getMessage());
+                                }
+                    })
+                    .addOnSuccessListener(new OnSuccessListener<Void>() {
+                        @Override
+                        public void onSuccess(Void aVoid) {
+                            Log.d(TAG, "Deleted");
+                        }
+                    });
         }
+        getDatabasePost(holderPost.getPostid()).removeValue();
+        getDatabaseUserPost(holderPost.getUser().getUid(), holderPost.getPostid()).removeValue();
+
+
         //Delete Repost & Like of user of post is deleted
     }
 }
