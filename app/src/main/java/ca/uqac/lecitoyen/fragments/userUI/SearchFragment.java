@@ -21,6 +21,7 @@ import ca.uqac.lecitoyen.R;
 import ca.uqac.lecitoyen.adapters.HorizontalEventTypeAdapter;
 import ca.uqac.lecitoyen.adapters.VerticalEventAdapter;
 import ca.uqac.lecitoyen.adapters.SearchUserAdapter;
+import ca.uqac.lecitoyen.buttons.EventTypeButton;
 import ca.uqac.lecitoyen.buttons.ToggleButton;
 import ca.uqac.lecitoyen.fragments.BaseFragment;
 import ca.uqac.lecitoyen.fragments.CreateEventDialogFragment;
@@ -28,6 +29,7 @@ import ca.uqac.lecitoyen.models.DatabaseManager;
 import ca.uqac.lecitoyen.models.Event;
 import ca.uqac.lecitoyen.models.User;
 import ca.uqac.lecitoyen.util.Constants;
+import ca.uqac.lecitoyen.util.Util;
 import ca.uqac.lecitoyen.views.ToolbarView;
 
 //  TODO: Handle research of (user, post, etc.)
@@ -172,21 +174,35 @@ public class SearchFragment extends BaseFragment implements View.OnClickListener
 
         if(mEventsList != null && !mEventsList.isEmpty()) {
 
-            ArrayList<ToggleButton> toggleButtons = new ArrayList<>();
-            for (int i = 0; i < 10; i++) {
-                ToggleButton button = new ToggleButton(activity);
-                button.create(ToggleButton.CIRCLE_BUTTON);
-                button.setTitle("Type " + i);
-                button.setCircleButtonColor(R.color.primaryColor);
-                toggleButtons.add(button);
-            }
-            RecyclerView.Adapter typeAdapter = new HorizontalEventTypeAdapter(activity, toggleButtons);
-            mEventRecyclerView.setAdapter(typeAdapter);
-
+            //filte
+            createTypeButton();
 
             ArrayList<ArrayList<Event>> mCompleteEventList = new ArrayList<>();
             ArrayList<Event> mBydateEventList = mEventsList;
-            mCompleteEventList.add(mBydateEventList);
+            ArrayList<Event> nextWeekList = new ArrayList<>();
+            ArrayList<Event> nextMonthList = new ArrayList<>();
+            ArrayList<Event> nextYearList = new ArrayList<>();
+            for(int i = 0; i < mEventsList.size(); i++) {
+
+                //less than a week
+                long date = mEventsList.get(i).getEventDate();
+                if (date < Util.getAWeekFromNow()) {
+                    nextWeekList.add(mEventsList.get(i));
+                } else if (date > Util.getAWeekFromNow() && date < Util.getAMonthFromNow()){
+                    nextMonthList.add(mEventsList.get(i));
+                } else {
+                    nextYearList.add(mEventsList.get(i));
+                }
+
+                //less than a month
+
+
+                //the rest (more than a month
+
+            }
+            mCompleteEventList.add(nextWeekList);
+            mCompleteEventList.add(nextMonthList);
+            mCompleteEventList.add(nextYearList);
             mEventByDateAdapter = new VerticalEventAdapter(activity, mCompleteEventList);
             mEventByDateRecyclerView.setAdapter(mEventByDateAdapter);
 
@@ -194,60 +210,36 @@ public class SearchFragment extends BaseFragment implements View.OnClickListener
 
     }
 
-    private void testAdapter(View view) {
+    private void createTypeButton() {
+        ArrayList<EventTypeButton> toggleButtons = new ArrayList<>();
 
-        ArrayList<ToggleButton> toggleButtons = new ArrayList<>();
-        for (int i = 0; i < 10; i++) {
-            ToggleButton button = new ToggleButton(activity);
-            button.create(ToggleButton.CIRCLE_BUTTON);
-            button.setTitle("Type " + i);
-            button.setCircleButtonColor(R.color.primaryColor);
-            toggleButtons.add(button);
-        }
-        LinearLayoutManager hllm = new LinearLayoutManager(activity, LinearLayoutManager.HORIZONTAL, false);
-        RecyclerView recyclerView = view.findViewById(R.id.search_event_type_recycler_view);
-        recyclerView.setLayoutManager(hllm);
+        EventTypeButton music = new EventTypeButton(activity);
+        music.setTitle(getString(R.string.event_type_music));
+        music.setButtonDrawable(R.drawable.ic_music_note_white_24dp);
+        music.setButtonStyle(R.color.primaryColor);
+        toggleButtons.add(music);
+
+        EventTypeButton art = new EventTypeButton(activity);
+        art.setTitle(getString(R.string.event_type_art));
+        art.setButtonDrawable(R.drawable.ic_brush_white_24dp);
+        art.setButtonStyle(R.color.complementary_300);
+        toggleButtons.add(art);
+
+        EventTypeButton photo = new EventTypeButton(activity);
+        photo.setTitle(getString(R.string.event_type_photography));
+        photo.setButtonDrawable(R.drawable.ic_photo_camera_white_24dp);
+        photo.setButtonStyle(R.color.triadic_p_400);
+        toggleButtons.add(photo);
+
+        EventTypeButton other = new EventTypeButton(activity);
+        other.setTitle(getString(R.string.event_type_other));
+        other.setButtonDrawable(R.drawable.ic_free_breakfast_white_24dp);
+        other.setButtonStyle(R.color.analogous_g_400);
+        toggleButtons.add(other);
+
 
         RecyclerView.Adapter typeAdapter = new HorizontalEventTypeAdapter(activity, toggleButtons);
-        recyclerView.setAdapter(typeAdapter);
-
-
-
-
-        long day = 1000 * 3600 * 24;
-        //For test
-        ArrayList<ArrayList<Event>> mCompleteEventList = new ArrayList<>();
-        ArrayList<Event> mBydateEventList = new ArrayList<>();
-        for(int j = 0; j < 5; j++) {
-
-
-            for (int i = 0; i < 5; i++) {
-                Event event = new Event();
-                event.setTitle("Event " + i);
-                event.setEventDate(System.currentTimeMillis());
-                event.setLocation("Place du royaume, Chicoutimi");
-                event.setPrice(i * 2);
-                mBydateEventList.add(event);
-            }
-            mCompleteEventList.add(mBydateEventList);
-        }
-
-        LinearLayoutManager llm = new LinearLayoutManager(activity);
-        mEventByDateRecyclerView = view.findViewById(R.id.search_event_by_date_recycler_view);
-        mEventByDateRecyclerView.setHasFixedSize(false);
-        mEventByDateRecyclerView.setLayoutManager(llm);
-        mEventByDateRecyclerView.setNestedScrollingEnabled(false);
-
-        mEventByDateAdapter = new VerticalEventAdapter(activity, mCompleteEventList);
-        mEventByDateRecyclerView.setAdapter(mEventByDateAdapter);
-
-
-        //mEventRecyclerView = view.findViewById(R.id.search_event_recycler_view);
-        //snapHelper.attachToRecyclerView(mEventRecyclerView);
-        //mEventRecyclerView.setNestedScrollingEnabled(false);
-        //mEventRecyclerView.setLayoutManager(llm);
-
-
+        mEventRecyclerView.setAdapter(typeAdapter);
     }
 
     public interface OnSearchFragmentInteractionListener {

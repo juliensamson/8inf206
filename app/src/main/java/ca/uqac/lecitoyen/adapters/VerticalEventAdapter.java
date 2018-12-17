@@ -17,6 +17,7 @@ import ca.uqac.lecitoyen.R;
 import ca.uqac.lecitoyen.activities.MainUserActivity;
 import ca.uqac.lecitoyen.helpers.CustomLinearLayoutManager;
 import ca.uqac.lecitoyen.models.Event;
+import ca.uqac.lecitoyen.util.Util;
 
 
 public class VerticalEventAdapter extends RecyclerView.Adapter<VerticalEventAdapter.ViewHolder> {
@@ -60,6 +61,7 @@ public class VerticalEventAdapter extends RecyclerView.Adapter<VerticalEventAdap
     }
 
     private MainUserActivity mUserActivity;
+    private String mDateRange;
     private ArrayList<ArrayList<Event>> mEventsList = new ArrayList<>();
     CustomLinearLayoutManager llm;
 
@@ -84,9 +86,19 @@ public class VerticalEventAdapter extends RecyclerView.Adapter<VerticalEventAdap
 
         Log.e(TAG, "Position " + position);
 
+        //less than a week
+        if (holder.getAdapterPosition() == 0) {
+            holder.date.setText("La prochaine semaine");
+        }
+        if (holder.getAdapterPosition() == 1) {
+            holder.date.setText("Le prochain mois");
+        }
+        if (holder.getAdapterPosition() == 2) {
+            holder.date.setText("Dans la prochaine année");
+        }
+
         holder.setData(mEventsList.get(holder.getAdapterPosition()));
 
-        holder.date.setText("SOME DATE");
 
     }
 

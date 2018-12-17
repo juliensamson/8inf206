@@ -86,6 +86,15 @@
             app:layout_anchorGravity="start|bottom"
             android:src="@mipmap/ic_launcher_round" />
 
+        <ca.uqac.lecitoyen.buttons.FollowButton
+            android:id="@+id/toolbar_profile_follow"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:elevation="5dp"
+            android:layout_marginEnd="@dimen/activity_horizontal_margin"
+            app:layout_anchor="@id/toolbar_profil_collapsing_background"
+            app:layout_anchorGravity="end|bottom"/>
+
     </android.support.design.widget.CoordinatorLayout>
 
 </merge>

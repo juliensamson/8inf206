@@ -132,7 +132,7 @@ public class ForumFragment extends BaseFragment implements View.OnClickListener 
 
             switch (view.getId()) {
                 case R.id.toolbar_view_image_view:
-                    UserProfileFragment fragment = UserProfileFragment.newInstance(Constants.FROM_PROFILE, mUserAuth);
+                    UserProfileFragment fragment = UserProfileFragment.newInstance(Constants.FROM_PROFILE, mUserAuth.getUid(), mUserAuth);
                     mainUserActivity.doUserProfileTransaction(fragment, MainUserActivity.AUTH_USER);
                     break;
                 case R.id.forum_add_post:

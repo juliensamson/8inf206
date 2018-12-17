@@ -298,7 +298,7 @@ public class MainUserActivity extends BaseActivity implements
     }
 
     private void loadEventsList(DataSnapshot dataSnapshot) {
-        Query dbEvents = dataSnapshot.getRef().child("events");
+        Query dbEvents = dataSnapshot.getRef().child("events").orderByChild("eventDate");
         dbEvents.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {

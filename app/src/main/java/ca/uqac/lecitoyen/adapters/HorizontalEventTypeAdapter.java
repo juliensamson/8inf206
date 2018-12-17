@@ -5,6 +5,7 @@ import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
@@ -46,9 +47,9 @@ public class HorizontalEventTypeAdapter extends RecyclerView.Adapter<HorizontalE
         this.mEventTypeButtons = eventTypeButtons;
     }*/
 
-    public HorizontalEventTypeAdapter(MainUserActivity activity, ArrayList<ToggleButton> toggleButtons) {
+    public HorizontalEventTypeAdapter(MainUserActivity activity, ArrayList<EventTypeButton> toggleButtons) {
         this.mUserActivity = activity;
-        this.mToggleButtons = toggleButtons;
+        this.mEventTypeButtons = toggleButtons;
     }
 
     @NonNull
@@ -63,25 +64,60 @@ public class HorizontalEventTypeAdapter extends RecyclerView.Adapter<HorizontalE
     @Override
     public void onBindViewHolder(@NonNull final HorizontalEventTypeAdapter.ViewHolder holder, int position) {
 
-        final ToggleButton button = mToggleButtons.get(holder.getAdapterPosition());
-        holder.mButton.setTitle(button.getTitle());
+        final EventTypeButton holderButton = mEventTypeButtons.get(holder.getAdapterPosition());
+        //holder.mButton.create(ToggleButton.CIRCLE_BUTTON);
+        holder.mButton.setTitle(holderButton.getTitle());
+        holder.mButton.setButtonDrawable(holderButton.getButtonDrawableId());
+        holder.mButton.setButtonStyle(holderButton.getColorId());
+
+
+        OnItemClick(holder);
         holder.mButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
 
                 Log.e(TAG, "Button click " + String.valueOf(holder.mButton.isButtonOn()));
 
-                if(!holder.mButton.isButtonOn()) {
-                    holder.mButton.setButtonOn();
-                } else {
-                    holder.mButton.setButtonOff();
-                }
+
             }
         });
     }
 
     @Override
     public int getItemCount() {
-        return mToggleButtons.size();
+        return mEventTypeButtons.size();
     }
+
+    public void OnItemClick(final ViewHolder holder) {
+
+        final EventTypeButton holderButton = mEventTypeButtons.get(holder.getAdapterPosition());
+
+        holder.mButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+                if(!holder.mButton.isButtonOn()) {
+                    holder.mButton.setButtonOn();
+
+                    if(holderButton.getTitle().equals("Musique")) {
+
+                    }
+
+                } else {
+                    holder.mButton.setButtonOff();
+                }
+
+                switch (holderButton.getTitle()) {
+
+                    case "Musique":
+                        Log.d(TAG, "Musique clicked");
+
+                        break;
+
+                }
+            }
+        });
+
+    }
+
 }

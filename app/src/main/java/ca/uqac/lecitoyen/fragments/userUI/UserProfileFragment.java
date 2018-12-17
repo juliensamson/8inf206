@@ -28,6 +28,8 @@ import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.StorageReference;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 
 import ca.uqac.lecitoyen.Interface.iHandleFragment;
 import ca.uqac.lecitoyen.R;
@@ -35,6 +37,7 @@ import ca.uqac.lecitoyen.activities.EditProfilActivity;
 import ca.uqac.lecitoyen.activities.MainUserActivity;
 import ca.uqac.lecitoyen.activities.SettingsActivity;
 import ca.uqac.lecitoyen.adapters.SwipePostAdapter;
+import ca.uqac.lecitoyen.buttons.FollowButton;
 import ca.uqac.lecitoyen.fragments.BaseFragment;
 import ca.uqac.lecitoyen.models.DatabaseManager;
 import ca.uqac.lecitoyen.models.Post;
@@ -83,6 +86,7 @@ public class UserProfileFragment extends BaseFragment implements View.OnClickLis
     private TextView mFollowerCount;
     private TextView mFollowingCount;
     private TextView mEditAccountButton;
+    private FollowButton mFollowButton;
     private RecyclerView mProfileRecyclerView;
     private RecyclerSwipeAdapter mProfileAdapter;
 
@@ -146,8 +150,10 @@ public class UserProfileFragment extends BaseFragment implements View.OnClickLis
         mFollowerCount = view.findViewById(R.id.toolbar_profil_collapsing_follower_count);
         mFollowingCount = view.findViewById(R.id.toolbar_profil_collapsing_following_count);
         mSwipeRefreshLayout = view.findViewById(R.id.profile_refresh_layout);
+        mFollowButton = view.findViewById(R.id.toolbar_profile_follow);
 
-        //botton
+        //  Button
+        view.findViewById(R.id.toolbar_profile_follow).setOnClickListener(this);
 
         //  Toolbar Listner
         toolbarLayout.addOnOffsetChangedListener(onOffsetChangedListener(view));
@@ -208,77 +214,70 @@ public class UserProfileFragment extends BaseFragment implements View.OnClickLis
     @Override
     public void onClick(View view) {
         switch (view.getId()) {
+
+            case  R.id.toolbar_profile_follow:
+
+                break;
+
         }
     }
 
     private void updateUI() {
 
-        StorageReference profileImage = dbManager.getStorageUserProfilPicture(mUserSelect.getUid(), mUserSelect.getPid());
-        mToolbar.profileToolbar(this,"", profileImage,  mUserSelect);
-        //mUserActivity.setSupportActionBar();
-        //setHasOptionsMenu(true);
-        if(mUserActivity.getSupportActionBar() != null) {
-
-            //if (mUserAuthId.equals(mUserSelect.getUid())) {
-            //mAddPostButton.setVisibility(View.VISIBLE);
-            //mUserActivity.setBottomNavigationItem(4);
-            //mUserActivity.getSupportActionBar().setDisplayHomeAsUpEnabled(false);
-            //} else {
-            //mAddPostButton.setVisibility(View.GONE);
-            //mUserActivity.getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-            //}
-
-        }
-
-
         DatabaseReference dbUserPost = dbManager.getDatabaseUserPosts(mUserSelect.getUid());
 
-        initUserdata(dbManager);
+        StorageReference profileImage = dbManager.getStorageUserProfilPicture(mUserSelect.getUid(), mUserSelect.getPid());
 
-        ArrayList<Post> postsList = new ArrayList<>();
+        //  Toolbar
+        mToolbar.profileToolbar(this,"", profileImage,  mUserSelect);
 
-        dbUserPost.orderByChild("dateInverse").addListenerForSingleValueEvent(initPostsList(postsList));
-
-        mSwipeRefreshLayout.setOnRefreshListener(refreshListener(dbManager, postsList));
-
-    }
-
-    private void initUserdata(DatabaseManager dbManager) {
-
+        //  Profile image
         setProfileImageView(mProfilPictureView, mUserSelect);
         setProfileImageView(mToolbarProfilPictureView, mUserSelect);
-
+        //  Set user selected information
         setTextView(mToolbarName, mUserSelect.getName());
         setTextView(mNameView, mUserSelect.getName());
         setTextView(mUsernameView, mUserSelect.getUsername());
         setTextView(mBiographyView, mUserSelect.getBiography());
-        setTextView(mFollowerCount, Util.setStringPlurial(0, getString(R.string.textview_follower)));
-        setTextView(mFollowingCount, Util.setStringPlurial(0, getString(R.string.textview_following)));
+        //  Check if user selected is user auth
+        if (!mUserAuthId.equals(mUserSelect.getUid())) {
+            mFollowButton.setFollowOnClickListener(mFollowButton, mUserAuthId, mUserSelect);
+            mFollowButton.setVisibility(View.VISIBLE);
+            setTextView(mFollowerCount, Util.setStringPlurial(mFollowButton.getUserSelectFollowersCount(), getString(R.string.textview_follower)));
+            setTextView(mFollowingCount, Util.setStringPlurial(mFollowButton.getUserSelectFollowingsCount(), getString(R.string.textview_following)));
 
-        /*if (mUserSelect.getName() != null && !mUserSelect.getName().isEmpty()) {
-            mToolbarName.setText(mUserSelect.getName());
-            mNameView.setText(mUserSelect.getName());
+        } else {
+            mFollowButton.setVisibility(View.GONE);
         }
 
-        if (mUserSelect.getUsername() != null && !mUserSelect.getUsername().isEmpty())
-            mUsernameView.setText(mUserSelect.getUsername());
 
-        if (mUserSelect.getBiography() != null && !mUserSelect.getBiography().isEmpty())
-            mBiographyView.setText(mUserSelect.getBiography());*
+        ArrayList<Post> postsList = new ArrayList<>();
+        dbUserPost.orderByChild("dateInverse").addListenerForSingleValueEvent(initPostsList(postsList));
+        mSwipeRefreshLayout.setOnRefreshListener(refreshListener(dbManager, postsList));
 
-        mFollowerCount.setText(Util.setStringPlurial(
-                0,
-                getString(R.string.textview_follower)));
-        mFollowingCount.setText(Util.setStringPlurial(
-                0,
-                getString(R.string.textview_following)));*/
-        //  Following & Follower
+    }
+
+    private Map<String, String> getUsers(DataSnapshot snapshot) {
+        final Map<String, String> users = new HashMap<>();
+
+        Log.i(TAG, "Snapshot: " + snapshot.toString());
+        Log.i(TAG, "Count: " + snapshot.getChildrenCount());
+
+        for(DataSnapshot userAuthIsFollowing : snapshot.getChildren()) {
+
+            String userid = userAuthIsFollowing.getValue(String.class);
+            if(userid != null) {
+                users.put(userid, userid);
+            } else {
+                Log.e(TAG, "userid null");
+            }
+        }
+        return users;
     }
 
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         super.onCreateOptionsMenu(menu, inflater);
-        Log.d(TAG, "onCreateOptionsMenu");
         //if (mUserAuthId.equals(mUserSelect.getUid())) {
         inflater.inflate(R.menu.user_menu, menu);
         MenuItem edit = menu.findItem(R.id.menu_edit);

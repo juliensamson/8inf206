@@ -1,6 +1,7 @@
 package ca.uqac.lecitoyen.buttons;
 
 import android.content.Context;
+import android.graphics.drawable.Drawable;
 import android.graphics.drawable.GradientDrawable;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -24,6 +25,8 @@ public class ToggleButton extends FrameLayout implements iToggleButton {
     private static final int RIGHT = 88;
     private static final int LEFT = 88;
 
+
+    private int mDrawableId;
 
     private FrameLayout mButtonOn, mButtonOff;
     private TextView mShapeOn, mShapeOff, mButtonTitle;
@@ -117,21 +120,37 @@ public class ToggleButton extends FrameLayout implements iToggleButton {
         return mButtonTitle.getText().toString();
     }
 
-    public void setCircleButtonColor(int color) {
+    public void setCircleButtonColor(int color, int drawableId) {
 
         if(typeSelect != CIRCLE_BUTTON)
             throw new IllegalArgumentException("Cannot change style on a none circle button");
 
+        if(drawableId != 0) {
+            mDrawableId = drawableId;
+            mIconOn.setImageResource(drawableId);
+            mIconOff.setImageResource(drawableId);
+        }
+
         if(mShapeOn != null && mIconOn != null) {
+
             DrawableCompat.setTint(mShapeOn.getBackground(), ContextCompat.getColor(getContext(), color));
             DrawableCompat.setTint(mIconOn.getDrawable(), ContextCompat.getColor(getContext(), R.color.white_50));
         }
         //  Color Button Off
         if(mShapeOff != null && mIconOff != null) {
+
             GradientDrawable drawable = (GradientDrawable)mShapeOff.getBackground();
             drawable.setStroke(8, getResources().getColor(color));
             DrawableCompat.setTint(mIconOff.getDrawable(), ContextCompat.getColor(getContext(), color));
         }
+    }
+
+    public int getButtonColor() {
+        return mIconOn.getSolidColor();
+    }
+
+    public int getButtonDrawableId() {
+        return mDrawableId;
     }
 
 

@@ -38,6 +38,8 @@ public class Post implements Parcelable {
     private Map<String, User> repostUsers;
     private long repostCount;
 
+    private long commentCount;
+
     //MAP of (User, Comment)
     //private ArrayList<User> commentUserList;
     //private long commentCount;
@@ -211,6 +213,14 @@ public class Post implements Parcelable {
         this.repostCount = repostCount;
     }
 
+    public long getCommentCount() {
+        return commentCount;
+    }
+
+    public void setCommentCount(long commentCount) {
+        this.commentCount = commentCount;
+    }
+
     @Exclude
     public Map<String, Object> toMap() {
         HashMap<String, Object> result = new HashMap<>();
@@ -228,6 +238,7 @@ public class Post implements Parcelable {
         result.put("upvoteCount", upvoteCount);
         result.put("repostUsers", repostUsers);
         result.put("repostCount", repostCount);
+        result.put("commentCount", commentCount);
 
         return result;
     }
@@ -245,5 +256,6 @@ public class Post implements Parcelable {
         parcel.writeLong(dateInverse);
         parcel.writeLong(upvoteCount);
         parcel.writeLong(repostCount);
+        parcel.writeLong(commentCount);
     }
 }

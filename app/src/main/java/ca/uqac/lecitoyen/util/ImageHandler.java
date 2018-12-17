@@ -10,14 +10,21 @@ import android.hardware.camera2.CameraManager;
 import android.net.Uri;
 import android.os.Environment;
 import android.provider.MediaStore;
+import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.text.format.DateFormat;
 import android.util.Log;
 
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
+
 import java.io.File;
 import java.io.IOException;
 import java.util.Date;
+
+import ca.uqac.lecitoyen.models.DatabaseManager;
+import ca.uqac.lecitoyen.models.User;
 
 public class ImageHandler {
 
@@ -84,5 +91,26 @@ public class ImageHandler {
             return new Intent();
         }*/
         return new Intent();
+    }
+
+    public void loadProfileImage(User user) {
+
+        Uri mUri = null;
+
+        DatabaseManager.getInstance()
+                .getStorageUserProfilPicture(user.getUid(), user.getPid())
+                .getDownloadUrl().addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception e) {
+                Log.e(TAG, e.getMessage());
+            }
+        }).addOnSuccessListener(new OnSuccessListener<Uri>() {
+            @Override
+            public void onSuccess(Uri uri) {
+
+            }
+        });
+
+
     }
 }

@@ -111,7 +111,7 @@ public class RepostButton extends FrameLayout implements iToggleButton {
         return isRepostOn;
     }
 
-    public void setRepostOnClickListener(final RepostButton repostButton, User currUser, Post post) {
+    public void setRepostOnClickListener(final RepostButton repostButton, final User currUser, Post post) {
 
         mCurrentUser = currUser;
         mPostClicked = post;
@@ -122,6 +122,17 @@ public class RepostButton extends FrameLayout implements iToggleButton {
                     public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
 
                         final Map<String, User> users = getRepostUsers(dataSnapshot);
+
+                        if(!users.isEmpty())
+                        {
+                            if(mCurrentUser != null) {
+                                if (users.containsKey(currUser.getUid()))
+                                    repostButton.setButtonOn();
+                                else
+                                    repostButton.setButtonOff();
+                            }
+                        }
+
 
                         repostButton.setOnClickListener(repostOnClickListener(repostButton, users));
 

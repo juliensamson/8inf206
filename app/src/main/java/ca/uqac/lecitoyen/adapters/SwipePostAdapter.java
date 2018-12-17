@@ -64,7 +64,7 @@ public class SwipePostAdapter extends RecyclerSwipeAdapter<SwipePostAdapter.View
 
         LinearLayout profilLayout;
         CircleImageView profilPicture;
-        TextView name, userName, time, modify, message;
+        TextView name, userName, time, modify, message, commentCount;
         MultimediaView multimediaView;
 
         UpvoteButton upvoteButton;
@@ -90,6 +90,7 @@ public class SwipePostAdapter extends RecyclerSwipeAdapter<SwipePostAdapter.View
 
             upvoteButton = itemView.findViewById(R.id.post_upvote_button);
             repostButton = itemView.findViewById(R.id.post_repost_button);
+            commentCount = itemView.findViewById(R.id.publication_social_comment_count);
 
             //  Multimedia
 
@@ -200,7 +201,7 @@ public class SwipePostAdapter extends RecyclerSwipeAdapter<SwipePostAdapter.View
             if(holderPost.getDate() != 0)                                                                 //Time of publication
                 holder.time.setText(Util.setDisplayTime(mContext, holderPost.getDate()));
 
-            if(holderPost.getHistories().size() > 1)                                                  //Show if post modified
+            if(holderPost.getHistories() != null && holderPost.getHistories().size() > 1)                                                  //Show if post modified
                 holder.modify.setVisibility(View.VISIBLE);
 
 
@@ -227,6 +228,8 @@ public class SwipePostAdapter extends RecyclerSwipeAdapter<SwipePostAdapter.View
             holder.upvoteButton.setButtonCount(holderPost.getUpvoteCount());
 
             holder.repostButton.setButtonCount(holderPost.getRepostCount());
+
+            holder.commentCount.setText(String.valueOf(holderPost.getCommentCount()));
 
         } else {
             //TODO: Create blank canvas
@@ -279,10 +282,12 @@ public class SwipePostAdapter extends RecyclerSwipeAdapter<SwipePostAdapter.View
             public void onDoubleClick(SwipeLayout layout, boolean surface) {
                 Bundle bundle = new Bundle();
                 bundle.putString("postid", holderPost.getPostid());
-                Intent intent = new Intent(mContext, ExpandPostActivity.class);
+                bundle.putParcelable("user-auth", mCurrentUser);
+                bundle.putParcelable("post-select", holderPost);
+                Intent intent = new Intent(mUserActivity, ExpandPostActivity.class);
                 intent.putExtras(bundle);
                 //intent.putExtra(TAG, holderPost);
-                mContext.startActivity(intent);
+                mUserActivity.startActivity(intent);
                 //mainUserActivity.overridePendingTransition(R.anim.fadein, R.anim.fadeout);
             }
         });
@@ -441,7 +446,7 @@ public class SwipePostAdapter extends RecyclerSwipeAdapter<SwipePostAdapter.View
                 holderPost.setRepostCount(repostUsers.size());
 
                 //  Find if users upvote the post and initialize
-                if(!upvoteUsers.isEmpty())
+                /*if(!upvoteUsers.isEmpty())
                 {
                     if(upvoteUsers.containsKey(mCurrentUserId))
                         holder.upvoteButton.setButtonOn();
@@ -455,7 +460,7 @@ public class SwipePostAdapter extends RecyclerSwipeAdapter<SwipePostAdapter.View
                         holder.repostButton.setButtonOn();
                     else
                         holder.repostButton.setButtonOff();
-                }
+                }*/
             }
 
             @Override

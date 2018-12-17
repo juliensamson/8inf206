@@ -115,7 +115,7 @@ public class UpvoteButton extends FrameLayout implements iToggleButton {
     }
 
 
-    public void setUpvoteOnClickListener(final UpvoteButton upvoteButton, User currUser, Post post) {
+    public void setUpvoteOnClickListener(final UpvoteButton upvoteButton, final User currUser, Post post) {
 
         mCurrentUser = currUser;
         mPostClicked = post;
@@ -126,6 +126,18 @@ public class UpvoteButton extends FrameLayout implements iToggleButton {
                     public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
 
                         final Map<String, User> users = getUpvoteUsers(dataSnapshot);
+
+                        if(!users.isEmpty())
+                        {
+                            if(mCurrentUser != null) {
+                                if (users.containsKey(currUser.getUid()))
+                                    upvoteButton.setButtonOn();
+                                else
+                                    upvoteButton.setButtonOff();
+                            }
+                        }
+
+
 
                         upvoteButton.setOnClickListener(upvoteOnClickListener(upvoteButton, users));
 

@@ -118,7 +118,13 @@ public final class Util {
         return Calendar.getInstance().get(Calendar.DAY_OF_YEAR);
     }
 
+    public static long getAWeekFromNow() {
+        return System.currentTimeMillis() + Constants.DAY * 7;
+    }
 
+    public static long getAMonthFromNow() {
+        return System.currentTimeMillis() + Constants.DAY * 30;
+    }
 
 
     /**
