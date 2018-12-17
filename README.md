@@ -43,3 +43,14 @@ Créer un "réseau social" faciliant la découverte d'artiste de la région par 
 - Permettre au citoyen de commenter et voter (sondage) sur des projets physique, projets de lois, etc. 
 - Permettre la diffusion en direct (et notifier) de scéances publiques (ou des adresses direct au public)
 
+# Fonctionnalitées
+* Connexion avec email et facebook
+* Afficher profile personnel ainsi que le profile d'autre utilisteurs
+* Modifications du email, changer mot de passe et supprimer compte
+* Modifications de données personnel (image profile, nom, nom utilisateur, etc.)
+* Publication de message (text, image, audio)
+* Système de "upvote", "repost" et commentaire pour les publications
+* Edition, historique et suppression d'une publications
+* Création d'événements (lieu, date, description, etc.)
+* Notification lors qu'un message est ajouter au fil d'actualité
+
